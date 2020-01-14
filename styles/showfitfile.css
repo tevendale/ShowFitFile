@@ -1,0 +1,11 @@
+.dataTitle {
+	color: grey;
+	font-size: 75%;
+	font-weight: bold;
+}
+.dataItem {
+	color: black;
+}
+.dataTable {
+	border: 0px solid black;
+}
