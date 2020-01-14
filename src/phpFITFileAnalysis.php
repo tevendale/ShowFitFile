@@ -12,6 +12,9 @@ namespace adriangibbons;
  * Added code to generate TRIMPexp and hrIF (Intensity Factor) value to measure session if Power is not present (June 2015).
  * Added code to generate Quadrant Analysis data (September 2015).
  *
+ * Rafael Nájera edits:
+ * Added code to support compressed timestamps (March 2017).
+ *
  * https://github.com/adriangibbons/phpFITFileAnalysis
  * http://www.thisisant.com/resources/fit
  */
@@ -35,7 +38,7 @@ if (!defined('FIT_UNIX_TS_DIFF')) {
 class phpFITFileAnalysis
 {
     public $data_mesgs = [];  // Used to store the data read from the file in associative arrays.
-    
+    private $dev_field_descriptions = [];
     private $options = null;                 // Options provided to __construct().
     private $file_contents = '';             // FIT file is read-in to memory as a string, split into an array, and reversed. See __construct().
     private $file_pointer = 0;               // Points to the location in the file that shall be read next.
@@ -332,6 +335,39 @@ class phpFITFileAnalysis
             93 => 'inside_ride_technologies',
             94 => 'sound_of_motion',
             95 => 'stryd',
+            96 => 'icg',
+            97 => 'MiPulse',
+            98 => 'bsx_athletics',
+            99 => 'look',
+            100 => 'campagnolo_srl',
+            101 => 'body_bike_smart',
+            102 => 'praxisworks',
+            103 => 'limits_technology',
+            104 => 'topaction_technology',
+            105 => 'cosinuss',
+            106 => 'fitcare',
+            107 => 'magene',
+            108 => 'giant_manufacturing_co',
+            109 => 'tigrasport',
+            110 => 'salutron',
+            111 => 'technogym',
+            112 => 'bryton_sensors',
+            113 => 'latitude_limited',
+            114 => 'soaring_technology',
+            115 => 'igpsport',
+            116 => 'thinkrider',
+            117 => 'gopher_sport',
+            118 => 'waterrower',
+            119 => 'orangetheory',
+            120 => 'inpeak',
+            121 => 'kinetic',
+            122 => 'johnson_health_tech',
+            123 => 'polar_electro',
+            124 => 'seesense',
+            125 => 'nci_technology',
+            126 => 'iqsquare',
+            127 => 'leomo',
+            128 => 'ifit_com',
             255 => 'development',
             257 => 'healthandlife',
             258 => 'Lezyne',
@@ -342,6 +378,40 @@ class phpFITFileAnalysis
             263 => 'favero_electronics',
             264 => 'dynovelo',
             265 => 'Strava',
+            266 => 'precor',
+            267 => 'Bryton',
+            268 => 'sram',
+            269 => 'navman',
+            270 => 'cobi',
+            271 => 'spivi',
+            272 => 'mio_magellan',
+            273 => 'evesports',
+            274 => 'sensitivus_gauge',
+            275 => 'podoon',
+            276 => 'life_time_fitness',
+            277 => 'falco_e_motors',
+            278 => 'minoura',
+            279 => 'cycliq',
+            280 => 'luxottica',
+            281 => 'trainer_road',
+            282 => 'the_sufferfest',
+            283 => 'fullspeedahead',
+            284 => 'virtualtraining',
+            285 => 'feedbacksports',
+            286 => 'omata',
+            287 => 'vdo',
+            288 => 'magneticdays',
+            289 => 'hammerhead',
+            290 => 'kinetic_by_kurt',
+            291 => 'shapelog',
+            292 => 'dabuziduo',
+            293 => 'jetblack',
+            294 => 'coros',
+            295 => 'virtugo',
+            296 => 'velosense',
+            297 => 'cycligentinc',
+            298 => 'trailforks',
+            299 => 'mahle_ebikemotion',
             5759 => 'actigraphcorp'
         ],
         'pwr_zone_calc' => [0 => 'custom', 1 => 'percent_ftp'],
@@ -356,6 +426,9 @@ class phpFITFileAnalysis
             8 => 'hrm_run_single_byte_product_id',
             9 => 'bsm',
             10 => 'bcm',
+            11 => 'axs01',
+            12 => 'HRM-Tri',                    // 'hrm_tri_single_byte_product_id',
+            14 => 'Forerunner 225',             // 'fr225_single_byte_product_id',
             473 => 'Forerunner 301',            // 'fr301_china',
             474 => 'Forerunner 301',            // 'fr301_japan',
             475 => 'Forerunner 301',            // 'fr301_korea',
@@ -380,8 +453,8 @@ class phpFITFileAnalysis
             1341 => 'alf04',
             1345 => 'Forerunner 610',           // 'fr610',
             1360 => 'Forerunner 210',           // 'fr210_japan',
-            1380 => 'vector_ss',
-            1381 => 'vector_cp',
+            1380 => 'Vector 2S',                // vector_ss
+            1381 => 'Vector 2',                 // vector_cp
             1386 => 'Edge 800',                 // 'edge800_china',
             1387 => 'Edge 500',                 // 'edge500_china',
             1410 => 'Forerunner 610',           // 'fr610_japan',
@@ -393,7 +466,7 @@ class phpFITFileAnalysis
             1497 => 'Edge 800',                 // 'edge800_korea',
             1499 => 'swim',
             1537 => 'Forerunner 910XT',         // 'fr910xt_china',
-            1551 => 'fenix',
+            1551 => 'Fenix',                    // fenix
             1555 => 'edge200_taiwan',
             1561 => 'Edge 510',                 // 'edge510',
             1567 => 'Edge 810',                 // 'edge810',
@@ -407,7 +480,9 @@ class phpFITFileAnalysis
             1735 => 'virb_elite',
             1736 => 'edge_touring',
             1742 => 'Edge 510',                 // 'edge510_japan',
+            1743 => 'HRM-Tri',                  // 'hrm_tri',
             1752 => 'hrm_run',
+            1765 => 'Forerunner 920XT',         // 'fr920xt',
             1821 => 'Edge 510',                 // 'edge510_asia',
             1822 => 'Edge 810',                 // 'edge810_china',
             1823 => 'Edge 810',                 // 'edge810_taiwan',
@@ -416,17 +491,112 @@ class phpFITFileAnalysis
             1853 => 'virb_remote',
             1885 => 'vivo_ki',
             1903 => 'Forerunner 15',            // 'fr15',
+            1907 => 'vivoactive',               // 'vivo_active',
             1918 => 'Edge 510',                 // 'edge510_korea',
             1928 => 'Forerunner 620',           // 'fr620_japan',
             1929 => 'Forerunner 620',           // 'fr620_china',
             1930 => 'Forerunner 220',           // 'fr220_japan',
             1931 => 'Forerunner 220',           // 'fr220_china',
-            1967 => 'fenix2',
-            10007 => 'sdm4',
+            1936 => 'Approach S6',              // 'approach_s6'
+            1956 => 'vívosmart',                // 'vivo_smart',
+            1967 => 'Fenix 2',                  // fenix2
+            1988 => 'epix',
+            2050 => 'Fenix 3',                  // fenix3
+            2052 => 'Edge 1000',                // edge1000_taiwan
+            2053 => 'Edge 1000',                // edge1000_japan
+            2061 => 'Forerunner 15',            // fr15_japan
+            2067 => 'Edge 520',                 // edge520
+            2070 => 'Edge 1000',                // edge1000_china
+            2072 => 'Forerunner 620',           // fr620_russia
+            2073 => 'Forerunner 220',           // fr220_russia
+            2079 => 'Vector S',                 // vector_s
+            2100 => 'Edge 1000',                // edge1000_korea
+            2130 => 'Forerunner 920',           // fr920xt_taiwan
+            2131 => 'Forerunner 920',           // fr920xt_china
+            2132 => 'Forerunner 920',           // fr920xt_japan
+            2134 => 'virbx',
+            2135 => 'vívosmart',                // vivo_smart_apac',
+            2140 => 'etrex_touch',
+            2147 => 'Edge 25',                  // edge25
+            2148 => 'Forerunner 25',            // fr25
+            2150 => 'vivo_fit2',
+            2153 => 'Forerunner 225',           // fr225
+            2156 => 'Forerunner 630',           // fr630
+            2157 => 'Forerunner 230',           // fr230
+            2160 => 'vivo_active_apac',
+            2161 => 'Vector 2',                 // vector_2
+            2162 => 'Vector 2S',                // vector_2s
+            2172 => 'virbxe',
+            2173 => 'Forerunner 620',           // fr620_taiwan
+            2174 => 'Forerunner 220',           // fr220_taiwan
+            2175 => 'truswing',
+            2188 => 'Fenix 3',                  // fenix3_china
+            2189 => 'Fenix 3',                  // fenix3_twn
+            2192 => 'varia_headlight',
+            2193 => 'varia_taillight_old',
+            2204 => 'Edge Explore 1000',        // edge_explore_1000
+            2219 => 'Forerunner 225',           // fr225_asia
+            2225 => 'varia_radar_taillight',
+            2226 => 'varia_radar_display',
+            2238 => 'Edge 20',                  // edge20
+            2262 => 'D2 Bravo',                 // d2_bravo
+            2266 => 'approach_s20',
+            2276 => 'varia_remote',
+            2327 => 'hrm4_run',
+            2337 => 'vivo_active_hr',
+            2347 => 'vivo_smart_gps_hr',
+            2348 => 'vivo_smart_hr',
+            2368 => 'vivo_move',
+            2398 => 'varia_vision',
+            2406 => 'vivo_fit3',
+            2413 => 'Fenix 3 HR',               // fenix3_hr
+            2417 => 'Virb Ultra 30',            // virb_ultra_30
+            2429 => 'index_smart_scale',
+            2431 => 'Forerunner 235',           // fr235
+            2432 => 'Fenix 3 Chronos',          // fenix3_chronos
+            2441 => 'oregon7xx',
+            2444 => 'rino7xx',
+            2496 => 'nautix',
+            2530 => 'Edge 820',                 // edge_820
+            2531 => 'Edge Explore 820',         // edge_explore_820
+            2544 => 'fenix5s',
+            2547 => 'D2 Bravo Titanium',        // d2_bravo_titanium
+            2593 => 'Running Dynamics Pod',     // running_dynamics_pod
+            2604 => 'Fenix 5x',                 // fenix5x
+            2606 => 'vivofit jr',               // vivo_fit_jr
+            2691 => 'Forerunner 935',           // fr935
+            2697 => 'Fenix 5',                  // fenix5
+            2700 => 'vivoactive3',
+            2769 => 'foretrex_601_701',
+            2772 => 'vivo_move_hr',
+            2713 => 'Edge 1030',                // edge_1030
+            2806 => 'approach_z80',
+            2831 => 'vivo_smart3_apac',
+            2832 => 'vivo_sport_apac',
+            2859 => 'descent',
+            2886 => 'Forerunner 645',           // fr645
+            2888 => 'Forerunner 645',           // fr645m
+            2900 => 'Fenix 5S Plus',            // fenix5s_plus
+            2909 => 'Edge 130',                 // Edge_130
+            2927 => 'vivosmart_4',
+            2962 => 'approach_x10',
+            2988 => 'vivoactive3m_w',
+            3011 => 'edge_explore',
+            3028 => 'gpsmap66',
+            3049 => 'approach_s10',
+            3066 => 'vivoactive3m_l',
+            3085 => 'approach_g80',
+            3110 => 'Fenix 5 Plus',             // fenix5_plus
+            3111 => 'Fenix 5X Plus',            // fenix5x_plus
+            3112 => 'Edge 520 Plus',            // edge_520_plus
+            3299 => 'hrm_dual',
+            3314 => 'approach_s40',
+            10007 => 'SDM4 footpod',            // sdm4
             10014 => 'edge_remote',
             20119 => 'training_center',
+            65531 => 'connectiq_simulator',
             65532 => 'android_antplus_plugin',
-            65534 => 'connect'
+            65534 => 'Garmin Connect website'   // connect
         ],
         'sport' => [  // Have capitalised and replaced underscores with spaces.
             0 => 'Generic',
@@ -492,11 +662,16 @@ class phpFITFileAnalysis
             4 => 'wifi',  //External device connected with Wifi
             5 => 'local',  //Onboard device
         ],
-        'swim_stroke' => [0 => 'Freestyle', 1 => 'Backstroke', 2 => 'Breaststroke', 3 => 'Butterfly', 4 => 'Drill', 5 => 'Mixed', 6 => 'IM']  // Have capitalised.
+        'swim_stroke' => [0 => 'Freestyle', 1 => 'Backstroke', 2 => 'Breaststroke', 3 => 'Butterfly', 4 => 'Drill', 5 => 'Mixed', 6 => 'IM'],  // Have capitalised.
+        'water_type' => [0 => 'fresh', 1 => 'salt', 2 => 'en13319', 3 => 'custom'],
+        'tissue_model_type' => [0 => 'zhl_16c'],
+        'dive_gas_status' => [0 => 'disabled', 1 => 'enabled', 2 => 'backup_only'],
+        'dive_alarm_type' => [0 => 'depth', 1 => 'time'],
+        'dive_backlight_mode' => [0 => 'at_depth', 1 => 'always_on'],
     ];
     
     /**
-     * D00001275 Flexible & Interoperable Data Transfer (FIT) Protocol Rev 1.7.pdf
+     * D00001275 Flexible & Interoperable Data Transfer (FIT) Protocol Rev 2.2.pdf
      * Table 4-6. FIT Base Types and Invalid Values
      *
      * $types array holds a string used by the PHP unpack() function to format binary data.
@@ -504,36 +679,42 @@ class phpFITFileAnalysis
      */
     private $endianness = [
         0 => [  // Little Endianness
-            0   => 'Ctmp',  // enum
-            1   => 'ctmp',  // sint8
-            2   => 'Ctmp',  // uint8
-            131 => 'vtmp',  // sint16 - manually convert uint16 to sint16 in fixData()
-            132 => 'vtmp',  // uint16
-            133 => 'Vtmp',  // sint32 - manually convert uint32 to sint32 in fixData()
-            134 => 'Vtmp',  // uint32
-            7   => 'a*tmp', // string
-            136 => 'ftmp',  // float32
-            137 => 'dtmp',  // float64
-            10  => 'Ctmp',  // uint8z
-            139 => 'vtmp',  // uint16z
-            140 => 'Vtmp',  // uint32z
-            13  => 'Ctmp',  // byte
+            0   => ['format' => 'Ctmp', 'bytes' => 1],  // enum
+            1   => ['format' => 'ctmp', 'bytes' => 1],  // sint8
+            2   => ['format' => 'Ctmp', 'bytes' => 1],  // uint8
+            131 => ['format' => 'vtmp', 'bytes' => 2],  // sint16 - manually convert uint16 to sint16 in fixData()
+            132 => ['format' => 'vtmp', 'bytes' => 2],  // uint16
+            133 => ['format' => 'Vtmp', 'bytes' => 4],  // sint32 - manually convert uint32 to sint32 in fixData()
+            134 => ['format' => 'Vtmp', 'bytes' => 4],  // uint32
+            7   => ['format' => 'a*tmp', 'bytes' => 1], // string
+            136 => ['format' => 'ftmp', 'bytes' => 4],  // float32
+            137 => ['format' => 'dtmp', 'bytes' => 8],  // float64
+            10  => ['format' => 'Ctmp', 'bytes' => 1],  // uint8z
+            139 => ['format' => 'vtmp', 'bytes' => 2],  // uint16z
+            140 => ['format' => 'Vtmp', 'bytes' => 4],  // uint32z
+            13  => ['format' => 'Ctmp', 'bytes' => 1],  // byte
+            142 => ['format' => 'Ptmp', 'bytes' => 8],  // sint64 - manually convert uint64 to sint64 in fixData()
+            143 => ['format' => 'Ptmp', 'bytes' => 8],  // uint64
+            144 => ['format' => 'Ptmp', 'bytes' => 8]   // uint64z
         ],
         1 => [  // Big Endianness
-            0   => 'Ctmp',  // enum
-            1   => 'ctmp',  // sint8
-            2   => 'Ctmp',  // uint8
-            131 => 'ntmp',  // sint16 - manually convert uint16 to sint16 in fixData()
-            132 => 'ntmp',  // uint16
-            133 => 'Ntmp',  // sint32 - manually convert uint32 to sint32 in fixData()
-            134 => 'Ntmp',  // uint32
-            7   => 'a*tmp', // string
-            136 => 'ftmp',  // float32
-            137 => 'dtmp',  // float64
-            10  => 'Ctmp',  // uint8z
-            139 => 'ntmp',  // uint16z
-            140 => 'Ntmp',  // uint32z
-            13  => 'Ctmp',  // byte
+            0   => ['format' => 'Ctmp', 'bytes' => 1],  // enum
+            1   => ['format' => 'ctmp', 'bytes' => 1],  // sint8
+            2   => ['format' => 'Ctmp', 'bytes' => 1],  // uint8
+            131 => ['format' => 'ntmp', 'bytes' => 2],  // sint16 - manually convert uint16 to sint16 in fixData()
+            132 => ['format' => 'ntmp', 'bytes' => 2],  // uint16
+            133 => ['format' => 'Ntmp', 'bytes' => 4],  // sint32 - manually convert uint32 to sint32 in fixData()
+            134 => ['format' => 'Ntmp', 'bytes' => 4],  // uint32
+            7   => ['format' => 'a*tmp', 'bytes' => 1], // string
+            136 => ['format' => 'ftmp', 'bytes' => 4],  // float32
+            137 => ['format' => 'dtmp', 'bytes' => 8],  // float64
+            10  => ['format' => 'Ctmp', 'bytes' => 1],  // uint8z
+            139 => ['format' => 'ntmp', 'bytes' => 2],  // uint16z
+            140 => ['format' => 'Ntmp', 'bytes' => 4],  // uint32z
+            13  => ['format' => 'Ctmp', 'bytes' => 1],  // byte
+            142 => ['format' => 'Jtmp', 'bytes' => 8],  // sint64 - manually convert uint64 to sint64 in fixData()
+            143 => ['format' => 'Jtmp', 'bytes' => 8],  // uint64
+            144 => ['format' => 'Jtmp', 'bytes' => 8]   // uint64z
         ]
     ];
     
@@ -552,6 +733,9 @@ class phpFITFileAnalysis
         139 => 0,                    // 0x0000
         140 => 0,                    // 0x00000000
         13  => 255,                  // 0xFF
+        142 => 9223372036854775807,  // 0x7FFFFFFFFFFFFFFF
+        143 => 18446744073709551615, // 0xFFFFFFFFFFFFFFFF
+        144 => 0                     // 0x0000000000000000
     ];
     
     /**
@@ -768,27 +952,65 @@ class phpFITFileAnalysis
         
         20 => [
             'mesg_name' => 'record', 'field_defns' => [
-                0 => ['field_name' => 'position_lat',                'scale' => 1,    'offset' => 0,   'units' => 'semicircles'],
-                1 => ['field_name' => 'position_long',               'scale' => 1,    'offset' => 0,   'units' => 'semicircles'],
-                2 => ['field_name' => 'altitude',                    'scale' => 5,    'offset' => 500, 'units' => 'm'],
-                3 => ['field_name' => 'heart_rate',                  'scale' => 1,    'offset' => 0,   'units' => 'bpm'],
-                4 => ['field_name' => 'cadence',                     'scale' => 1,    'offset' => 0,   'units' => 'rpm'],
-                5 => ['field_name' => 'distance',                    'scale' => 100,  'offset' => 0,   'units' => 'm'],
-                6 => ['field_name' => 'speed',                       'scale' => 1000, 'offset' => 0,   'units' => 'm/s'],
-                7 => ['field_name' => 'power',                       'scale' => 1,    'offset' => 0,   'units' => 'watts'],
-                9 => ['field_name' => 'grade',                       'scale' => 100,  'offset' => 0,   'units' => 'percent'],
-                10 => ['field_name' => 'resistance',                 'scale' => 1,    'offset' => 0,   'units' => ''],
-                13 => ['field_name' => 'temperature',                'scale' => 1,    'offset' => 0,   'units' => 'C'],
-                29 => ['field_name' => 'accumulated_power',          'scale' => 1,    'offset' => 0,   'units' => 'watts'],
-                39 => ['field_name' => 'vertical_oscillation',       'scale' => 10,   'offset' => 0,   'units' => 'mm'],
-                40 => ['field_name' => 'stance_time_percent',        'scale' => 100,  'offset' => 0,   'units' => 'percent'],
-                43 => ['field_name' => 'left_torque_effectiveness',  'scale' => 2,    'offset' => 0,   'units' => 'percent'],
-                44 => ['field_name' => 'right_torque_effectiveness', 'scale' => 2,    'offset' => 0,   'units' => 'percent'],
-                45 => ['field_name' => 'left_pedal_smoothness',      'scale' => 2,    'offset' => 0,   'units' => 'percent'],
-                46 => ['field_name' => 'right_pedal_smoothness',     'scale' => 2,    'offset' => 0,   'units' => 'percent'],
-                47 => ['field_name' => 'combined_pedal_smoothness',  'scale' => 2,    'offset' => 0,   'units' => 'percent'],
-                53 => ['field_name' => 'fractional_cadence',         'scale' => 128,  'offset' => 0,   'units' => 'rpm'],
-                253 => ['field_name' => 'timestamp',                 'scale' => 1,    'offset' => 0,   'units' => 's']
+                0 => ['field_name' => 'position_lat',                      'scale' => 1,         'offset' => 0,   'units' => 'semicircles'],
+                1 => ['field_name' => 'position_long',                     'scale' => 1,         'offset' => 0,   'units' => 'semicircles'],
+                2 => ['field_name' => 'altitude',                          'scale' => 5,         'offset' => 500, 'units' => 'm'],
+                3 => ['field_name' => 'heart_rate',                        'scale' => 1,         'offset' => 0,   'units' => 'bpm'],
+                4 => ['field_name' => 'cadence',                           'scale' => 1,         'offset' => 0,   'units' => 'rpm'],
+                5 => ['field_name' => 'distance',                          'scale' => 100,       'offset' => 0,   'units' => 'm'],
+                6 => ['field_name' => 'speed',                             'scale' => 1000,      'offset' => 0,   'units' => 'm/s'],
+                7 => ['field_name' => 'power',                             'scale' => 1,         'offset' => 0,   'units' => 'watts'],
+                8 => ['field_name' => 'compressed_speed_distance',         'scale' => 100,       'offset' => 0,   'units' => 'm/s,m'],
+                9 => ['field_name' => 'grade',                             'scale' => 100,       'offset' => 0,   'units' => 'percent'],
+                10 => ['field_name' => 'resistance',                       'scale' => 1,         'offset' => 0,   'units' => ''],
+                11 => ['field_name' => 'time_from_course',                 'scale' => 1000,      'offset' => 0,   'units' => 's'],
+                12 => ['field_name' => 'cycle_length',                     'scale' => 100,       'offset' => 0,   'units' => 'm'],
+                13 => ['field_name' => 'temperature',                      'scale' => 1,         'offset' => 0,   'units' => 'C'],
+                17 => ['field_name' => 'speed_1s',                         'scale' => 16,        'offset' => 0,   'units' => 'm/s'],
+                18 => ['field_name' => 'cycles',                           'scale' => 1,         'offset' => 0,   'units' => 'cycles'],
+                19 => ['field_name' => 'total_cycles',                     'scale' => 1,         'offset' => 0,   'units' => 'cycles'],
+                28 => ['field_name' => 'compressed_accumulated_power',     'scale' => 1,         'offset' => 0,   'units' => 'watts'],
+                29 => ['field_name' => 'accumulated_power',                'scale' => 1,         'offset' => 0,   'units' => 'watts'],
+                30 => ['field_name' => 'left_right_balance',               'scale' => 1,         'offset' => 0,   'units' => ''],
+                31 => ['field_name' => 'gps_accuracy',                     'scale' => 1,         'offset' => 0,   'units' => 'm'],
+                32 => ['field_name' => 'vertical_speed',                   'scale' => 1000,      'offset' => 0,   'units' => 'm/s'],
+                33 => ['field_name' => 'calories',                         'scale' => 1,         'offset' => 0,   'units' => 'kcal'],
+                39 => ['field_name' => 'vertical_oscillation',             'scale' => 10,        'offset' => 0,   'units' => 'mm'],
+                40 => ['field_name' => 'stance_time_percent',              'scale' => 100,       'offset' => 0,   'units' => 'percent'],
+                41 => ['field_name' => 'stance_time',                      'scale' => 10,        'offset' => 0,   'units' => 'ms'],
+                42 => ['field_name' => 'activity_type',                    'scale' => 1,         'offset' => 0,   'units' => ''],
+                43 => ['field_name' => 'left_torque_effectiveness',        'scale' => 2,         'offset' => 0,   'units' => 'percent'],
+                44 => ['field_name' => 'right_torque_effectiveness',       'scale' => 2,         'offset' => 0,   'units' => 'percent'],
+                45 => ['field_name' => 'left_pedal_smoothness',            'scale' => 2,         'offset' => 0,   'units' => 'percent'],
+                46 => ['field_name' => 'right_pedal_smoothness',           'scale' => 2,         'offset' => 0,   'units' => 'percent'],
+                47 => ['field_name' => 'combined_pedal_smoothness',        'scale' => 2,         'offset' => 0,   'units' => 'percent'],
+                48 => ['field_name' => 'time128',                          'scale' => 128,       'offset' => 0,   'units' => 's'],
+                49 => ['field_name' => 'stroke_type',                      'scale' => 1,         'offset' => 0,   'units' => ''],
+                50 => ['field_name' => 'zone',                             'scale' => 1,         'offset' => 0,   'units' => ''],
+                51 => ['field_name' => 'ball_speed',                       'scale' => 100,       'offset' => 0,   'units' => 'm/s'],
+                52 => ['field_name' => 'cadence256',                       'scale' => 256,       'offset' => 0,   'units' => 'rpm'],
+                53 => ['field_name' => 'fractional_cadence',               'scale' => 128,       'offset' => 0,   'units' => 'rpm'],
+                54 => ['field_name' => 'total_hemoglobin_conc',            'scale' => 100,       'offset' => 0,   'units' => 'g/dL'],
+                55 => ['field_name' => 'total_hemoglobin_conc_min',        'scale' => 100,       'offset' => 0,   'units' => 'g/dL'],
+                56 => ['field_name' => 'total_hemoglobin_conc_max',        'scale' => 100,       'offset' => 0,   'units' => 'g/dL'],
+                57 => ['field_name' => 'saturated_hemoglobin_percent',     'scale' => 10,        'offset' => 0,   'units' => '%'],
+                58 => ['field_name' => 'saturated_hemoglobin_percent_min', 'scale' => 10,        'offset' => 0,   'units' => '%'],
+                59 => ['field_name' => 'saturated_hemoglobin_percent_max', 'scale' => 10,        'offset' => 0,   'units' => '%'],
+                62 => ['field_name' => 'device_index',                     'scale' => 1,         'offset' => 0,   'units' => ''],
+                67 => ['field_name' => 'left_pco',                         'scale' => 1,         'offset' => 0,   'units' => 'mm'],
+                68 => ['field_name' => 'right_pco',                        'scale' => 1,         'offset' => 0,   'units' => 'mm'],
+                69 => ['field_name' => 'left_power_phase',                 'scale' => 0.7111111, 'offset' => 0,   'units' => 'degrees'],
+                70 => ['field_name' => 'left_power_phase_peak',            'scale' => 0.7111111, 'offset' => 0,   'units' => 'degrees'],
+                71 => ['field_name' => 'right_power_phase',                'scale' => 0.7111111, 'offset' => 0,   'units' => 'degrees'],
+                72 => ['field_name' => 'right_power_phase_peak',           'scale' => 0.7111111, 'offset' => 0,   'units' => 'degrees'],
+                73 => ['field_name' => 'enhanced_speed',                   'scale' => 1000,      'offset' => 0,   'units' => 'm/s'],
+                78 => ['field_name' => 'enhanced_altitude',                'scale' => 5,         'offset' => 500, 'units' => 'm'],
+                81 => ['field_name' => 'battery_soc',                      'scale' => 2,         'offset' => 0,   'units' => 'percent'],
+                82 => ['field_name' => 'motor_power',                      'scale' => 1,         'offset' => 0,   'units' => 'watts'],
+                83 => ['field_name' => 'vertical_ratio',                   'scale' => 100,       'offset' => 0,   'units' => 'percent'],
+                84 => ['field_name' => 'stance_time_balance',              'scale' => 100,       'offset' => 0,   'units' => 'percent'],
+                85 => ['field_name' => 'step_length',                      'scale' => 10,        'offset' => 0,   'units' => 'mm'],
+                253 => ['field_name' => 'timestamp',                       'scale' => 1,         'offset' => 0,   'units' => 's']
             ]
         ],
         
@@ -867,6 +1089,19 @@ class phpFITFileAnalysis
             ]
         ],
         
+        // 'event_timestamp' and 'event_timestamp_12' should have scale of 1024 but due to floating point rounding errors.
+        // These are manually divided by 1024 later in the processHrMessages() function.
+        132 => [
+            'mesg_name' => 'hr', 'field_defns' => [
+                0 => ['field_name' => 'fractional_timestamp', 'scale' => 32768, 'offset' => 0, 'units' => 's'],
+                1 => ['field_name' => 'time256',              'scale' => 256,   'offset' => 0, 'units' => 's'],
+                6 => ['field_name' => 'filtered_bpm',         'scale' => 1,     'offset' => 0, 'units' => 'bpm'],
+                9 => ['field_name' => 'event_timestamp',      'scale' => 1,     'offset' => 0, 'units' => 's'],
+                10 => ['field_name' => 'event_timestamp_12',  'scale' => 1,     'offset' => 0, 'units' => 's'],
+                253 => ['field_name' => 'timestamp',          'scale' => 1,     'offset' => 0, 'units' => 's']
+            ]
+        ],
+        
         142 => [
             'mesg_name' => 'segment_lap', 'field_defns' => [
                 0 => ['field_name' => 'event',                           'scale' => 1,         'offset' => 0, 'units' => ''],
@@ -931,35 +1166,141 @@ class phpFITFileAnalysis
                 253 => ['field_name' => 'timestamp',                     'scale' => 1,         'offset' => 0, 'units' => 's'],
                 254 => ['field_name' => 'message_index',                 'scale' => 1,         'offset' => 0, 'units' => '']
             ]
-        ]
+        ],
+        
+        206 => [
+            'mesg_name' => 'field_description', 'field_defns' => [
+                0 => ['field_name' => 'developer_data_index',    'scale' => 1, 'offset' => 0, 'units' => ''],
+                1 => ['field_name' => 'field_definition_number', 'scale' => 1, 'offset' => 0, 'units' => ''],
+                2 => ['field_name' => 'fit_base_type_id',        'scale' => 1, 'offset' => 0, 'units' => ''],
+                3 => ['field_name' => 'field_name',              'scale' => 1, 'offset' => 0, 'units' => ''],
+                4 => ['field_name' => 'array',                   'scale' => 1, 'offset' => 0, 'units' => ''],
+                5 => ['field_name' => 'components',              'scale' => 1, 'offset' => 0, 'units' => ''],
+                6 => ['field_name' => 'scale',                   'scale' => 1, 'offset' => 0, 'units' => ''],
+                7 => ['field_name' => 'offset',                  'scale' => 1, 'offset' => 0, 'units' => ''],
+                8 => ['field_name' => 'units',                   'scale' => 1, 'offset' => 0, 'units' => ''],
+                9 => ['field_name' => 'bits',                    'scale' => 1, 'offset' => 0, 'units' => ''],
+                10 => ['field_name' => 'accumulate',             'scale' => 1, 'offset' => 0, 'units' => ''],
+                13 => ['field_name' => 'fit_base_unit_id',       'scale' => 1, 'offset' => 0, 'units' => ''],
+                14 => ['field_name' => 'native_mesg_num',        'scale' => 1, 'offset' => 0, 'units' => ''],
+                15 => ['field_name' => 'native_field_num',       'scale' => 1, 'offset' => 0, 'units' => '']
+            ]
+        ],
+        
+        207 => [
+            'mesg_name' => 'developer_data_id', 'field_defns' => [
+                0 => ['field_name' => 'developer_id',         'scale' => 1, 'offset' => 0, 'units' => ''],
+                1 => ['field_name' => 'application_id',       'scale' => 1, 'offset' => 0, 'units' => ''],
+                2 => ['field_name' => 'manufacturer_id',      'scale' => 1, 'offset' => 0, 'units' => ''],
+                3 => ['field_name' => 'developer_data_index', 'scale' => 1, 'offset' => 0, 'units' => ''],
+                4 => ['field_name' => 'application_version',  'scale' => 1, 'offset' => 0, 'units' => '']
+            ]
+        ],
+        
+        258 => [
+            'mesg_name' => 'dive_settings', 'field_defns' => [
+                0 => ['field_name' => 'name',                     'scale' => 1,   'offset' => 0, 'units' => ''],
+                1 => ['field_name' => 'model',                    'scale' => 1,   'offset' => 0, 'units' => ''],
+                2 => ['field_name' => 'gf_low',                   'scale' => 1,   'offset' => 0, 'units' => 'percent'],
+                3 => ['field_name' => 'gf_high',                  'scale' => 1,   'offset' => 0, 'units' => 'percent'],
+                4 => ['field_name' => 'water_type',               'scale' => 1,   'offset' => 0, 'units' => ''],
+                5 => ['field_name' => 'water_density',            'scale' => 1,   'offset' => 0, 'units' => 'kg/m^3'],
+                6 => ['field_name' => 'po2_warn',                 'scale' => 100, 'offset' => 0, 'units' => 'percent'],
+                7 => ['field_name' => 'po2_critical',             'scale' => 100, 'offset' => 0, 'units' => 'percent'],
+                8 => ['field_name' => 'po2_deco',                 'scale' => 100, 'offset' => 0, 'units' => 'percent'],
+                9 => ['field_name' => 'safety_stop_enabled',      'scale' => 1,   'offset' => 0, 'units' => ''],
+                10 => ['field_name' => 'bottom_depth',            'scale' => 1,   'offset' => 0, 'units' => ''],
+                11 => ['field_name' => 'bottom_time',             'scale' => 1,   'offset' => 0, 'units' => ''],
+                12 => ['field_name' => 'apnea_countdown_enabled', 'scale' => 1,   'offset' => 0, 'units' => ''],
+                13 => ['field_name' => 'apnea_countdown_time',    'scale' => 1,   'offset' => 0, 'units' => ''],
+                14 => ['field_name' => 'backlight_mode',          'scale' => 1,   'offset' => 0, 'units' => ''],
+                15 => ['field_name' => 'backlight_brightness',    'scale' => 1,   'offset' => 0, 'units' => ''],
+                16 => ['field_name' => 'backlight_timeout',       'scale' => 1,   'offset' => 0, 'units' => ''],
+                17 => ['field_name' => 'repeat_dive_interval',    'scale' => 1,   'offset' => 0, 'units' => 's'],
+                18 => ['field_name' => 'safety_stop_time',        'scale' => 1,   'offset' => 0, 'units' => 's'],
+                19 => ['field_name' => 'heart_rate_source_type',  'scale' => 1,   'offset' => 0, 'units' => ''],
+                20 => ['field_name' => 'heart_rate_source',       'scale' => 1,   'offset' => 0, 'units' => ''],
+                254 => ['field_name' => 'message_index',          'scale' => 1,   'offset' => 0, 'units' => '']
+              ]
+          ],
+        
+        259 => [
+            'mesg_name' => 'dive_gas', 'field_defns' => [
+                0 => ['field_name' => 'helium_content',  'scale' => 1, 'offset' => 0, 'units' => 'percent'],
+                1 => ['field_name' => 'oxygen_content',  'scale' => 1, 'offset' => 0, 'units' => 'percent'],
+                2 => ['field_name' => 'status',          'scale' => 1, 'offset' => 0, 'units' => ''],
+                254 => ['field_name' => 'message_index', 'scale' => 1, 'offset' => 0, 'units' => '']
+              ]
+          ],
+        
+        262 => [
+            'mesg_name' => 'dive_alarm', 'field_defns' => [
+                0 => ['field_name' => 'depth',           'scale' => 1000, 'offset' => 0, 'units' => 'm'],
+                1 => ['field_name' => 'time',            'scale' => 1,    'offset' => 0, 'units' => 's'],
+                2 => ['field_name' => 'enabled',         'scale' => 1,    'offset' => 0, 'units' => ''],
+                3 => ['field_name' => 'alarm_type',      'scale' => 1,    'offset' => 0, 'units' => ''],
+                4 => ['field_name' => 'sound',           'scale' => 1,    'offset' => 0, 'units' => ''],
+                254 => ['field_name' => 'message_index', 'scale' => 1,    'offset' => 0, 'units' => '']
+              ]
+          ],
+        
+        268 => [
+            'mesg_name' => 'dive_summary', 'field_defns' => [
+                0 => ['field_name' => 'reference_mesg',   'scale' => 1,    'offset' => 0, 'units' => ''],
+                1 => ['field_name' => 'reference_index',  'scale' => 1,    'offset' => 0, 'units' => ''],
+                2 => ['field_name' => 'avg_depth',        'scale' => 1000, 'offset' => 0, 'units' => 'm'],
+                3 => ['field_name' => 'max_depth',        'scale' => 1000, 'offset' => 0, 'units' => 'm'],
+                4 => ['field_name' => 'surface_interval', 'scale' => 1,    'offset' => 0, 'units' => 's'],
+                5 => ['field_name' => 'start_cns',        'scale' => 1,    'offset' => 0, 'units' => 'percent'],
+                6 => ['field_name' => 'end_cns',          'scale' => 1,    'offset' => 0, 'units' => 'percent'],
+                7 => ['field_name' => 'start_n2',         'scale' => 1,    'offset' => 0, 'units' => 'percent'],
+                8 => ['field_name' => 'end_n2',           'scale' => 1,    'offset' => 0, 'units' => 'percent'],
+                9 => ['field_name' => 'o2_toxicity',      'scale' => 1,    'offset' => 0, 'units' => 'OTUs'],
+                10 => ['field_name' => 'dive_number',     'scale' => 1,    'offset' => 0, 'units' => ''],
+                11 => ['field_name' => 'bottom_time',     'scale' => 1000, 'offset' => 0, 'units' => 's'],
+                253 => ['field_name' => 'timestamp',      'scale' => 1,    'offset' => 0, 'units' => 's']
+              ]
+          ]
     ];
 
     // PHP Constructor - called when an object of the class is instantiated.
-    public function __construct($file_path, $options = null)
+    public function __construct($file_path_or_data, $options = null)
     {
-        if (empty($file_path)) {
-            throw new \Exception('phpFITFileAnalysis->__construct(): file_path is empty!');
+        if( isset( $options['input_is_data'] ) ){
+            $this->file_contents = $file_path_or_data;
+        }else{
+            if (empty($file_path_or_data)) {
+                throw new \Exception('phpFITFileAnalysis->__construct(): file_path is empty!');
+            }
+            if (!file_exists($file_path_or_data)) {
+                throw new \Exception('phpFITFileAnalysis->__construct(): file \''.$file_path_or_data.'\' does not exist!');
+            }
+            /**
+             * D00001275 Flexible & Interoperable Data Transfer (FIT) Protocol Rev 1.7.pdf
+             * 3.3 FIT File Structure
+             * Header . Data Records . CRC
+             */
+            $this->file_contents = file_get_contents($file_path_or_data);  // Read the entire file into a string
+
         }
-        if (!file_exists($file_path)) {
-            throw new \Exception('phpFITFileAnalysis->__construct(): file \''.$file_path.'\' does not exist!');
-        }
+
         $this->options = $options;
         if (isset($options['garmin_timestamps']) && $options['garmin_timestamps'] == true) {
             $this->garmin_timestamps = true;
         }
+        $this->options['overwrite_with_dev_data'] = false;
+        if (isset($this->options['overwrite_with_dev_data']) && $this->options['overwrite_with_dev_data'] == true) {
+            $this->options['overwrite_with_dev_data'] = true;
+        }
         $this->php_trader_ext_loaded = extension_loaded('trader');
-        
-        /**
-          * D00001275 Flexible & Interoperable Data Transfer (FIT) Protocol Rev 1.7.pdf
-          * 3.3 FIT File Structure
-          * Header . Data Records . CRC
-          */
-        $this->file_contents = file_get_contents($file_path);  // Read the entire file into a string
         
         // Process the file contents.
         $this->readHeader();
         $this->readDataRecords();
         $this->oneElementArrays();
+        
+        // Process HR messages
+        $this->processHrMessages();
         
         // Handle options.
         $this->fixData($this->options);
@@ -998,7 +1339,8 @@ class phpFITFileAnalysis
         }
         
         if (strlen($this->file_contents) - $header_size - 2 !== $this->file_header['data_size']) {
-            throw new \Exception('phpFITFileAnalysis->readHeader(): file_header[\'data_size\'] does not seem correct!');
+            // Overwrite the data_size. Seems to be incorrect if there are buffered messages e.g. HR records.
+            $this->file_header['data_size'] = $this->file_header['crc'] - $header_size + 2;
         }
     }
     
@@ -1009,21 +1351,33 @@ class phpFITFileAnalysis
     {
         $record_header_byte = 0;
         $message_type = 0;
+        $developer_data_flag = 0;
         $local_mesg_type = 0;
+        $previousTS = 0;
         
         while ($this->file_header['header_size'] + $this->file_header['data_size'] > $this->file_pointer) {
             $record_header_byte = ord(substr($this->file_contents, $this->file_pointer, 1));
             $this->file_pointer++;
             
+            $compressedTimestamp = false;
+            $tsOffset = 0;
             /**
-             * D00001275 Flexible & Interoperable Data Transfer (FIT) Protocol Rev 1.7.pdf
+             * D00001275 Flexible & Interoperable Data Transfer (FIT) Protocol Rev 2.2.pdf
              * Table 4-1. Normal Header Bit Field Description
              */
             if (($record_header_byte >> 7) & 1) {  // Check that it's a normal header
-                throw new \Exception('phpFITFileAnalysis->readDataRecords(): this class can only handle normal headers!');
+                // Header with compressed timestamp
+                $message_type = 0;  //always 0: DATA_MESSAGE
+                $developer_data_flag = 0;  // always 0: DATA_MESSAGE
+                $local_mesg_type = ($record_header_byte >> 5) & 3;  // bindec('0011') == 3
+                $tsOffset = $record_header_byte & 31;
+                $compressedTimestamp = true;
+            } else {
+                //Normal header
+                $message_type = ($record_header_byte >> 6) & 1;  // 1: DEFINITION_MESSAGE; 0: DATA_MESSAGE
+                $developer_data_flag = ($record_header_byte >> 5) & 1;  // 1: DEFINITION_MESSAGE; 0: DATA_MESSAGE
+                $local_mesg_type = $record_header_byte & 15;  // bindec('1111') == 15
             }
-            $message_type = ($record_header_byte >> 6) & 1;  // 1: DEFINITION_MESSAGE; 0: DATA_MESSAGE
-            $local_mesg_type = $record_header_byte & 15;  // bindec('1111') == 15
             
             switch ($message_type) {
                 case DEFINITION_MESSAGE:
@@ -1031,7 +1385,6 @@ class phpFITFileAnalysis
                      * D00001275 Flexible & Interoperable Data Transfer (FIT) Protocol Rev 1.7.pdf
                      * Table 4-1. Normal Header Bit Field Description
                      */
-                    
                     $this->file_pointer++;  // Reserved - IGNORED
                     $architecture = ord(substr($this->file_contents, $this->file_pointer, 1));  // Architecture
                     $this->file_pointer++;
@@ -1058,16 +1411,39 @@ class phpFITFileAnalysis
                         $total_size += $size;
                     }
                     
+                    $num_dev_fields = 0;
+                    $dev_field_definitions = [];
+                    if ($developer_data_flag === 1) {
+                        $num_dev_fields = ord(substr($this->file_contents, $this->file_pointer, 1));
+                        $this->file_pointer++;
+                        
+                        for ($i=0; $i<$num_dev_fields; ++$i) {
+                            $field_definition_number = ord(substr($this->file_contents, $this->file_pointer, 1));
+                            $this->file_pointer++;
+                            $size = ord(substr($this->file_contents, $this->file_pointer, 1));
+                            $this->file_pointer++;
+                            $developer_data_index = ord(substr($this->file_contents, $this->file_pointer, 1));
+                            $this->file_pointer++;
+                            
+                            $dev_field_definitions[] = ['field_definition_number' => $field_definition_number, 'size' => $size, 'developer_data_index' => $developer_data_index];
+                            $total_size += $size;
+                        }
+                    }
+                    
                     $this->defn_mesgs[$local_mesg_type] = [
                             'global_mesg_num' => $global_mesg_num,
                             'num_fields' => $num_fields,
                             'field_defns' => $field_definitions,
+                            'num_dev_fields' => $num_dev_fields,
+                            'dev_field_definitions' => $dev_field_definitions,
                             'total_size' => $total_size
                         ];
                     $this->defn_mesgs_all[] = [
                             'global_mesg_num' => $global_mesg_num,
                             'num_fields' => $num_fields,
                             'field_defns' => $field_definitions,
+                            'num_dev_fields' => $num_dev_fields,
+                            'dev_field_definitions' => $dev_field_definitions,
                             'total_size' => $total_size
                         ];
                     break;
@@ -1082,8 +1458,9 @@ class phpFITFileAnalysis
                             // Check that we have information on the Field Definition and a valid base type exists.
                             if (isset($this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['field_defns'][$field_defn['field_definition_number']]) && isset($this->types[$field_defn['base_type']])) {
                                 // Check if it's an invalid value for the type
-                                $tmp_value = unpack($this->types[$field_defn['base_type']], substr($this->file_contents, $this->file_pointer, $field_defn['size']))['tmp'];
-                                if ($tmp_value !== $this->invalid_values[$field_defn['base_type']]) {
+                                $tmp_value = unpack($this->types[$field_defn['base_type']]['format'], substr($this->file_contents, $this->file_pointer, $field_defn['size']))['tmp'];
+                                if ($tmp_value !== $this->invalid_values[$field_defn['base_type']] ||
+                                   $this->defn_mesgs[$local_mesg_type]['global_mesg_num'] === 132) {
                                     // If it's a timestamp, compensate between different in FIT and Unix timestamp epochs
                                     if ($field_defn['field_definition_number'] === 253 && !$this->garmin_timestamps) {
                                         $tmp_value += FIT_UNIX_TS_DIFF;
@@ -1092,11 +1469,23 @@ class phpFITFileAnalysis
                                     // If it's a Record data message, store all the pieces in the temporary array as the timestamp may not be first...
                                     if ($this->defn_mesgs[$local_mesg_type]['global_mesg_num'] === 20) {
                                         $tmp_record_array[$this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['field_defns'][$field_defn['field_definition_number']]['field_name']] = $tmp_value / $this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['field_defns'][$field_defn['field_definition_number']]['scale'] - $this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['field_defns'][$field_defn['field_definition_number']]['offset'];
+                                    } elseif ($this->defn_mesgs[$local_mesg_type]['global_mesg_num'] === 206) {  // Developer Data
+                                        $tmp_record_array[$this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['field_defns'][$field_defn['field_definition_number']]['field_name']] = $tmp_value;
                                     } else {
                                         if ($field_defn['base_type'] === 7) {  // Handle strings appropriately
                                             $this->data_mesgs[$this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['mesg_name']][$this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['field_defns'][$field_defn['field_definition_number']]['field_name']][] = filter_var($tmp_value, FILTER_SANITIZE_STRING);
                                         } else {
-                                            $this->data_mesgs[$this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['mesg_name']][$this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['field_defns'][$field_defn['field_definition_number']]['field_name']][] = $tmp_value / $this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['field_defns'][$field_defn['field_definition_number']]['scale'] - $this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['field_defns'][$field_defn['field_definition_number']]['offset'];
+                                            // Handle arrays
+                                            if ($field_defn['size'] !== $this->types[$field_defn['base_type']]['bytes']) {
+                                                $tmp_array = [];
+                                                $num_vals = $field_defn['size'] / $this->types[$field_defn['base_type']]['bytes'];
+                                                for ($i=0; $i<$num_vals; ++$i) {
+                                                    $tmp_array[] = unpack($this->types[$field_defn['base_type']]['format'], substr($this->file_contents, $this->file_pointer + ($i * $this->types[$field_defn['base_type']]['bytes']), $field_defn['size']))['tmp']/ $this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['field_defns'][$field_defn['field_definition_number']]['scale'] - $this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['field_defns'][$field_defn['field_definition_number']]['offset'];
+                                                }
+                                                $this->data_mesgs[$this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['mesg_name']][$this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['field_defns'][$field_defn['field_definition_number']]['field_name']][] = $tmp_array;
+                                            } else {
+                                                $this->data_mesgs[$this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['mesg_name']][$this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['field_defns'][$field_defn['field_definition_number']]['field_name']][] = $tmp_value / $this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['field_defns'][$field_defn['field_definition_number']]['scale'] - $this->data_mesg_info[$this->defn_mesgs[$local_mesg_type]['global_mesg_num']]['field_defns'][$field_defn['field_definition_number']]['offset'];
+                                            }
                                         }
                                     }
                                 }
@@ -1104,15 +1493,58 @@ class phpFITFileAnalysis
                             $this->file_pointer += $field_defn['size'];
                         }
                         
+                        // Handle Developer Data
+                        if ($this->defn_mesgs[$local_mesg_type]['global_mesg_num'] === 206) {
+                            $developer_data_index = $tmp_record_array['developer_data_index'];
+                            $field_definition_number = $tmp_record_array['field_definition_number'];
+                            unset($tmp_record_array['developer_data_index']);
+                            unset($tmp_record_array['field_definition_number']);
+                            if (isset($tmp_record_array['field_name'])) {  // Get rid of special/invalid characters after the null terminated string
+                                $tmp_record_array['field_name'] = strtolower(implode('', explode("\0", $tmp_record_array['field_name'])));
+                            }
+                            if (isset($tmp_record_array['units'])) {
+                                $tmp_record_array['units'] = strtolower(implode('', explode("\0", $tmp_record_array['units'])));
+                            }
+                            $this->dev_field_descriptions[$developer_data_index][$field_definition_number] = $tmp_record_array;
+                            unset($tmp_record_array);
+                        }
+                        foreach ($this->defn_mesgs[$local_mesg_type]['dev_field_definitions'] as $field_defn) {
+                            // Units
+                            $this->data_mesgs['developer_data'][$this->dev_field_descriptions[$field_defn['developer_data_index']][$field_defn['field_definition_number']]['field_name']]['units'] = $this->dev_field_descriptions[$field_defn['developer_data_index']][$field_defn['field_definition_number']]['units'];
+                            
+                            // Data
+                            $this->data_mesgs['developer_data'][$this->dev_field_descriptions[$field_defn['developer_data_index']][$field_defn['field_definition_number']]['field_name']]['data'][] = unpack($this->types[$this->dev_field_descriptions[$field_defn['developer_data_index']][$field_defn['field_definition_number']]['fit_base_type_id']]['format'], substr($this->file_contents, $this->file_pointer, $field_defn['size']))['tmp'];
+                            
+                            $this->file_pointer += $field_defn['size'];
+                        }
+                        
                         // Process the temporary array and load values into the public data messages array
                         if (!empty($tmp_record_array)) {
                             $timestamp = isset($this->data_mesgs['record']['timestamp']) ? max($this->data_mesgs['record']['timestamp']) + 1 : 0;
-                            
-                            if (isset($tmp_record_array['timestamp'])) {
-                                if ($tmp_record_array['timestamp'] > 0) {
-                                    $timestamp = $tmp_record_array['timestamp'];
+                            if ($compressedTimestamp) {
+                                if ($previousTS === 0) {
+                                    // This should not happen! Throw exception?
+                                } else {
+                                    $previousTS -= FIT_UNIX_TS_DIFF; // back to FIT timestamps epoch
+                                    $fiveLsb = $previousTS & 0x1F;
+                                    if ($tsOffset >= $fiveLsb) {
+                                        // No rollover
+                                        $timestamp = $previousTS - $fiveLsb + $tsOffset;
+                                    } else {
+                                        // Rollover
+                                        $timestamp = $previousTS - $fiveLsb  + $tsOffset + 32;
+                                    }
+                                    $timestamp += FIT_UNIX_TS_DIFF; // back to Unix timestamps epoch
+                                    $previousTS += FIT_UNIX_TS_DIFF;
                                 }
-                                unset($tmp_record_array['timestamp']);
+                            } else {
+                                if (isset($tmp_record_array['timestamp'])) {
+                                    if ($tmp_record_array['timestamp'] > 0) {
+                                        $timestamp = $tmp_record_array['timestamp'];
+                                        $previousTS = $timestamp;
+                                    }
+                                    unset($tmp_record_array['timestamp']);
+                                }
                             }
                             
                             $this->data_mesgs['record']['timestamp'][] = $timestamp;
@@ -1126,6 +1558,19 @@ class phpFITFileAnalysis
                     } else {
                         $this->file_pointer += $this->defn_mesgs[$local_mesg_type]['total_size'];
                     }
+            }
+        }
+        // Overwrite native FIT fields (e.g. Power, HR, Cadence, etc) with developer data by default
+        if (!empty($this->dev_field_descriptions)) {
+            foreach ($this->dev_field_descriptions as $developer_data_index) {
+                foreach ($developer_data_index as $field_definition_number) {
+                    if (isset($field_definition_number['native_field_num'])) {
+                        if (isset($this->data_mesgs['record'][$field_definition_number['field_name']]) && !$this->options['overwrite_with_dev_data']) {
+                            continue;
+                        }
+                        $this->data_mesgs['record'][$field_definition_number['field_name']] = $this->data_mesgs['developer_data'][$field_definition_number['field_name']]['data'];
+                    }
+                }
             }
         }
     }
@@ -1178,10 +1623,12 @@ class phpFITFileAnalysis
         // http://php.net/manual/en/function.pack.php - signed integers endianness is always machine dependent.
         // 131    s    signed short (always 16 bit, machine byte order)
         // 133    l    signed long (always 32 bit, machine byte order)
+        // 142    q    signed long long (always 64 bit, machine byte order)
         foreach ($this->defn_mesgs_all as $mesg) {
             if (isset($this->data_mesg_info[$mesg['global_mesg_num']])) {
                 $mesg_name = $this->data_mesg_info[$mesg['global_mesg_num']]['mesg_name'];
                 
+
                 foreach ($mesg['field_defns'] as $field) {
                     // Convert uint16 to sint16
                     if ($field['base_type'] === 131 && isset($this->data_mesg_info[$mesg['global_mesg_num']]['field_defns'][$field['field_definition_number']]['field_name'])) {
@@ -1219,8 +1666,31 @@ class phpFITFileAnalysis
                             } elseif ($this->data_mesgs[$mesg_name][$field_name] > 0x7FFFFFFF) {
                                 if (PHP_INT_SIZE === 8) {
                                     $this->data_mesgs[$mesg_name][$field_name] -= 0x100000000;
+
                                 }
-                                $this->data_mesgs[$mesg_name][$field_name] = -1 * ($this->data_mesgs[$mesg_name][$field_name] - 0x7FFFFFFF);
+                                if( $this->data_mesgs[$mesg_name][$field_name] > 0x7FFFFFFF ){
+                                    $this->data_mesgs[$mesg_name][$field_name] = -1 * ($this->data_mesgs[$mesg_name][$field_name] - 0x7FFFFFFF);
+                                }
+                            }
+                        }
+                    } // Convert uint64 to sint64
+                    elseif ($field['base_type'] === 142 && isset($this->data_mesg_info[$mesg['global_mesg_num']]['field_defns'][$field['field_definition_number']]['field_name'])) {
+                        $field_name = $this->data_mesg_info[$mesg['global_mesg_num']]['field_defns'][$field['field_definition_number']]['field_name'];
+                        if (isset($this->data_mesgs[$mesg_name][$field_name])) {
+                            if (is_array($this->data_mesgs[$mesg_name][$field_name])) {
+                                foreach ($this->data_mesgs[$mesg_name][$field_name] as &$v) {
+                                    if (PHP_INT_SIZE === 8 && $v > 0x7FFFFFFFFFFFFFFF) {
+                                        $v -= 0x10000000000000000;
+                                    }
+                                    if ($v > 0x7FFFFFFFFFFFFFFF) {
+                                        $v = -1 * ($v - 0x7FFFFFFFFFFFFFFF);
+                                    }
+                                }
+                            } elseif ($this->data_mesgs[$mesg_name][$field_name] > 0x7FFFFFFFFFFFFFFF) {
+                                if (PHP_INT_SIZE === 8) {
+                                    $this->data_mesgs[$mesg_name][$field_name] -= 0x10000000000000000;
+                                }
+                                $this->data_mesgs[$mesg_name][$field_name] = -1 * ($this->data_mesgs[$mesg_name][$field_name] - 0x7FFFFFFFFFFFFFFF);
                             }
                         }
                     }
@@ -1229,7 +1699,7 @@ class phpFITFileAnalysis
         }
         
         // Remove duplicate timestamps
-        if (isset($this->data_mesgs['record']['timestamp'])) {
+        if (isset($this->data_mesgs['record']['timestamp']) && is_array($this->data_mesgs['record']['timestamp'])) {
             $this->data_mesgs['record']['timestamp'] = array_unique($this->data_mesgs['record']['timestamp']);
         }
         
@@ -1420,6 +1890,9 @@ class phpFITFileAnalysis
     private function oneElementArrays()
     {
         foreach ($this->data_mesgs as $mesg_key => $mesg) {
+            if ($mesg_key === 'developer_data') {
+                continue;
+            }
             foreach ($mesg as $field_key => $field) {
                 if (count($field) === 1) {
                     $first_key = key($field);
@@ -1528,6 +2001,7 @@ class phpFITFileAnalysis
                 'avg_speed',
                 'enhanced_avg_speed',
                 'enhanced_max_speed',
+                'enhanced_speed',
                 'max_neg_vertical_speed',
                 'max_pos_vertical_speed',
                 'max_speed',
@@ -1653,6 +2127,9 @@ class phpFITFileAnalysis
                                     }
                                 }
                             } else {
+                                if ($this->data_mesgs[$message][$field] === 0) {  // Prevent divide by zero error
+                                    continue;
+                                }
                                 if ($bPace) {
                                     $this->data_mesgs[$message][$field] = round(60 / 3.6 / $this->data_mesgs[$message][$field], 3);
                                 } else {
@@ -1690,7 +2167,6 @@ class phpFITFileAnalysis
     {
         if (array_walk($percentages_array, function (&$value, $key, $hr_maximum) {
             $value = round($value * $hr_maximum);
-
         }, $hr_maximum)) {
             return $percentages_array;
         } else {
@@ -1705,7 +2181,6 @@ class phpFITFileAnalysis
     {
         if (array_walk($percentages_array, function (&$value, $key, $params) {
             $value = round($params[0] + ($value * $params[1]));
-
         }, [$hr_resting, $hr_maximum - $hr_resting])) {
             return $percentages_array;
         } else {
@@ -1720,7 +2195,6 @@ class phpFITFileAnalysis
     {
         if (array_walk($percentages_array, function (&$value, $key, $functional_threshold_power) {
             $value = round($value * $functional_threshold_power) + 1;
-
         }, $functional_threshold_power)) {
             return $percentages_array;
         } else {
@@ -1757,12 +2231,10 @@ class phpFITFileAnalysis
             $count = count($thresholds);
             for ($key; $key<$count; ++$key) {
                 if ($value < $thresholds[$key]) {
-                    $result[$key]++;
-                    goto loop_end;
+                    break;
                 }
             }
             $result[$key]++;
-            loop_end:
         }
         
         array_unshift($thresholds, 0);
@@ -1780,7 +2252,6 @@ class phpFITFileAnalysis
             $total = array_sum($result);
             array_walk($result, function (&$value, $key, $total) {
                 $value = round($value / $total * 100, 1);
-
             }, $total);
         }
         
@@ -2160,8 +2631,7 @@ class phpFITFileAnalysis
         if (isset($fgc[0]['timestamp'])) {
             if ($first_ts == $fgc[0]['timestamp']) {
                 $fg = $fgc[0]['front_gear'];
-            }
-            else {
+            } else {
                 $fg = $fgc[0]['front_gear_num'] == 1 ? $front_gears[2] : $front_gears[1];
             }
         }
@@ -2169,8 +2639,7 @@ class phpFITFileAnalysis
         if (isset($rgc[0]['timestamp'])) {
             if ($first_ts == $rgc[0]['timestamp']) {
                 $rg = $rgc[0]['rear_gear'];
-            }
-            else {
+            } else {
                 $rg = $rgc[0]['rear_gear_num'] == min($rear_gears) ? $rear_gears[$rgc[0]['rear_gear_num'] + 1] : $rear_gears[$rgc[0]['rear_gear_num'] - 1];
             }
         }
@@ -2180,14 +2649,14 @@ class phpFITFileAnalysis
         $combined = [];
         $gears_array = [];
         
-        if($bIgnoreTimerPaused === true) {
+        if ($bIgnoreTimerPaused === true) {
             $is_paused = $this->isPaused();
         }
         
         reset($fgc);
         reset($rgc);
         for ($i = $first_ts; $i < $last_ts; ++$i) {
-            if($bIgnoreTimerPaused === true && $is_paused[$i] === true) {
+            if ($bIgnoreTimerPaused === true && $is_paused[$i] === true) {
                 continue;
             }
             
@@ -2308,6 +2777,30 @@ class phpFITFileAnalysis
     }
     
     /**
+     * Create a JSON object that contains available lap message information.
+     */
+    public function getJSONLap()
+    {
+        $for_json = [];
+        $for_json['fix_data'] = isset($this->options['fix_data']) ? $this->options['fix_data'] : null;
+        $for_json['units'] = isset($this->options['units']) ? $this->options['units'] : null;
+        $for_json['pace'] = isset($this->options['pace']) ? $this->options['pace'] : null;
+        $for_json['num_laps'] = count($this->data_mesgs['lap']['timestamp']);
+        $data = [];
+        
+        for ($i=0; $i<$for_json['num_laps']; $i++) {
+            $data[$i]['lap'] = $i;
+            foreach ($this->data_mesgs['lap'] as $key => $value) {
+                $data[$i][$key] = $value[$i];
+            }
+        }
+        
+        $for_json['data'] = $data;
+        
+        return json_encode($for_json);
+    }
+    
+    /**
      * Outputs tables of information being listened for and found within the processed FIT file.
      */
     public function showDebugInfo()
@@ -2319,10 +2812,11 @@ class phpFITFileAnalysis
         echo '<thead>';
         echo '<th>key</th>';
         echo '<th>PHP unpack() format</th>';
+        echo '<th>Bytes</th>';
         echo '</thead>';
         echo '<tbody>';
         foreach ($this->types as $key => $val) {
-            echo '<tr><td>'.$key.'</td><td>'.$val[0].'</td></tr>';
+            echo '<tr><td>'.$key.'</td><td>'.$val['format'].'</td><td>'.$val['bytes'].'</td></tr>';
         }
         echo '</tbody>';
         echo '</table>';
@@ -2372,6 +2866,91 @@ class phpFITFileAnalysis
                 echo '<tr><td>'.$field_key.'</td><td>'.count($field).'</td></tr>';
             }
             echo '</tbody></table><br><br>';
+        }
+    }
+    
+    /*
+     * Process HR messages
+     * 
+     * Based heavily on logic in commit:
+     * https://github.com/GoldenCheetah/GoldenCheetah/commit/957ae470999b9a57b5b8ec57e75512d4baede1ec
+     * Particularly the decodeHr() method
+     */
+    private function processHrMessages()
+    {
+        // Check that we have received HR messages
+        if (empty($this->data_mesgs['hr'])) {
+            return;
+        }
+        
+        $hr = [];
+        $timestamps = [];
+        
+        // Load all filtered_bpm values into the $hr array
+        foreach ($this->data_mesgs['hr']['filtered_bpm'] as $hr_val) {
+            if (is_array($hr_val)) {
+                foreach ($hr_val as $sub_hr_val) {
+                    $hr[] = $sub_hr_val;
+                }
+            } else {
+                $hr[] = $hr_val;
+            }
+        }
+        
+        // Manually scale timestamps (i.e. divide by 1024)
+        $last_event_timestamp = $this->data_mesgs['hr']['event_timestamp'];
+        if (is_array($last_event_timestamp)) {
+            $last_event_timestamp = $last_event_timestamp[0];
+        }
+        $start_timestamp = $this->data_mesgs['hr']['timestamp'] - $last_event_timestamp / 1024.0;
+        $timestamps[] = $last_event_timestamp / 1024.0;
+        
+        // Determine timestamps (similar to compressed timestamps)
+        foreach ($this->data_mesgs['hr']['event_timestamp_12'] as $event_timestamp_12_val) {
+            $j=0;
+            for ($i=0; $i<11; $i++) {
+                $last_event_timestamp12 = $last_event_timestamp & 0xFFF;
+                $next_event_timestamp12;
+                
+                if ($j % 2 === 0) {
+                    $next_event_timestamp12 = $event_timestamp_12_val[$i] + (($event_timestamp_12_val[$i+1] & 0xF) << 8);
+                    $last_event_timestamp = ($last_event_timestamp & 0xFFFFF000) + $next_event_timestamp12;
+                } else {
+                    $next_event_timestamp12 = 16 * $event_timestamp_12_val[$i+1] + (($event_timestamp_12_val[$i] & 0xF0) >> 4);
+                    $last_event_timestamp = ($last_event_timestamp & 0xFFFFF000) + $next_event_timestamp12;
+                    $i++;
+                }
+                if ($next_event_timestamp12 < $last_event_timestamp12) {
+                    $last_event_timestamp += 0x1000;
+                }
+                
+                $timestamps[] = $last_event_timestamp / 1024.0;
+                $j++;
+            }
+        }
+        
+        // Map HR values to timestamps
+        $filtered_bpm_arr = [];
+        $secs = 0;
+        $min_record_ts = min($this->data_mesgs['record']['timestamp']);
+        $max_record_ts = max($this->data_mesgs['record']['timestamp']);
+        foreach ($timestamps as $idx => $timestamp) {
+            $ts_secs = round($timestamp + $start_timestamp);
+            
+            // Skip timestamps outside of the range we're interested in
+            if ($ts_secs >= $min_record_ts && $ts_secs <= $max_record_ts) {
+                if (isset($filtered_bpm_arr[$ts_secs])) {
+                    $filtered_bpm_arr[$ts_secs][0] += $hr[$idx];
+                    $filtered_bpm_arr[$ts_secs][1]++;
+                } else {
+                    $filtered_bpm_arr[$ts_secs] = [$hr[$idx], 1];
+                }
+            }
+        }
+        
+        // Populate the heart_rate fields for record messages
+        foreach ($filtered_bpm_arr as $idx => $arr) {
+            $this->data_mesgs['record']['heart_rate'][$idx] = (int)round($arr[0] / $arr[1]);
         }
     }
 }
