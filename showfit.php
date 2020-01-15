@@ -6,7 +6,7 @@
 /*
 Plugin Name: Show Fit File
 Plugin URI: http://wordpress.org/plugins/Show-FIT-File/
-Description: Displays the data from a .fit file (Flexible and Interoperable Data Transfer) as part of a blog post.
+Description: A plugin for displaying data from a .fit file (Flexible and Interoperable Data Transfer).
 Author: Yellow Field Technologies Ltd
 Version: 0.1
 Author URI: http://Yellowfield.co.uk
@@ -62,6 +62,7 @@ class mapOptions {
 	public $routeLineColour;
 	public $isInteractive;
 	public $units;
+	public $uniqueID;
 	
 	function __construct() {
 		$routeLineColour = 'red';
@@ -77,6 +78,7 @@ global $options;
 
 function readFitFile($file) {
 	try {
+		global $options;
 		$upload_dir = wp_upload_dir();
 		$url = $upload_dir['path'];
 
@@ -84,14 +86,19 @@ function readFitFile($file) {
 		$file = $url . '/' . $file;
 		$filename = $file;
 		
-		$options = [
+		$fitOptions = [
 		// Just using the defaults so no need to provide
 		//		'fix_data'	=> [],
-		//		'units'		=> 'metric', Options: statue, raw, metric
+		//		'units'		=> 'metric', Options: statute, raw, metric
 		//		'pace'		=> false
 		];
+		if ($options->units == "imperial") {
+			$fitOptions = ['units' => 'statute'];
+		}
+		
+		
 		global $pFFA;
-		$pFFA = new adriangibbons\phpFITFileAnalysis($file, $options);
+		$pFFA = new adriangibbons\phpFITFileAnalysis($file, $fitOptions);
 	} catch (Exception $e) {
 		echo 'caught exception: '.$e->getMessage();
 		die();
@@ -110,7 +117,7 @@ function fitHTML() {
     	$unitsString = "miles";
     }
 	
-	$html = "<table class=\"dataTable\"><tr><td class=\"dataTable\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $date->format('d-M-y g:i a') . "</div></td><td class=\"dataTable\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_elapsed_time']) . "</div></td><td class=\"dataTable\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr><tr><td colspan=\"3\" class=\"dataTable\"><div id=\"mapid\" style=\"width: 100%; height: 400px;\"></div></td></tr></table>";
+	$html = "<table class=\"dataTable\"><tr><td class=\"dataTable\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $date->format('d-M-y g:i a') . "</div></td>\n<td class=\"dataTable\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_elapsed_time']) . "</div>\n</td><td class=\"dataTable\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr><tr><td colspan=\"3\" class=\"dataTable\">" . getMapCode() ."</td></tr></table>";
 	
 	return $html;
 }
@@ -168,19 +175,54 @@ function showFitFile($atts) {
 	$options->units = $a['units'];
 	$options->isInteractive = $a['interactive'];
 	
+	$options->uniqueID = uniqid('', TRUE);
+	
 	readFitFile($file);
 	
 	return fitHTML();
 }
 
+function getMapCode() {
+	global $options;
+	$maphtml = "<div id=\"mapid-" . $options->uniqueID . "\" style=\"width: 100%; height: 400px;\"></div>";
+	
+	$maphtml = $maphtml . "<script>	
+	var map = new L.map('mapid-" . $options->uniqueID . "', {zoomControl:false, 
+	layers: [
+		new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			'attribution': 'Map data © <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors'
+		})
+	],
+	center: [51.505, -0.09],
+	zoom: 13
+	}); 
+	
+	var poly = L.polyline([" . routePolyline() . "], {color: '" . getRouteColour() . "'});
+	
+	poly.addTo(map);
+	
+	var centre = poly.getCenter();
+	var bounds = poly.getBounds();
+	
+	map.fitBounds(bounds);
+	
+	" . getInteractive() . "
+</script>";
+	return $maphtml;
+
+
+
+}
+
 // Add Shortcode
-add_shortcode('showFitFile', 'showFitFile');
+add_shortcode('showfitfile', 'showFitFile');
 
 
 // Add the Leaflet.js css & javascript files
 add_action('wp_enqueue_scripts', 'leafletjs_load');
 
 function leafletjs_load(){
+	global $options;
 	// Custom css for table containing map and data
 	$cssurl = plugins_url('/styles/showfitfile.css', __FILE__);
 	wp_enqueue_style('showfitfile_css', $cssurl);
@@ -195,39 +237,11 @@ function leafletjs_load(){
 			padding: 0;
 			margin: 0;
 		}
-		html, body, #mapid, mapid, map {
+		html, body, #mapid-" . $options->uniqueID . ", mapid-" . $options->uniqueID . ", map {
 			height: 100%;
 			width: 100%;
 		}";
   wp_add_inline_style('leafletjs_css', $map_custom_css );
-}
-
-// Add the javascript for the map to the footer section
-add_action( 'wp_footer', 'my_footer_scripts' );
-function my_footer_scripts(){
-  ?>  <script>	
-	var map = new L.map('mapid', {zoomControl:false, 
-	layers: [
-		new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			'attribution': 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-		})
-	],
-	center: [51.505, -0.09],
-	zoom: 13
-	}); 
-	
-	var poly = L.polyline([<?php echo routePolyline(); ?>], {color: '<?php echo getRouteColour(); ?>'});
-	
-	poly.addTo(map);
-	
-	var centre = poly.getCenter();
-	var bounds = poly.getBounds();
-	
-	map.fitBounds(bounds);
-	
-	<?php echo getInteractive(); ?>
-</script>
-  <?php
 }
 
 function getRouteColour() {
@@ -255,6 +269,12 @@ function getInteractive() {
 		map.dragging.disable();";
 	}
 }
+
+function getUniqueID() {
+	global $options;
+	return $options->uniqueID;
+}
+
 
 
 // Adds .fit filetype to the allowable types. Without this we can't upload .fit files to the gallery
