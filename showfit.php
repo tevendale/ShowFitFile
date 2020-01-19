@@ -81,6 +81,8 @@ class mapOptions {
 global $filename;
 global $pFFA;
 global $options;
+global $startPoint;
+global $endPoint;
 
 function readFitFile($file) {
 	try {
@@ -131,6 +133,8 @@ function fitHTML() {
 function routePolyline() {
 
 	global $pFFA;
+	global $startPoint;
+	global $endPoint;
 
     // Google Static Maps API
     $position_lat = $pFFA->data_mesgs['record']['position_lat'];
@@ -152,10 +156,17 @@ function routePolyline() {
 		$RDP_LatLng_coord = simplify_RDP($lat_long_combined, $delta);  // Simplify the array of coordinates using the Ramer-Douglas-Peucker algorithm.
 		$delta += 0.00001;  // Rough accuracy somewhere between 4m and 12m depending where in the World coordinates are, source http://en.wikipedia.org/wiki/Decimal_degrees
 		
-		echo (count($RDP_LatLng_coord));
-		echo "\r\n<br>";
+// 		echo (count($RDP_LatLng_coord));
+// 		echo "\r\n<br>";
 		
 	} while (count($RDP_LatLng_coord) > 1000); 
+	
+	$LatLng_start = implode(',', $lat_long_combined[0]);
+    $LatLng_finish = implode(',', $lat_long_combined[count($lat_long_combined)-1]);
+    
+    $startPoint = "[" . $LatLng_start . "]";
+    $endPoint = "[" . $LatLng_finish . "]";
+
 	
 // 	print_r($RDP_LatLng_coord);
 
@@ -227,6 +238,8 @@ function showFitFile($atts) {
 
 function getMapCode() {
 	global $options;
+	global $startPoint;
+	global $endPoint;
 	$maphtml = "<div id=\"mapid-" . $options->uniqueID . "\" style=\"width: 100%; height: 400px;\"></div>";
 	
 	$maphtml = $maphtml . "<script>	
@@ -240,9 +253,14 @@ function getMapCode() {
 	zoom: 13
 	}); 
 	
+	" . loadIcons() . "
+	
 	var poly = L.polyline([" . routePolyline() . "], {color: '" . getRouteColour() . "'});
 	
 	poly.addTo(map);
+	
+	L.marker(" . $startPoint . ", {icon: greenIcon}).addTo(map)
+	L.marker(" . $endPoint . ", {icon: blueIcon}).addTo(map)
 	
 	var centre = poly.getCenter();
 	var bounds = poly.getBounds();
@@ -289,10 +307,33 @@ function getRouteColour() {
 	return esc_js($options->colour);
 }
 
+function loadIcons() {
+	$loadIcons = "var greenIcon = new L.Icon({
+	  iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+	  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+	  iconSize: [25, 41],
+	  iconAnchor: [12, 41],
+	  popupAnchor: [1, -34],
+	  shadowSize: [41, 41]
+	});
+	
+	
+	var blueIcon = new L.Icon({
+	  iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+	  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+	  iconSize: [25, 41],
+	  iconAnchor: [12, 41],
+	  popupAnchor: [1, -34],
+	  shadowSize: [41, 41]
+	});";
+	
+	return $loadIcons;
+}
+
 function getInteractive() {
 	// Determine if the map can be scrolled and panned
 	global $options;
-	if ($options->isInteractive == 'YES') {
+	if (strtolower($options->isInteractive) == 'yes') {
 		return "map.touchZoom.enable();
 		map.doubleClickZoom.enable();
 		map.scrollWheelZoom.enable();
