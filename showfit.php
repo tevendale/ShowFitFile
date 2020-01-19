@@ -17,12 +17,12 @@ Author URI: http://Yellowfield.co.uk
 ✓ Create one function that reads the .fit file
 ✓ Have a global oject that stores the imported .fit data and use this in the other functions (map, summary data, etc)
 Check if the imported object is null, and import is necessary
-Read the file from the folder whewre images are uploaded to? (Uploads) --> find out how to get path to this, also, files seem to be arranged in yyyy/mm folder structure
+✓ Read the file from the folder whewre images are uploaded to? (Uploads) --> find out how to get path to this, also, files seem to be arranged in yyyy/mm folder structure
 	- Seems to work with yyyy/mm folders, seems to use the date the post was created.
 	- Do some more testing, i.e. add to older post and see what path is produced
 	- Add option to upload to custom folder ????
 
-Sort out styling of Table
+✓ Sort out styling of Table
 	- Move styles into a srtylesheet file and load - easier for users to customise
 
 ✓ Add options to Shortcut
@@ -33,15 +33,20 @@ Sort out styling of Table
 		- Maybe make the above two just 'Is Interactive'?
 	- Obfusicate End Points - NO
 	- Metric/Imperial - Metric
+	- Show start/end points
+	
+Method to get start & end points
 	
 
 Add Sport Icon?
 	- Add option to shortcut to specify icon file?
 	- Include icon for swim, bike & run
+	
+Downsize data array for route - speed up drawing
 
 
 Set up Github repository
-Set up Webpage
+✓ Set up Webpage
 Readme file
 Text for Wordpress Page
 Investigate how to promote WP Plugins
@@ -56,6 +61,7 @@ Show graphs of .fit data - HR, power, speed, etc.
 */
 
 require __DIR__ . '/src/phpFITFileAnalysis.php';
+require __DIR__ . '/libraries/Line_DouglasPeucker.php';
 
 // Class to hold the various options for the map
 class mapOptions {
@@ -117,7 +123,7 @@ function fitHTML() {
     	$unitsString = "miles";
     }
 	
-	$html = "<table class=\"dataTable\"><tr><td class=\"dataTable\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $date->format('d-M-y g:i a') . "</div></td>\n<td class=\"dataTable\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_elapsed_time']) . "</div>\n</td><td class=\"dataTable\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr><tr><td colspan=\"3\" class=\"dataTable\">" . getMapCode() ."</td></tr></table>";
+	$html = "<table class=\"dataTable\"><tr><td class=\"dataTable\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $date->format('d-M-y g:i a') . "</div></td>\n<td class=\"dataTable\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_timer_time']) . "</div>\n</td><td class=\"dataTable\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr><tr><td colspan=\"3\" class=\"dataTable\">" . getMapCode() ."</td></tr></table>";
 	
 	return $html;
 }
@@ -131,16 +137,53 @@ function routePolyline() {
     $position_long = $pFFA->data_mesgs['record']['position_long'];
     $lat_long_combined = [];
     
-	$polyline = "";
-
 	foreach ($position_lat as $key => $value) {  // Assumes every lat has a corresponding long
 		$lat_long_combined[] = [$position_lat[$key],$position_long[$key]];
-		$polyline .= "[" . $position_lat[$key] . "," . $position_long[$key] . "],";
 	}
-	$polyline = rtrim($polyline, ",");
+
+//     echo (count($lat_long_combined));
+//     echo "\r\n<br>";
+    
+    
+	// Reduce the number of Lat/Lonf coords to below 1000 - for a static map, we probably could go lower.
+	// For a zoom'able map, we might think about using all the data.
+	$delta = 0.00001;
+	do {
+		$RDP_LatLng_coord = simplify_RDP($lat_long_combined, $delta);  // Simplify the array of coordinates using the Ramer-Douglas-Peucker algorithm.
+		$delta += 0.00001;  // Rough accuracy somewhere between 4m and 12m depending where in the World coordinates are, source http://en.wikipedia.org/wiki/Decimal_degrees
+		
+		echo (count($RDP_LatLng_coord));
+		echo "\r\n<br>";
+		
+	} while (count($RDP_LatLng_coord) > 1000); 
+	
+// 	print_r($RDP_LatLng_coord);
+
+	$polyline = "";
+// 	echo (count($RDP_LatLng_coord));
+
+    foreach($RDP_LatLng_coord as $latLongPair) {
+//     	print_r($latLongPair);
+    	$polyline .= "[" . $latLongPair[0] . "," . $latLongPair[1] . "],";
+    }
+    
+    $polyline = rtrim($polyline, ",");
 	$polyline = "[" . $polyline . "]";
 	
+// 	echo (count($polyline));
+	
 	return $polyline;
+    
+// 	$polyline = "";
+// 
+// 	foreach ($position_lat as $key => $value) {  // Assumes every lat has a corresponding long
+// 		$lat_long_combined[] = [$position_lat[$key],$position_long[$key]];
+// 		$polyline .= "[" . $position_lat[$key] . "," . $position_long[$key] . "],";
+// 	}
+// 	$polyline = rtrim($polyline, ",");
+// 	$polyline = "[" . $polyline . "]";
+// 	
+// 	return $polyline;
 }
 
 function showFitFile($atts) {
@@ -209,9 +252,6 @@ function getMapCode() {
 	" . getInteractive() . "
 </script>";
 	return $maphtml;
-
-
-
 }
 
 // Add Shortcode
@@ -237,7 +277,7 @@ function leafletjs_load(){
 			padding: 0;
 			margin: 0;
 		}
-		html, body, #mapid-" . $options->uniqueID . ", mapid-" . $options->uniqueID . ", map {
+		html, body, #mapid, mapid, map {
 			height: 100%;
 			width: 100%;
 		}";
@@ -285,6 +325,6 @@ function my_custom_mime_types( $mimes ) {
 
 	return $mimes;
 }
-add_filter( 'upload_mimes', 'my_custom_mime_types' );
+add_filter('upload_mimes', 'my_custom_mime_types');
 
 ?>
