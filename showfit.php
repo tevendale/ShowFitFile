@@ -24,32 +24,39 @@ Check if the imported object is null, and import is necessary
 
 ✓ Sort out styling of Table
 	- Move styles into a srtylesheet file and load - easier for users to customise
+	- Change style names to use 'yft' suffix to asvoid clashes
 
 ✓ Add options to Shortcut
-	- Line colour - RED
+	✓- Line colour - RED
 	- Show Power - NO
-	- Can Scroll - NO
-	- Can Zoom - NO
-		- Maybe make the above two just 'Is Interactive'?
+	✓- Can Scroll - NO
+	✓- Can Zoom - NO
+		✓- Maybe make the above two just 'Is Interactive'?
 	- Obfusicate End Points - NO
-	- Metric/Imperial - Metric
-	- Show start/end points
+	✓- Metric/Imperial - Metric
+	✓- Show start/end points
+	- Set line width
 	
-Method to get start & end points
+	
+✓ Method to get start & end points
+
+Check that the date is in local time, not UTC
 	
 
 Add Sport Icon?
 	- Add option to shortcut to specify icon file?
 	- Include icon for swim, bike & run
 	
-Downsize data array for route - speed up drawing
+✓ Downsize data array for route - speed up drawing
 
 
 Set up Github repository
+	- Have private one for devlopment, and a public one with a release snap-shot
 ✓ Set up Webpage
 Readme file
 Text for Wordpress Page
 Investigate how to promote WP Plugins
+	- YFT Blog post mostly done.
 
 Phase 2
 Add Altitude Graph under map with option to show or hide
@@ -83,6 +90,7 @@ global $pFFA;
 global $options;
 global $startPoint;
 global $endPoint;
+global $startLatLong;
 
 function readFitFile($file) {
 	try {
@@ -116,8 +124,18 @@ function readFitFile($file) {
 function fitHTML() {
 	global $pFFA;
 	global $options;
-	$date = new DateTime('now', new DateTimeZone('UTC'));
+	global $startLatLong;
+	
+	$mapcode = getMapCode();
+	
+	$tz = timeZoneForCoords($startLatLong[0], $startLatLong[1]);
+	
+	
+	
+// 	$date = new DateTime('now', new DateTimeZone('UTC'));
+	$date = new DateTime('now', new DateTimeZone($tz));
     $date_s = $pFFA->data_mesgs['session']['start_time'];
+//     $date_s = $pFFA->data_mesgs['activity']['local_timestamp'];
     $date->setTimestamp($date_s);
     
     $unitsString = "km";
@@ -125,7 +143,7 @@ function fitHTML() {
     	$unitsString = "miles";
     }
 	
-	$html = "<table class=\"dataTable\"><tr><td class=\"dataTable\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $date->format('d-M-y g:i a') . "</div></td>\n<td class=\"dataTable\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_timer_time']) . "</div>\n</td><td class=\"dataTable\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr><tr><td colspan=\"3\" class=\"dataTable\">" . getMapCode() ."</td></tr></table>";
+	$html = "<table class=\"dataTable\"><tr><td class=\"dataTable\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $date->format('d-M-y g:i a') . "</div></td>\n<td class=\"dataTable\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_timer_time']) . "</div>\n</td><td class=\"dataTable\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr><tr><td colspan=\"3\" class=\"dataTable\">" . $mapcode ."</td></tr></table>";
 	
 	return $html;
 }
@@ -135,6 +153,7 @@ function routePolyline() {
 	global $pFFA;
 	global $startPoint;
 	global $endPoint;
+	global $startLatLong;
 
     // Google Static Maps API
     $position_lat = $pFFA->data_mesgs['record']['position_lat'];
@@ -161,11 +180,14 @@ function routePolyline() {
 		
 	} while (count($RDP_LatLng_coord) > 1000); 
 	
+	$startLatLong = $lat_long_combined[0];
 	$LatLng_start = implode(',', $lat_long_combined[0]);
     $LatLng_finish = implode(',', $lat_long_combined[count($lat_long_combined)-1]);
     
     $startPoint = "[" . $LatLng_start . "]";
     $endPoint = "[" . $LatLng_finish . "]";
+    
+    timeZoneForCoords($lat_long_combined[0][0], $lat_long_combined[0][1]);
 
 	
 // 	print_r($RDP_LatLng_coord);
@@ -270,6 +292,26 @@ function getMapCode() {
 	" . getInteractive() . "
 </script>";
 	return $maphtml;
+}
+
+function timeZoneForCoords($lat, $long) {
+	$url = 'http://api.geonames.org/timezone?lat=' . $lat . '&lng=' . $long . '&username=tevendale';
+	echo $url;
+	$xml = simplexml_load_file($url);
+	print_r($xml->timezone->timezoneId);
+// 	echo $xml;
+// 	foreach ($xml->geoname as $o_location){
+// 	printf(
+// 		'Timezone %s<br>
+// 		lat is %s<br>
+// 		lon is %s<br>
+// 		',
+// 		$o_location->timezoneId,
+// 		$o_location->lat,
+// 		$o_location->lng,
+// 	);
+// 	}
+return $xml->timezone->timezoneId;
 }
 
 // Add Shortcode
