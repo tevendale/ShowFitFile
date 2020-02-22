@@ -92,17 +92,27 @@ global $startPoint;
 global $endPoint;
 global $startLatLong;
 
-function readFitFile($file) {
+function sff_readFitFile($file) {
 	try {
 		global $options;
-		$upload_dir = wp_upload_dir();
-		$url = $upload_dir['path'];
+		
+		// Files are uploaded to this folder
+		$customdir = '/fit_Files';
+		$path = wp_upload_dir();
+		$path['path']    = str_replace($path['subdir'], '', $path['path']); //remove default subdir (year/month)
+		$path['url']     = str_replace($path['subdir'], '', $path['url']);      
+		$path['subdir']  = $customdir;
+		$path['path']   .= $customdir; 
+		$path['url']    .= $customdir;
+		
+		$url = $path['path'];
+		
 
-// 		$file = '/files/' . $file;
 		$file = $url . '/' . $file;
 		$filename = $file;
 		
 		$fitOptions = [
+// 		'garmin_timestamps' => true
 		// Just using the defaults so no need to provide
 		//		'fix_data'	=> [],
 		//		'units'		=> 'metric', Options: statute, raw, metric
@@ -121,14 +131,14 @@ function readFitFile($file) {
 	}
 }
 
-function fitHTML() {
+function sff_fitHTML() {
 	global $pFFA;
 	global $options;
 	global $startLatLong;
 	
 	$mapcode = getMapCode();
 	
-	$tz = timeZoneForCoords($startLatLong[0], $startLatLong[1]);
+	$tz = sff_timeZoneForCoords($startLatLong[0], $startLatLong[1]);
 	
 	
 	
@@ -137,6 +147,9 @@ function fitHTML() {
     $date_s = $pFFA->data_mesgs['session']['start_time'];
 //     $date_s = $pFFA->data_mesgs['activity']['local_timestamp'];
     $date->setTimestamp($date_s);
+    
+//     $date = new DateTime('1989-12-31', new DateTimeZone('UTC'));
+// 	$date_s = $date->getTimestamp() + $pFFA->data_mesgs['session']['start_time'];
     
     $unitsString = "km";
     if ($options->units == "imperial") {
@@ -148,7 +161,7 @@ function fitHTML() {
 	return $html;
 }
 
-function routePolyline() {
+function sff_routePolyline() {
 
 	global $pFFA;
 	global $startPoint;
@@ -187,7 +200,7 @@ function routePolyline() {
     $startPoint = "[" . $LatLng_start . "]";
     $endPoint = "[" . $LatLng_finish . "]";
     
-    timeZoneForCoords($lat_long_combined[0][0], $lat_long_combined[0][1]);
+    sff_timeZoneForCoords($lat_long_combined[0][0], $lat_long_combined[0][1]);
 
 	
 // 	print_r($RDP_LatLng_coord);
@@ -253,9 +266,9 @@ function showFitFile($atts) {
 	
 	$options->uniqueID = uniqid('', TRUE);
 	
-	readFitFile($file);
+	sff_readFitFile($file);
 	
-	return fitHTML();
+	return sff_fitHTML();
 }
 
 function getMapCode() {
@@ -275,9 +288,9 @@ function getMapCode() {
 	zoom: 13
 	}); 
 	
-	" . loadIcons() . "
+	" . sff_loadIcons() . "
 	
-	var poly = L.polyline([" . routePolyline() . "], {color: '" . getRouteColour() . "'});
+	var poly = L.polyline([" . sff_routePolyline() . "], {color: '" . sff_getRouteColour() . "'});
 	
 	poly.addTo(map);
 	
@@ -289,16 +302,16 @@ function getMapCode() {
 	
 	map.fitBounds(bounds);
 	
-	" . getInteractive() . "
+	" . sff_getInteractive() . "
 </script>";
 	return $maphtml;
 }
 
-function timeZoneForCoords($lat, $long) {
+function sff_timeZoneForCoords($lat, $long) {
 	$url = 'http://api.geonames.org/timezone?lat=' . $lat . '&lng=' . $long . '&username=tevendale';
-	echo $url;
+// 	echo $url;
 	$xml = simplexml_load_file($url);
-	print_r($xml->timezone->timezoneId);
+// 	print_r($xml->timezone->timezoneId);
 // 	echo $xml;
 // 	foreach ($xml->geoname as $o_location){
 // 	printf(
@@ -319,9 +332,9 @@ add_shortcode('showfitfile', 'showFitFile');
 
 
 // Add the Leaflet.js css & javascript files
-add_action('wp_enqueue_scripts', 'leafletjs_load');
+add_action('wp_enqueue_scripts', 'sff_leafletjs_load');
 
-function leafletjs_load(){
+function sff_leafletjs_load(){
 	global $options;
 	// Custom css for table containing map and data
 	$cssurl = plugins_url('/styles/showfitfile.css', __FILE__);
@@ -344,12 +357,12 @@ function leafletjs_load(){
   wp_add_inline_style('leafletjs_css', $map_custom_css );
 }
 
-function getRouteColour() {
+function sff_getRouteColour() {
 	global $options;
 	return esc_js($options->colour);
 }
 
-function loadIcons() {
+function sff_loadIcons() {
 	$loadIcons = "var greenIcon = new L.Icon({
 	  iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
 	  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -372,7 +385,7 @@ function loadIcons() {
 	return $loadIcons;
 }
 
-function getInteractive() {
+function sff_getInteractive() {
 	// Determine if the map can be scrolled and panned
 	global $options;
 	if (strtolower($options->isInteractive) == 'yes') {
@@ -393,7 +406,7 @@ function getInteractive() {
 	}
 }
 
-function getUniqueID() {
+function sff_getUniqueID() {
 	global $options;
 	return $options->uniqueID;
 }
@@ -401,13 +414,41 @@ function getUniqueID() {
 
 
 // Adds .fit filetype to the allowable types. Without this we can't upload .fit files to the gallery
-function my_custom_mime_types( $mimes ) {
+add_filter('upload_mimes', 'fit_mime_types');
+
+function fit_mime_types( $mimes ) {
 	
         // New allowed mime types.
         $mimes['fit'] = 'application/fit';
 
 	return $mimes;
 }
-add_filter('upload_mimes', 'my_custom_mime_types');
+
+
+// Upload .fit files to a separate folder, otherwise we can't find them in the yyyy/mm sub-folders
+add_filter('wp_handle_upload_prefilter', 'sff_pre_upload');
+add_filter('wp_handle_upload', 'sff_post_upload');
+
+function sff_pre_upload($file){
+    add_filter('upload_dir', 'sff_custom_upload_dir');
+    return $file;
+}
+
+function sff_post_upload($fileinfo){
+    remove_filter('upload_dir', 'sff_custom_upload_dir');
+    return $fileinfo;
+}
+
+function sff_custom_upload_dir($path){    
+    $extension = substr(strrchr($_POST['name'],'.'),1);
+    if(!empty($path['error']) ||  $extension != 'fit') { return $path; } //error or other filetype; do nothing. 
+    $customdir = '/fit_Files';
+    $path['path']    = str_replace($path['subdir'], '', $path['path']); //remove default subdir (year/month)
+    $path['url']     = str_replace($path['subdir'], '', $path['url']);      
+    $path['subdir']  = $customdir;
+    $path['path']   .= $customdir; 
+    $path['url']    .= $customdir;  
+    return $path;
+}
 
 ?>
