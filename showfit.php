@@ -18,7 +18,7 @@ require __DIR__ . '/libraries/phpFITFileAnalysis.php';
 require __DIR__ . '/libraries/Line_DouglasPeucker.php';
 
 // Class to hold the various options for the map
-class mapOptions {
+class ssf_mapOptions {
 	public $routeLineColour;
 	public $isInteractive;
 	public $units;
@@ -152,7 +152,7 @@ function sff_routePolyline() {
 function showFitFile($atts) {
 
 	global $options;
-	$options = new mapOptions();
+	$options = new ssf_mapOptions();
 
 	$atts = array_change_key_case($atts, CASE_LOWER);
 
