@@ -4,9 +4,9 @@ This plugin allows you to add a map and summary exercise data from a .fit (Flexi
 
 ## Usage
 
-Upload the .fit file to your Media Library, then simply create a map from the file by adding the following ShortCode to your post:
-
 ![Sample](/images/SuieMap.png)
+
+Upload the .fit file to your Media Library, then simply create a map from the file by adding the following ShortCode to your post:
 
 [showfitfile file="2019-06-16-10-48-12.fit"]
 
