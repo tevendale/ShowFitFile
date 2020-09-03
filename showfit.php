@@ -1,73 +1,20 @@
 <?php
+
 /**
- * @package Show_Fit_File
- * @version 0.1
+ * Plugin Name:       Show_Fit_File
+ * Plugin URI:        http://yellowfield.co.uk/plugins/Show-FIT-File/
+ * Description:       A plugin for displaying route and exercise data from a Garmin .fit file (Flexible and Interoperable Data Transfer).
+ * Version:           0.2
+ * Requires at least: 5.2
+ * Requires PHP:      7.2
+ * Author:            Stuart Tevendale
+ * Author URI:        http://Yellowfield.co.uk
+ * License:           GPL v2
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  */
-/*
-Plugin Name: Show Fit File
-Plugin URI: http://wordpress.org/plugins/Show-FIT-File/
-Description: A plugin for displaying data from a .fit file (Flexible and Interoperable Data Transfer).
-Author: Yellow Field Technologies Ltd
-Version: 0.1
-Author URI: http://Yellowfield.co.uk
-*/
 
 
-/* TODO
-✓ Create one function that reads the .fit file
-✓ Have a global oject that stores the imported .fit data and use this in the other functions (map, summary data, etc)
-Check if the imported object is null, and import is necessary
-✓ Read the file from the folder whewre images are uploaded to? (Uploads) --> find out how to get path to this, also, files seem to be arranged in yyyy/mm folder structure
-	- Seems to work with yyyy/mm folders, seems to use the date the post was created.
-	- Do some more testing, i.e. add to older post and see what path is produced
-	- Add option to upload to custom folder ????
-
-✓ Sort out styling of Table
-	- Move styles into a srtylesheet file and load - easier for users to customise
-	- Change style names to use 'yft' suffix to asvoid clashes
-
-✓ Add options to Shortcut
-	✓- Line colour - RED
-	- Show Power - NO
-	✓- Can Scroll - NO
-	✓- Can Zoom - NO
-		✓- Maybe make the above two just 'Is Interactive'?
-	- Obfusicate End Points - NO
-	✓- Metric/Imperial - Metric
-	✓- Show start/end points
-	- Set line width
-	
-	
-✓ Method to get start & end points
-
-Check that the date is in local time, not UTC
-	
-
-Add Sport Icon?
-	- Add option to shortcut to specify icon file?
-	- Include icon for swim, bike & run
-	
-✓ Downsize data array for route - speed up drawing
-
-
-Set up Github repository
-	- Have private one for devlopment, and a public one with a release snap-shot
-✓ Set up Webpage
-Readme file
-Text for Wordpress Page
-Investigate how to promote WP Plugins
-	- YFT Blog post mostly done.
-
-Phase 2
-Add Altitude Graph under map with option to show or hide
-Show multisport sessions with all legs
-Show laps
-
-'Pro' Version - Paid for
-Show graphs of .fit data - HR, power, speed, etc.
-*/
-
-require __DIR__ . '/src/phpFITFileAnalysis.php';
+require __DIR__ . '/libraries/phpFITFileAnalysis.php';
 require __DIR__ . '/libraries/Line_DouglasPeucker.php';
 
 // Class to hold the various options for the map
@@ -136,20 +83,12 @@ function sff_fitHTML() {
 	global $options;
 	global $startLatLong;
 	
-	$mapcode = getMapCode();
+	$mapcode = sff_getMapCode();
 	
 	$tz = sff_timeZoneForCoords($startLatLong[0], $startLatLong[1]);
-	
-	
-	
-// 	$date = new DateTime('now', new DateTimeZone('UTC'));
 	$date = new DateTime('now', new DateTimeZone($tz));
     $date_s = $pFFA->data_mesgs['session']['start_time'];
-//     $date_s = $pFFA->data_mesgs['activity']['local_timestamp'];
     $date->setTimestamp($date_s);
-    
-//     $date = new DateTime('1989-12-31', new DateTimeZone('UTC'));
-// 	$date_s = $date->getTimestamp() + $pFFA->data_mesgs['session']['start_time'];
     
     $unitsString = "km";
     if ($options->units == "imperial") {
@@ -177,20 +116,12 @@ function sff_routePolyline() {
 		$lat_long_combined[] = [$position_lat[$key],$position_long[$key]];
 	}
 
-//     echo (count($lat_long_combined));
-//     echo "\r\n<br>";
-    
-    
 	// Reduce the number of Lat/Lonf coords to below 1000 - for a static map, we probably could go lower.
 	// For a zoom'able map, we might think about using all the data.
 	$delta = 0.00001;
 	do {
 		$RDP_LatLng_coord = simplify_RDP($lat_long_combined, $delta);  // Simplify the array of coordinates using the Ramer-Douglas-Peucker algorithm.
 		$delta += 0.00001;  // Rough accuracy somewhere between 4m and 12m depending where in the World coordinates are, source http://en.wikipedia.org/wiki/Decimal_degrees
-		
-// 		echo (count($RDP_LatLng_coord));
-// 		echo "\r\n<br>";
-		
 	} while (count($RDP_LatLng_coord) > 1000); 
 	
 	$startLatLong = $lat_long_combined[0];
@@ -203,33 +134,19 @@ function sff_routePolyline() {
     sff_timeZoneForCoords($lat_long_combined[0][0], $lat_long_combined[0][1]);
 
 	
-// 	print_r($RDP_LatLng_coord);
-
 	$polyline = "";
-// 	echo (count($RDP_LatLng_coord));
 
     foreach($RDP_LatLng_coord as $latLongPair) {
-//     	print_r($latLongPair);
     	$polyline .= "[" . $latLongPair[0] . "," . $latLongPair[1] . "],";
     }
     
     $polyline = rtrim($polyline, ",");
 	$polyline = "[" . $polyline . "]";
 	
-// 	echo (count($polyline));
+// 	echo $polyline;
 	
 	return $polyline;
     
-// 	$polyline = "";
-// 
-// 	foreach ($position_lat as $key => $value) {  // Assumes every lat has a corresponding long
-// 		$lat_long_combined[] = [$position_lat[$key],$position_long[$key]];
-// 		$polyline .= "[" . $position_lat[$key] . "," . $position_long[$key] . "],";
-// 	}
-// 	$polyline = rtrim($polyline, ",");
-// 	$polyline = "[" . $polyline . "]";
-// 	
-// 	return $polyline;
 }
 
 function showFitFile($atts) {
@@ -266,15 +183,24 @@ function showFitFile($atts) {
 	
 	$options->uniqueID = uniqid('', TRUE);
 	
-	sff_readFitFile($file);
+	$transientID = "sff_transient" . $file;
 	
-	return sff_fitHTML();
+	// Cache the HTML so that it's only generated the first time the map is displayed
+	$routeHTML = get_transient($transientID);
+//  	delete_transient($transientID);
+	if ($routeHTML === false) {
+		sff_readFitFile($file);
+        $routeHTML = sff_fitHTML();
+        set_transient($transientID, $routeHTML);
+    }
+	return $routeHTML;
 }
 
-function getMapCode() {
+function sff_getMapCode() {
 	global $options;
 	global $startPoint;
 	global $endPoint;
+	
 	$maphtml = "<div id=\"mapid-" . $options->uniqueID . "\" style=\"width: 100%; height: 400px;\"></div>";
 	
 	$maphtml = $maphtml . "<script>	
@@ -309,21 +235,8 @@ function getMapCode() {
 
 function sff_timeZoneForCoords($lat, $long) {
 	$url = 'http://api.geonames.org/timezone?lat=' . $lat . '&lng=' . $long . '&username=tevendale';
-// 	echo $url;
 	$xml = simplexml_load_file($url);
-// 	print_r($xml->timezone->timezoneId);
-// 	echo $xml;
-// 	foreach ($xml->geoname as $o_location){
-// 	printf(
-// 		'Timezone %s<br>
-// 		lat is %s<br>
-// 		lon is %s<br>
-// 		',
-// 		$o_location->timezoneId,
-// 		$o_location->lat,
-// 		$o_location->lng,
-// 	);
-// 	}
+
 return $xml->timezone->timezoneId;
 }
 
@@ -341,9 +254,14 @@ function sff_leafletjs_load(){
 	wp_enqueue_style('showfitfile_css', $cssurl);
 	
 	//CSS and JS for Leaflet
-	wp_enqueue_style('leafletjs_css', 'https://unpkg.com/leaflet@1.6.0/dist/leaflet.css');
-	wp_enqueue_script('leafletjs', 'https://unpkg.com/leaflet@1.6.0/dist/leaflet.js');
+	$leafletcss = plugins_url('/styles/leaflet.css', __FILE__);
+	$leafletjs = plugins_url('/styles/leaflet.js', __FILE__);
+	wp_enqueue_style('leafletjs_css', $leafletcss);
+	wp_enqueue_script('leafletjs', $leafletjs);
 	
+// 	wp_enqueue_style('leafletjs_css', 'https://unpkg.com/leaflet@1.6.0/dist/leaflet.css');
+// 	wp_enqueue_script('leafletjs', 'https://unpkg.com/leaflet@1.6.0/dist/leaflet.js');
+
 	// Custom css for displaying Map
 	$map_custom_css = "
 		body {
@@ -363,9 +281,12 @@ function sff_getRouteColour() {
 }
 
 function sff_loadIcons() {
+	$greenIcon = plugins_url('/assets/marker-icon-2x-green.png', __FILE__);
+	$blueIcon = plugins_url('/assets/marker-icon-2x-blue.png', __FILE__);
+	$shadowIcon = plugins_url('/assets/marker-shadow.png', __FILE__);
 	$loadIcons = "var greenIcon = new L.Icon({
-	  iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-	  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+	  iconUrl: '$greenIcon',
+	  shadowUrl: '$shadowIcon',
 	  iconSize: [25, 41],
 	  iconAnchor: [12, 41],
 	  popupAnchor: [1, -34],
@@ -374,8 +295,8 @@ function sff_loadIcons() {
 	
 	
 	var blueIcon = new L.Icon({
-	  iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-	  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+	  iconUrl: '$blueIcon',
+	  shadowUrl: '$shadowIcon',
 	  iconSize: [25, 41],
 	  iconAnchor: [12, 41],
 	  popupAnchor: [1, -34],
@@ -414,12 +335,12 @@ function sff_getUniqueID() {
 
 
 // Adds .fit filetype to the allowable types. Without this we can't upload .fit files to the gallery
-add_filter('upload_mimes', 'fit_mime_types');
+add_filter('upload_mimes', 'sff_fit_mime_types');
 
-function fit_mime_types( $mimes ) {
+function sff_fit_mime_types( $mimes ) {
 	
-        // New allowed mime types.
-        $mimes['fit'] = 'application/fit';
+	// New allowed mime types.
+	$mimes['fit'] = 'application/fit';
 
 	return $mimes;
 }
@@ -439,8 +360,9 @@ function sff_post_upload($fileinfo){
     return $fileinfo;
 }
 
-function sff_custom_upload_dir($path){    
-    $extension = substr(strrchr($_POST['name'],'.'),1);
+function sff_custom_upload_dir($path){
+	$filename = sanitize_file_name($_POST['name'])  ;  
+    $extension = substr(strrchr($filename,'.'),1);
     if(!empty($path['error']) ||  $extension != 'fit') { return $path; } //error or other filetype; do nothing. 
     $customdir = '/fit_Files';
     $path['path']    = str_replace($path['subdir'], '', $path['path']); //remove default subdir (year/month)
