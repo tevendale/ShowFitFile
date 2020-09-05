@@ -153,6 +153,7 @@ function showFitFile($atts) {
 
 	global $options;
 	$options = new ssf_mapOptions();
+	$optionsChanged = false;
 
 	$atts = array_change_key_case($atts, CASE_LOWER);
 
@@ -184,11 +185,56 @@ function showFitFile($atts) {
 	$options->uniqueID = uniqid('', TRUE);
 	
 	$transientID = "sff_transient" . $file;
+	$transientOptionsID = "sff_transient" . "options" . $file;
+
+// 	delete_transient($transientID);
+// 	delete_transient($transientOptionsID);
+	
+	// Retrieve the cached options
+	$cachedOptions = get_transient($transientOptionsID);
+	// Test if the cached options are the same as the options passed this time
+	if ($cachedOptions === false) {
+		set_transient($transientOptionsID, $options);
+	}
+	else {
+		// Test colour, units & interactive to see if these have changes
+// 		error_log("cachedOptions->Colour: " . $cachedOptions->colour);
+// 		error_log("cachedOptions->Units: " . $cachedOptions->units);
+// 		error_log("cachedOptions->isInteractive: " . $cachedOptions->isInteractive);
+// 		
+// 		error_log("options->Colour: " . $options->colour);
+// 		error_log("options->Units: " . $options->units);
+// 		error_log("options->isInteractive: " . $options->isInteractive);
+
+		if (($cachedOptions->colour == $options->colour) && ($cachedOptions->units == $options->units) && ($cachedOptions->isInteractive == $options->isInteractive)) {
+// 			error_log("no change");
+			$optionsChanged = false;
+		}
+		else {
+// 			error_log("options changed");
+			set_transient($transientOptionsID, $options);
+			$optionsChanged = true;
+		}
+// 		print_r($cachedOptions);
+// 		echo "<br>";
+// 		print_r($options);
+// 		$match = array_diff($cachedOptions, $options);
+// 		if (count($match) == 0) {
+// 			echo "no change";		
+// 		}
+// 		else {
+// 			echo "options changed";
+// 		}
+	
+	}
+	
+	
 	
 	// Cache the HTML so that it's only generated the first time the map is displayed
 	$routeHTML = get_transient($transientID);
 //  	delete_transient($transientID);
-	if ($routeHTML === false) {
+	if (($routeHTML === false) || $optionsChanged) {
+// 		error_log("Regenerating Map");
 		sff_readFitFile($file);
         $routeHTML = sff_fitHTML();
         set_transient($transientID, $routeHTML);
