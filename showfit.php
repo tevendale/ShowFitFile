@@ -73,9 +73,37 @@ function sff_readFitFile($file) {
 		global $pFFA;
 		$pFFA = new adriangibbons\phpFITFileAnalysis($file, $fitOptions);
 	} catch (Exception $e) {
-		echo 'caught exception: '.$e->getMessage();
-		die();
+// 		echo 'caught exception: '.$e->getMessage();
+// 		die();
 	}
+}
+
+function sff_pathToFileInCustomFolder($file) {
+	$customdir = '/fit_Files';
+	$path = wp_upload_dir();
+	$path['path']    = str_replace($path['subdir'], '', $path['path']); //remove default subdir (year/month)
+	$path['url']     = str_replace($path['subdir'], '', $path['url']);      
+	$path['subdir']  = $customdir;
+	$path['path']   .= $customdir; 
+	$path['url']    .= $customdir;
+	
+	$url = $path['path'];
+	
+
+	$filePath = $url . '/' . $file;
+	
+	return $filePath;
+}
+
+function sff_doesFileExist($file) {
+	$filePath = sff_pathToFileInCustomFolder($file);
+	if (file_exists($filePath)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+
 }
 
 function sff_fitHTML() {
@@ -169,77 +197,69 @@ function showFitFile($atts) {
 	
 	$file = $a['file'];
 	
-	$colour = 'red'; // Default Colour for line
-	if (!empty($a['colour'])) {
-		$colour = $a['colour'];
-	}
+	if (sff_doesFileExist($file)) {
+		$colour = 'red'; // Default Colour for line
+		if (!empty($a['colour'])) {
+			$colour = $a['colour'];
+		}
 	
-	if (!empty($a['color'])) {
-		$colour = $a['color'];
-	}
+		if (!empty($a['color'])) {
+			$colour = $a['color'];
+		}
 	
-	$options->colour = $colour;
-	$options->units = $a['units'];
-	$options->isInteractive = $a['interactive'];
+		$options->colour = $colour;
+		$options->units = $a['units'];
+		$options->isInteractive = $a['interactive'];
 	
-	$options->uniqueID = uniqid('', TRUE);
+		$options->uniqueID = uniqid('', TRUE);
 	
-	$transientID = "sff_transient" . $file;
-	$transientOptionsID = "sff_transient" . "options" . $file;
+		$transientID = "sff_transient" . $file;
+		$transientOptionsID = "sff_transient" . "options" . $file;
 
-// 	delete_transient($transientID);
-// 	delete_transient($transientOptionsID);
+	// 	delete_transient($transientID);
+	// 	delete_transient($transientOptionsID);
 	
-	// Retrieve the cached options
-	$cachedOptions = get_transient($transientOptionsID);
-	// Test if the cached options are the same as the options passed this time
-	if ($cachedOptions === false) {
-		set_transient($transientOptionsID, $options);
-	}
-	else {
-		// Test colour, units & interactive to see if these have changes
-// 		error_log("cachedOptions->Colour: " . $cachedOptions->colour);
-// 		error_log("cachedOptions->Units: " . $cachedOptions->units);
-// 		error_log("cachedOptions->isInteractive: " . $cachedOptions->isInteractive);
-// 		
-// 		error_log("options->Colour: " . $options->colour);
-// 		error_log("options->Units: " . $options->units);
-// 		error_log("options->isInteractive: " . $options->isInteractive);
-
-		if (($cachedOptions->colour == $options->colour) && ($cachedOptions->units == $options->units) && ($cachedOptions->isInteractive == $options->isInteractive)) {
-// 			error_log("no change");
-			$optionsChanged = false;
+		// Retrieve the cached options
+		$cachedOptions = get_transient($transientOptionsID);
+		// Test if the cached options are the same as the options passed this time
+		if ($cachedOptions === false) {
+			set_transient($transientOptionsID, $options);
 		}
 		else {
-// 			error_log("options changed");
-			set_transient($transientOptionsID, $options);
-			$optionsChanged = true;
+			// Test colour, units & interactive to see if these have changes
+	// 		error_log("cachedOptions->Colour: " . $cachedOptions->colour);
+	// 		error_log("cachedOptions->Units: " . $cachedOptions->units);
+	// 		error_log("cachedOptions->isInteractive: " . $cachedOptions->isInteractive);
+	// 		
+	// 		error_log("options->Colour: " . $options->colour);
+	// 		error_log("options->Units: " . $options->units);
+	// 		error_log("options->isInteractive: " . $options->isInteractive);
+
+			if (($cachedOptions->colour == $options->colour) && ($cachedOptions->units == $options->units) && ($cachedOptions->isInteractive == $options->isInteractive)) {
+	// 			error_log("no change");
+				$optionsChanged = false;
+			}
+			else {
+	// 			error_log("options changed");
+				set_transient($transientOptionsID, $options);
+				$optionsChanged = true;
+			}
 		}
-// 		print_r($cachedOptions);
-// 		echo "<br>";
-// 		print_r($options);
-// 		$match = array_diff($cachedOptions, $options);
-// 		if (count($match) == 0) {
-// 			echo "no change";		
-// 		}
-// 		else {
-// 			echo "options changed";
-// 		}
 	
+		// Cache the HTML so that it's only generated the first time the map is displayed
+		$routeHTML = get_transient($transientID);
+	//  	delete_transient($transientID);
+		if (($routeHTML === false) || $optionsChanged) {
+	// 		error_log("Regenerating Map");
+			sff_readFitFile($file);
+			$routeHTML = sff_fitHTML();
+			set_transient($transientID, $routeHTML);
+		}
+		return $routeHTML;
 	}
-	
-	
-	
-	// Cache the HTML so that it's only generated the first time the map is displayed
-	$routeHTML = get_transient($transientID);
-//  	delete_transient($transientID);
-	if (($routeHTML === false) || $optionsChanged) {
-// 		error_log("Regenerating Map");
-		sff_readFitFile($file);
-        $routeHTML = sff_fitHTML();
-        set_transient($transientID, $routeHTML);
-    }
-	return $routeHTML;
+	else {
+		error_log("ShowFitFile Plugin - file missing");
+	}
 }
 
 function sff_getMapCode() {
