@@ -4,7 +4,7 @@
  * Plugin Name:       Show_Fit_File
  * Plugin URI:        http://yellowfield.co.uk/plugins/Show-FIT-File/
  * Description:       A plugin for displaying route and exercise data from a Garmin .fit file (Flexible and Interoperable Data Transfer).
- * Version:           0.2
+ * Version:           0.3
  * Requires at least: 5.2
  * Requires PHP:      7.2
  * Author:            Stuart Tevendale
@@ -16,6 +16,101 @@
 
 require __DIR__ . '/libraries/phpFITFileAnalysis.php';
 require __DIR__ . '/libraries/Line_DouglasPeucker.php';
+
+// Add Shortcode
+add_shortcode('showfitfile', 'showFitFile');
+
+// Add the Leaflet.js css & javascript files
+add_action('wp_enqueue_scripts', 'sff_leafletjs_load');
+
+// Adds .fit filetype to the allowable types. Without this we can't upload .fit files to the gallery
+add_filter('upload_mimes', 'sff_fit_mime_types');
+
+// Upload .fit files to a separate folder, otherwise we can't find them in the yyyy/mm sub-folders
+add_filter('wp_handle_upload_prefilter', 'sff_pre_upload');
+add_filter('wp_handle_upload', 'sff_post_upload');
+
+
+function showFitFile($atts) {
+
+	global $options;
+	$options = new ssf_mapOptions();
+	$optionsChanged = false;
+
+	$atts = array_change_key_case($atts, CASE_LOWER);
+
+	$a = shortcode_atts(array(
+		'file' => 'empty string',
+		'colour' => '',
+		'color' => '',
+		'interactive' => 'NO',
+		'showpower' => 'NO',
+		'units' => 'metric'
+	), $atts);
+	
+	$file = $a['file'];
+	
+	if (sff_doesFileExist($file)) {
+		$colour = 'red'; // Default Colour for line
+		if (!empty($a['colour'])) {
+			$colour = $a['colour'];
+		}
+	
+		if (!empty($a['color'])) {
+			$colour = $a['color'];
+		}
+	
+		$options->colour = $colour;
+		$options->units = $a['units'];
+		$options->isInteractive = $a['interactive'];
+	
+		$options->uniqueID = uniqid('', TRUE);
+	
+		$transientID = "sff_transient" . $file;
+		$transientOptionsID = "sff_transient" . "options" . $file;
+
+		// Retrieve the cached options
+		$cachedOptions = get_transient($transientOptionsID);
+		// Test if the cached options are the same as the options passed this time
+		if ($cachedOptions === false) {
+			set_transient($transientOptionsID, $options);
+		}
+		else {
+			if (($cachedOptions->colour == $options->colour) && ($cachedOptions->units == $options->units) && ($cachedOptions->isInteractive == $options->isInteractive)) {
+				$optionsChanged = false;
+			}
+			else {
+				set_transient($transientOptionsID, $options);
+				$optionsChanged = true;
+			}
+		}
+	
+		// Cache the HTML so that it's only generated the first time the map is displayed
+		$routeHTML = false;
+		if ( defined('WP_DEBUG') && true === WP_DEBUG ) { 
+			delete_transient($transientID);
+			console_log("regenerating map html");
+		}
+		else {
+			$routeHTML = get_transient($transientID);
+			console_log("Using cached map html");
+		}
+		
+		if (($routeHTML === false) || $optionsChanged) {
+			console_log("Regenerating Map");
+			$success = sff_readFitFile($file);
+			if ( $success === true ) {
+				$routeHTML = sff_fitHTML();
+				set_transient($transientID, $routeHTML);
+			}
+		}
+		return $routeHTML;
+	}
+	else {
+		$filePath = sff_pathToFileInCustomFolder($file);
+		return "<p>fit file not found: " . $filePath . "</p>";
+	}
+}
 
 // Class to hold the various options for the map
 class ssf_mapOptions {
@@ -69,12 +164,12 @@ function sff_readFitFile($file) {
 			$fitOptions = ['units' => 'statute'];
 		}
 		
-		
 		global $pFFA;
 		$pFFA = new adriangibbons\phpFITFileAnalysis($file, $fitOptions);
+		return true;
 	} catch (Exception $e) {
-// 		echo 'caught exception: '.$e->getMessage();
-// 		die();
+		echo '<p>Error reading fit file: ' . $e->getMessage() . '</p>';
+		return false;
 	}
 }
 
@@ -88,7 +183,6 @@ function sff_pathToFileInCustomFolder($file) {
 	$path['url']    .= $customdir;
 	
 	$url = $path['path'];
-	
 
 	$filePath = $url . '/' . $file;
 	
@@ -103,7 +197,6 @@ function sff_doesFileExist($file) {
 	else {
 		return false;
 	}
-
 }
 
 function sff_fitHTML() {
@@ -160,7 +253,6 @@ function sff_routePolyline() {
     $endPoint = "[" . $LatLng_finish . "]";
     
     sff_timeZoneForCoords($lat_long_combined[0][0], $lat_long_combined[0][1]);
-
 	
 	$polyline = "";
 
@@ -171,95 +263,7 @@ function sff_routePolyline() {
     $polyline = rtrim($polyline, ",");
 	$polyline = "[" . $polyline . "]";
 	
-// 	echo $polyline;
-	
 	return $polyline;
-    
-}
-
-function showFitFile($atts) {
-
-	global $options;
-	$options = new ssf_mapOptions();
-	$optionsChanged = false;
-
-	$atts = array_change_key_case($atts, CASE_LOWER);
-
-	$a = shortcode_atts(array(
-		'file' => 'empty string',
-		'colour' => '',
-		'color' => '',
-		'interactive' => 'NO',
-		'showpower' => 'NO',
-		'units' => 'metric'
-	), $atts);
-	
-	
-	$file = $a['file'];
-	
-	if (sff_doesFileExist($file)) {
-		$colour = 'red'; // Default Colour for line
-		if (!empty($a['colour'])) {
-			$colour = $a['colour'];
-		}
-	
-		if (!empty($a['color'])) {
-			$colour = $a['color'];
-		}
-	
-		$options->colour = $colour;
-		$options->units = $a['units'];
-		$options->isInteractive = $a['interactive'];
-	
-		$options->uniqueID = uniqid('', TRUE);
-	
-		$transientID = "sff_transient" . $file;
-		$transientOptionsID = "sff_transient" . "options" . $file;
-
-	// 	delete_transient($transientID);
-	// 	delete_transient($transientOptionsID);
-	
-		// Retrieve the cached options
-		$cachedOptions = get_transient($transientOptionsID);
-		// Test if the cached options are the same as the options passed this time
-		if ($cachedOptions === false) {
-			set_transient($transientOptionsID, $options);
-		}
-		else {
-			// Test colour, units & interactive to see if these have changes
-	// 		error_log("cachedOptions->Colour: " . $cachedOptions->colour);
-	// 		error_log("cachedOptions->Units: " . $cachedOptions->units);
-	// 		error_log("cachedOptions->isInteractive: " . $cachedOptions->isInteractive);
-	// 		
-	// 		error_log("options->Colour: " . $options->colour);
-	// 		error_log("options->Units: " . $options->units);
-	// 		error_log("options->isInteractive: " . $options->isInteractive);
-
-			if (($cachedOptions->colour == $options->colour) && ($cachedOptions->units == $options->units) && ($cachedOptions->isInteractive == $options->isInteractive)) {
-	// 			error_log("no change");
-				$optionsChanged = false;
-			}
-			else {
-	// 			error_log("options changed");
-				set_transient($transientOptionsID, $options);
-				$optionsChanged = true;
-			}
-		}
-	
-		// Cache the HTML so that it's only generated the first time the map is displayed
-		$routeHTML = get_transient($transientID);
-	//  	delete_transient($transientID);
-		if (($routeHTML === false) || $optionsChanged) {
-	// 		error_log("Regenerating Map");
-			sff_readFitFile($file);
-			$routeHTML = sff_fitHTML();
-			set_transient($transientID, $routeHTML);
-		}
-		return $routeHTML;
-	}
-	else {
-		error_log("ShowFitFile Plugin - file missing");
-	}
 }
 
 function sff_getMapCode() {
@@ -306,13 +310,6 @@ function sff_timeZoneForCoords($lat, $long) {
 return $xml->timezone->timezoneId;
 }
 
-// Add Shortcode
-add_shortcode('showfitfile', 'showFitFile');
-
-
-// Add the Leaflet.js css & javascript files
-add_action('wp_enqueue_scripts', 'sff_leafletjs_load');
-
 function sff_leafletjs_load(){
 	global $options;
 	// Custom css for table containing map and data
@@ -325,9 +322,6 @@ function sff_leafletjs_load(){
 	wp_enqueue_style('leafletjs_css', $leafletcss);
 	wp_enqueue_script('leafletjs', $leafletjs);
 	
-// 	wp_enqueue_style('leafletjs_css', 'https://unpkg.com/leaflet@1.6.0/dist/leaflet.css');
-// 	wp_enqueue_script('leafletjs', 'https://unpkg.com/leaflet@1.6.0/dist/leaflet.js');
-
 	// Custom css for displaying Map
 	$map_custom_css = "
 		body {
@@ -398,24 +392,12 @@ function sff_getUniqueID() {
 	return $options->uniqueID;
 }
 
-
-
-// Adds .fit filetype to the allowable types. Without this we can't upload .fit files to the gallery
-add_filter('upload_mimes', 'sff_fit_mime_types');
-
 function sff_fit_mime_types( $mimes ) {
-	
 	// New allowed mime types.
 	$mimes['fit'] = 'application/fit';
-
 	return $mimes;
 }
-
-
-// Upload .fit files to a separate folder, otherwise we can't find them in the yyyy/mm sub-folders
-add_filter('wp_handle_upload_prefilter', 'sff_pre_upload');
-add_filter('wp_handle_upload', 'sff_post_upload');
-
+ 
 function sff_pre_upload($file){
     add_filter('upload_dir', 'sff_custom_upload_dir');
     return $file;
@@ -437,6 +419,16 @@ function sff_custom_upload_dir($path){
     $path['path']   .= $customdir; 
     $path['url']    .= $customdir;  
     return $path;
+}
+
+// Log into the JS Console
+function console_log($output, $with_script_tags = true) {
+    $js_code = 'console.log(' . json_encode($output, JSON_HEX_TAG) . 
+');';
+    if ($with_script_tags) {
+        $js_code = '<script>' . $js_code . '</script>';
+    }
+    echo $js_code;
 }
 
 ?>
