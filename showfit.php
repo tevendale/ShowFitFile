@@ -30,6 +30,22 @@ add_filter('upload_mimes', 'sff_fit_mime_types');
 add_filter('wp_handle_upload_prefilter', 'sff_pre_upload');
 add_filter('wp_handle_upload', 'sff_post_upload');
 
+// Add code for Block
+add_action('init', function() {
+
+	$pathtoJS = plugin_dir_path( __FILE__ ) . '/assets/js/block-showfitfile.js';
+	wp_register_script('yft-showfitfile-js', plugins_url('/assets/js/block-showfitfile.js', __FILE__), array('wp-blocks',
+                    'wp-i18n',
+                    'wp-element',
+                    'wp-components',
+                    'wp-editor',
+                    'wp-polyfill'), filemtime($pathtoJS));
+ 
+	register_block_type('yft/showfitfile', [
+		'editor_script' => 'yft-showfitfile-js',
+	]);
+});
+
 
 function showFitFile($atts) {
 
