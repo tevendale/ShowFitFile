@@ -35,13 +35,6 @@ const BlockEdit = (props) => {
 	);
 };
 
-function selectImage(value) {
-    console.log(value);
-    setAttributes({
-        mediaUrl: url,
-    })
-}
-
  
 registerBlockType('yft/showfitfile', {
 	// Your block configuration and code here
@@ -59,6 +52,11 @@ registerBlockType('yft/showfitfile', {
 			type: 'string',
 			default: 'http://placehold.it/500'
 		},
+		mediaUrl: {
+			type: 'string',
+			default: 'http://placehold.it/500'
+		},
+
 		bgImageId: {
 			type: 'number',
 			default: 0
@@ -80,6 +78,14 @@ registerBlockType('yft/showfitfile', {
 	edit: (props) => { 
 		const { attributes, setAttributes } = props;
 		console.log(props);
+		
+		function selectImage(value) {
+			console.log('Value = ' + value);
+			setAttributes({
+				mediaUrl: value.url,
+			});
+		}
+		
 		return (
 			<div>
 			<InspectorControls>
@@ -120,20 +126,23 @@ registerBlockType('yft/showfitfile', {
 					value={attributes.exampleText}
 					onChange={(newtext) => setAttributes({ exampleText: newtext })}
 				/>
-				<MediaUpload
-				onSelect={selectImage}
-                render={ ({open}) => {
-                    return <img 
-                        src={attributes.imgUrl}
-                        onClick={open}
-                        />;
-                }}				
-                />
+				<MediaUpload 
+					onSelect={selectImage}
+					render={ ({open}) => {
+						return (
+							<button onClick={open}>
+								<img 
+									src={attributes.mediaUrl}
+									/>
+							</button>
+						);
+					}}
+				/>
 			</div> 
 		);
 	},
 	save: (props) => { 
 		const { attributes } = props;
-		return <div>{attributes.mediaUrl}<img src={attributes.imgUrl} /></div> 
+		return <div>{attributes.mediaUrl}<img src={attributes.mediaUrl} /></div> 
 	}	
 });
