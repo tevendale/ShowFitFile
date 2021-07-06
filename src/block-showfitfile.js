@@ -38,51 +38,49 @@ const BlockEdit = (props) => {
  
 registerBlockType('yft/showfitfile', {
 	// Your block configuration and code here
+	// TODO: Set Icon to map
+	// TODO: Set description, category and keywords
+	// TODO: Tidy up the actual attributes we need
 	title: 'Show Fit File',
 	icon: 'smiley',
 	category: 'common',
 	description: 'Project in progress',
 	keywords: ['test', 'exanple'],
 	attributes: {
-		mediaId: {
-			type: 'number',
-			default: 0
-		},
-		imgUrl: {
-			type: 'string',
-			default: 'http://placehold.it/500'
-		},
 		mediaUrl: {
 			type: 'string',
 			default: 'http://placehold.it/500'
 		},
-
-		bgImageId: {
-			type: 'number',
-			default: 0
-		},
-
-		exampleText: {
+		fileName: {
 			type: 'string',
 			default: ''
 		},
 		toggle: {
 			type: 'boolean',
-			default: true
+			default: false
 		},
-		postIds: {
-			type: 'array',
-			default: []
+		units: {
+			type: 'string',
+			default: 'metric'
+		},
+		lineColour: {
+			type: 'string',
+			default: '#000000'
 		}
 	},
 	edit: (props) => { 
 		const { attributes, setAttributes } = props;
-		console.log(props);
+// 		console.log(props);
 		
 		function selectImage(value) {
-			console.log('Value = ' + value);
+// 			console.log('Value = ' + value);
+			console.log(value);
+// 			filename = url.substring(value.url.lastIndexOf('/')+1);
+// 			console.log('Filename = ' + filename);
+			// We need to save the file name here
 			setAttributes({
 				mediaUrl: value.url,
+				fileName: value.filename,
 			});
 		}
 		
@@ -103,18 +101,18 @@ registerBlockType('yft/showfitfile', {
 					<PanelRow>
 							<SelectControl
 								label="Units"
-								value={attributes.favoriteAnimal}
+								value={attributes.units}
 								options={[
 									{label: "Imperial", value: 'imperial'},
 									{label: "Metric", value: 'metric'},
 								]}
-								onChange={(newval) => setAttributes({ favoriteAnimal: newval })}
+								onChange={(newval) => setAttributes({ units: newval })}
 							/>
 					</PanelRow>
 					<PanelRow>
 						<ColorPicker
-							color={attributes.favoriteColor}
-							onChangeComplete={(newval) => setAttributes({ favoriteColor: newval.hex })}
+							color={attributes.lineColour}
+							onChangeComplete={(newval) => setAttributes({ lineColour: newval.hex })}
 							disableAlpha
 						/>
 					</PanelRow>
@@ -141,8 +139,5 @@ registerBlockType('yft/showfitfile', {
 			</div> 
 		);
 	},
-	save: (props) => { 
-		const { attributes } = props;
-		return <div>{attributes.mediaUrl}<img src={attributes.mediaUrl} /></div> 
-	}	
+	save: (props) => { return null }	
 });

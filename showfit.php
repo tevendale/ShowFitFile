@@ -43,8 +43,104 @@ add_action('init', function() {
  
 	register_block_type('yft/showfitfile', [
 		'editor_script' => 'yft-showfitfile-js',
+		'render_callback' => 'yft_showfitfile_render',
+		'attributes' => [
+			'fileName' => [
+				'type' => 'string'
+			],
+			'mediaUrl' => [
+				'type' => 'string'
+			],
+			'units' => [
+				'type' => 'string'
+			],
+			'lineColour' => [
+				'type' => 'string'
+			],
+			'toggle' => [
+				'type' => 'boolean'
+			],
+		],
 	]);
 });
+
+function yft_showfitfile_render($attr, $content) {
+	// return the block's output here
+	
+	global $options;
+	$options = new ssf_mapOptions();
+	$optionsChanged = false;
+
+// 	$atts = array_change_key_case($atts, CASE_LOWER);
+// 
+// 	$a = shortcode_atts(array(
+// 		'file' => 'empty string',
+// 		'colour' => '',
+// 		'color' => '',
+// 		'interactive' => 'NO',
+// 		'showpower' => 'NO',
+// 		'units' => 'metric'
+// 	), $atts);
+	
+	$file = $attr['fileName'];
+	
+	if (sff_doesFileExist($file)) {
+		$options->colour = $attr['lineColour'];
+		$options->units = $attr['units'];
+		if (isset($attr['toggle'])) {
+			$options->isInteractive = 'YES';
+		}
+		else {
+			$options->isInteractive = 'NO';
+		}
+	
+		$options->uniqueID = uniqid('', TRUE);
+	
+		$transientID = "sff_transient" . $file;
+		$transientOptionsID = "sff_transient" . "options" . $file;
+
+		// Retrieve the cached options
+		$cachedOptions = get_transient($transientOptionsID);
+		// Test if the cached options are the same as the options passed this time
+		if ($cachedOptions === false) {
+			set_transient($transientOptionsID, $options);
+		}
+		else {
+			if (($cachedOptions->colour == $options->colour) && ($cachedOptions->units == $options->units) && ($cachedOptions->isInteractive == $options->isInteractive)) {
+				$optionsChanged = false;
+			}
+			else {
+				set_transient($transientOptionsID, $options);
+				$optionsChanged = true;
+			}
+		}
+	
+		// Cache the HTML so that it's only generated the first time the map is displayed
+		$routeHTML = false;
+		if ( defined('WP_DEBUG') && true === WP_DEBUG ) { 
+			delete_transient($transientID);
+// 			console_log("regenerating map html");
+		}
+		else {
+			$routeHTML = get_transient($transientID);
+// 			console_log("Using cached map html");
+		}
+		
+		if (($routeHTML === false) || $optionsChanged) {
+// 			console_log("Regenerating Map");
+			$success = sff_readFitFile($file);
+			if ( $success === true ) {
+				$routeHTML = sff_fitHTML();
+				set_transient($transientID, $routeHTML);
+			}
+		}
+		return $routeHTML;
+	}
+	else {
+		$filePath = sff_pathToFileInCustomFolder($file);
+		return "<p>fit file not found: " . $filePath . "</p>";
+	}
+}
 
 
 function showFitFile($atts) {
