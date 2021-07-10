@@ -4,7 +4,7 @@
  * Plugin Name:       Show_Fit_File
  * Plugin URI:        http://yellowfield.co.uk/plugins/Show-FIT-File/
  * Description:       A plugin for displaying route and exercise data from a Garmin .fit file (Flexible and Interoperable Data Transfer).
- * Version:           0.3
+ * Version:           0.4
  * Requires at least: 5.2
  * Requires PHP:      7.2
  * Author:            Stuart Tevendale
@@ -89,15 +89,12 @@ function showFitFile($atts) {
 		$routeHTML = false;
 		if ( defined('WP_DEBUG') && true === WP_DEBUG ) { 
 			delete_transient($transientID);
-// 			console_log("regenerating map html");
 		}
 		else {
 			$routeHTML = get_transient($transientID);
-// 			console_log("Using cached map html");
 		}
 		
 		if (($routeHTML === false) || $optionsChanged) {
-// 			console_log("Regenerating Map");
 			$success = sff_readFitFile($file);
 			if ( $success === true ) {
 				$routeHTML = sff_fitHTML();

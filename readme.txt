@@ -3,8 +3,8 @@ Contributors: stuarttevendale
 Donate link: https://yellowfield.co.uk
 Tags: Garmin, fit
 Requires at least: 5.0
-Tested up to: 5.3
-Stable tag: 5.3
+Tested up to: 5.8
+Stable tag: trunk
 Requires PHP: 5.2.4
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -38,6 +38,11 @@ This section describes how to install the plugin and get it working.
 3. Upload a .fit file to your Media Library
 4. Add the ShortCode to your post
 5. Done!
+
+== Changelog ==
+
+= 0.4 =
+Fixes occasional JSON error when saving a post
 
 == Support ==
 
