@@ -4,7 +4,7 @@
  * Plugin Name:       Show_Fit_File
  * Plugin URI:        http://yellowfield.co.uk/plugins/Show-FIT-File/
  * Description:       A plugin for displaying route and exercise data from a Garmin .fit file (Flexible and Interoperable Data Transfer).
- * Version:           0.3
+ * Version:           1.0
  * Requires at least: 5.2
  * Requires PHP:      7.2
  * Author:            Stuart Tevendale
@@ -30,10 +30,15 @@ add_filter('upload_mimes', 'sff_fit_mime_types');
 add_filter('wp_handle_upload_prefilter', 'sff_pre_upload');
 add_filter('wp_handle_upload', 'sff_post_upload');
 
+// Hook the enqueue functions into the editor
+add_action( 'enqueue_block_editor_assets', 'sff_leafletjs_load' );
+
+
 // Add code for Block
 add_action('init', function() {
 
-	$pathtoJS = plugin_dir_path( __FILE__ ) . '/assets/js/block-showfitfile.js';
+	$pathtoJS = plugin_dir_path( __FILE__ ) . '/assets/js/block-showfitfile.js';	
+	
 	wp_register_script('yft-showfitfile-js', plugins_url('/assets/js/block-showfitfile.js', __FILE__), array('wp-blocks',
                     'wp-i18n',
                     'wp-element',
@@ -52,35 +57,62 @@ add_action('init', function() {
 				'type' => 'string'
 			],
 			'units' => [
-				'type' => 'string'
+				'type' => 'string',
+				'default' => 'metric'
 			],
 			'lineColour' => [
-				'type' => 'string'
+				'type' => 'string',
+				'default' => 'red'
 			],
 			'toggle' => [
 				'type' => 'boolean'
 			],
 		],
 	]);
+	
+	// Render the header table in the block editor - do this, as we can't render the Leafletjs in the editor from the php code
+	register_block_type('yft/showfitfileheader', [
+		'editor_script' => 'yft-showfitfile-js',
+		'render_callback' => 'yft_showfitfile_render_header',
+		'attributes' => [
+			'fileName' => [
+				'type' => 'string'
+			],
+			'mediaUrl' => [
+				'type' => 'string'
+			],
+			'units' => [
+				'type' => 'string',
+				'default' => 'metric'
+			],
+			'lineColour' => [
+				'type' => 'string',
+				'default' => 'red'
+			],
+			'toggle' => [
+				'type' => 'boolean'
+			],
+		],
+	]);
+
+	
+	wp_localize_script( 'yft-showfitfile-js', 'js_data',
+    array(
+        'my_image_url' => plugins_url( './assets/map-placeholder.png', __FILE__ )
+		)
+	);
+	
 });
 
 function yft_showfitfile_render($attr, $content) {
 	// return the block's output here
 	
+	// Load the js and css style sheets
+// 	sff_leafletjs_load();
+	
 	global $options;
 	$options = new ssf_mapOptions();
 	$optionsChanged = false;
-
-// 	$atts = array_change_key_case($atts, CASE_LOWER);
-// 
-// 	$a = shortcode_atts(array(
-// 		'file' => 'empty string',
-// 		'colour' => '',
-// 		'color' => '',
-// 		'interactive' => 'NO',
-// 		'showpower' => 'NO',
-// 		'units' => 'metric'
-// 	), $atts);
 	
 	$file = $attr['fileName'];
 	
@@ -139,6 +171,51 @@ function yft_showfitfile_render($attr, $content) {
 	else {
 		$filePath = sff_pathToFileInCustomFolder($file);
 		return "<p>fit file not found: " . $filePath . "</p>";
+	}
+}
+
+function yft_showfitfile_render_header($attr, $content) {
+	// return the block's output here
+	global $options;
+	$options = new ssf_mapOptions();
+	global $pFFA;
+	global $startLatLong;
+
+	$file = $attr['fileName'];
+	
+	if (sff_doesFileExist($file)) {
+	
+		$routeHTML = "<h2>Error reading file - " . $file . "</h2>";
+		
+		$options->units = $attr['units'];
+		$unitsString = "km";
+		if ($options->units == "imperial") {
+			$unitsString = "miles";
+		}
+
+		
+		$success = sff_readFitFile($file);
+	
+		$mapcode = sff_getMapCode();
+
+		$tz = sff_timeZoneForCoords($startLatLong[0], $startLatLong[1]);
+		$date = new DateTime('now', new DateTimeZone($tz));
+		$date_s = $pFFA->data_mesgs['session']['start_time'];
+		$date->setTimestamp($date_s);
+// 	
+		$options->units = $attr['units'];
+		$unitsString = "km";
+		if ($options->units == "imperial") {
+			$unitsString = "miles";
+		}
+// 		$html = "<div><h2>Show file details - " . $file . "</h2></div>";
+	
+		$html = "<table style=\"width:100%;\"  class=\"dataTable\"><tr><td class=\"dataTable\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $date->format('d-M-y g:i a') . "</div></td>\n<td class=\"dataTable\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_timer_time']) . "</div>\n</td><td class=\"dataTable\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr></table>";
+	
+		return $html;
+	}
+	else {
+		return "<div><h2>No File Found</h2></div>";
 	}
 }
 
@@ -201,15 +278,15 @@ function showFitFile($atts) {
 		$routeHTML = false;
 		if ( defined('WP_DEBUG') && true === WP_DEBUG ) { 
 			delete_transient($transientID);
-			console_log("regenerating map html");
+// 			console_log("regenerating map html");
 		}
 		else {
 			$routeHTML = get_transient($transientID);
-			console_log("Using cached map html");
+// 			console_log("Using cached map html");
 		}
 		
 		if (($routeHTML === false) || $optionsChanged) {
-			console_log("Regenerating Map");
+// 			console_log("Regenerating Map");
 			$success = sff_readFitFile($file);
 			if ( $success === true ) {
 				$routeHTML = sff_fitHTML();
@@ -302,6 +379,10 @@ function sff_pathToFileInCustomFolder($file) {
 }
 
 function sff_doesFileExist($file) {
+	if (empty($file)) {
+		return false;
+	}
+
 	$filePath = sff_pathToFileInCustomFolder($file);
 	if (file_exists($filePath)) {
 		return true;
@@ -385,7 +466,8 @@ function sff_getMapCode() {
 	
 	$maphtml = "<div id=\"mapid-" . $options->uniqueID . "\" style=\"width: 100%; height: 400px;\"></div>";
 	
-	$maphtml = $maphtml . "<script>	
+	$maphtml = $maphtml . "<script>
+	( function(){
 	var map = new L.map('mapid-" . $options->uniqueID . "', {zoomControl:false, 
 	layers: [
 		new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -411,7 +493,28 @@ function sff_getMapCode() {
 	map.fitBounds(bounds);
 	
 	" . sff_getInteractive() . "
-</script>";
+	function is_loading() {
+			return document.body.classList.contains('loading');
+		}
+		var timer = 100;
+		function checkRender() {
+			if( is_loading()) {
+				setTimeout(function(){
+					checkRender();
+				}, timer);
+			} else {
+				map.invalidateSize(true);
+			}
+		}
+		if( is_loading()) {
+			checkRender();
+		} else {
+			document.addEventListener('DOMContentLoaded', function() {
+				map.invalidateSize(true);
+			});
+		}
+	})();
+	</script>";
 	return $maphtml;
 }
 

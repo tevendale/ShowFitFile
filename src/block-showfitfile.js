@@ -11,29 +11,7 @@ const { TextControl, PanelBody, PanelRow, ToggleControl, SelectControl, ColorPic
 const { MediaUpload, InspectorControls } = wp.editor;
 const { Fragment } = wp.element;
 const { MediaUploadCheck } = wp.blockEditor;
-
-
-const BlockEdit = (props) => {
-	const { attributes, setAttributes } = props;
- 
-	return (
-		<Fragment>
-			<InspectorControls>
-				<PanelBody
-					title={__('Select block background image', 'awp')}
-					initialOpen={ true }
-				>
-					<div className="editor-post-featured-image">
-						...We will add code here...
-					</div>
-				</PanelBody>
-			</InspectorControls>
-			<div>
-				... Your block content here...
-			</div>
-		</Fragment>
-	);
-};
+const { ServerSideRender } = wp.editor;
 
  
 registerBlockType('yft/showfitfile', {
@@ -65,7 +43,7 @@ registerBlockType('yft/showfitfile', {
 		},
 		lineColour: {
 			type: 'string',
-			default: '#000000'
+			default: 'red'
 		}
 	},
 	edit: (props) => { 
@@ -113,29 +91,42 @@ registerBlockType('yft/showfitfile', {
 						<ColorPicker
 							color={attributes.lineColour}
 							onChangeComplete={(newval) => setAttributes({ lineColour: newval.hex })}
-							disableAlpha
+							// disableAlpha
 						/>
 					</PanelRow>
 					</PanelBody>
 			</InspectorControls>
+			
+			<ServerSideRender
+				block = "yft/showfitfileheader"
+				attributes={{ 
+					fileName: attributes.fileName, 
+					toggle: attributes.toggle, 
+					units: attributes.units, 
+					lineColour: attributes.lineColour
+				}}
+			/>
+			<MediaUpload
+				onSelect={selectImage}
+                render={ ({open}) => {
+                    return <img 
+                        src={js_data.my_image_url}
+                        onClick={open}
+                        />;
+                }}				
+			/>
 
-				Text Input:
-				<TextControl 
-					value={attributes.exampleText}
-					onChange={(newtext) => setAttributes({ exampleText: newtext })}
-				/>
-				<MediaUpload 
-					onSelect={selectImage}
-					render={ ({open}) => {
-						return (
-							<button onClick={open}>
-								<img 
-									src={attributes.mediaUrl}
-									/>
-							</button>
-						);
-					}}
-				/>
+			
+			
+			<MediaUpload 
+				onSelect={selectImage}
+				render={ ({open}) => {
+					return (
+						<Button onClick={open} variant='primary'>Click to select .fit file to show </Button>
+					);
+				}}
+			/>
+
 			</div> 
 		);
 	},
