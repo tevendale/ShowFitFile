@@ -17,6 +17,8 @@
 require __DIR__ . '/libraries/phpFITFileAnalysis.php';
 require __DIR__ . '/libraries/Line_DouglasPeucker.php';
 
+define( 'SFF_DEBUG', true );
+
 // Add Shortcode
 add_shortcode('showfitfile', 'showFitFile');
 
@@ -67,6 +69,10 @@ add_action('init', function() {
 			'toggle' => [
 				'type' => 'boolean'
 			],
+			'showSummary' => [
+				'type' => 'boolean'
+			],
+
 		],
 	]);
 	
@@ -92,6 +98,10 @@ add_action('init', function() {
 			'toggle' => [
 				'type' => 'boolean'
 			],
+			'showSummary' => [
+				'type' => 'boolean'
+			],
+
 		],
 	]);
 
@@ -105,10 +115,7 @@ add_action('init', function() {
 });
 
 function yft_showfitfile_render($attr, $content) {
-	// return the block's output here
-	
-	// Load the js and css style sheets
-// 	sff_leafletjs_load();
+	// return the block output
 	
 	global $options;
 	$options = new ssf_mapOptions();
@@ -125,48 +132,18 @@ function yft_showfitfile_render($attr, $content) {
 		else {
 			$options->isInteractive = 'NO';
 		}
+		
+		if (isset($attr['showSummary'])) {
+			$options->showSummary = 'NO';
+		}
+		else {
+			$options->showSummary = 'YES';
+		}
 	
 		$options->uniqueID = uniqid('', TRUE);
-	
-		$transientID = "sff_transient" . $file;
-		$transientOptionsID = "sff_transient" . "options" . $file;
-
-		// Retrieve the cached options
-		$cachedOptions = get_transient($transientOptionsID);
-		// Test if the cached options are the same as the options passed this time
-		if ($cachedOptions === false) {
-			set_transient($transientOptionsID, $options);
-		}
-		else {
-			if (($cachedOptions->colour == $options->colour) && ($cachedOptions->units == $options->units) && ($cachedOptions->isInteractive == $options->isInteractive)) {
-				$optionsChanged = false;
-			}
-			else {
-				set_transient($transientOptionsID, $options);
-				$optionsChanged = true;
-			}
-		}
-	
-		// Cache the HTML so that it's only generated the first time the map is displayed
-		$routeHTML = false;
-		if ( defined('WP_DEBUG') && true === WP_DEBUG ) { 
-			delete_transient($transientID);
-// 			console_log("regenerating map html");
-		}
-		else {
-			$routeHTML = get_transient($transientID);
-// 			console_log("Using cached map html");
-		}
 		
-		if (($routeHTML === false) || $optionsChanged) {
-// 			console_log("Regenerating Map");
-			$success = sff_readFitFile($file);
-			if ( $success === true ) {
-				$routeHTML = sff_fitHTML();
-				set_transient($transientID, $routeHTML);
-			}
-		}
-		return $routeHTML;
+		return sff_showFitFile($options, $file);
+
 	}
 	else {
 		$filePath = sff_pathToFileInCustomFolder($file);
@@ -175,7 +152,7 @@ function yft_showfitfile_render($attr, $content) {
 }
 
 function yft_showfitfile_render_header($attr, $content) {
-	// return the block's output here
+	// Render the Block Editor fit file summary here
 	global $options;
 	$options = new ssf_mapOptions();
 	global $pFFA;
@@ -192,7 +169,6 @@ function yft_showfitfile_render_header($attr, $content) {
 		if ($options->units == "imperial") {
 			$unitsString = "miles";
 		}
-
 		
 		$success = sff_readFitFile($file);
 	
@@ -208,8 +184,6 @@ function yft_showfitfile_render_header($attr, $content) {
 		if ($options->units == "imperial") {
 			$unitsString = "miles";
 		}
-// 		$html = "<div><h2>Show file details - " . $file . "</h2></div>";
-	
 		$html = "<table style=\"width:100%;\"  class=\"dataTable\"><tr><td class=\"dataTable\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $date->format('d-M-y g:i a') . "</div></td>\n<td class=\"dataTable\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_timer_time']) . "</div>\n</td><td class=\"dataTable\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr></table>";
 	
 		return $html;
@@ -221,6 +195,7 @@ function yft_showfitfile_render_header($attr, $content) {
 
 
 function showFitFile($atts) {
+	// Render the shortcode
 
 	global $options;
 	$options = new ssf_mapOptions();
@@ -254,46 +229,8 @@ function showFitFile($atts) {
 		$options->isInteractive = $a['interactive'];
 	
 		$options->uniqueID = uniqid('', TRUE);
-	
-		$transientID = "sff_transient" . $file;
-		$transientOptionsID = "sff_transient" . "options" . $file;
-
-		// Retrieve the cached options
-		$cachedOptions = get_transient($transientOptionsID);
-		// Test if the cached options are the same as the options passed this time
-		if ($cachedOptions === false) {
-			set_transient($transientOptionsID, $options);
-		}
-		else {
-			if (($cachedOptions->colour == $options->colour) && ($cachedOptions->units == $options->units) && ($cachedOptions->isInteractive == $options->isInteractive)) {
-				$optionsChanged = false;
-			}
-			else {
-				set_transient($transientOptionsID, $options);
-				$optionsChanged = true;
-			}
-		}
-	
-		// Cache the HTML so that it's only generated the first time the map is displayed
-		$routeHTML = false;
-		if ( defined('WP_DEBUG') && true === WP_DEBUG ) { 
-			delete_transient($transientID);
-// 			console_log("regenerating map html");
-		}
-		else {
-			$routeHTML = get_transient($transientID);
-// 			console_log("Using cached map html");
-		}
 		
-		if (($routeHTML === false) || $optionsChanged) {
-// 			console_log("Regenerating Map");
-			$success = sff_readFitFile($file);
-			if ( $success === true ) {
-				$routeHTML = sff_fitHTML();
-				set_transient($transientID, $routeHTML);
-			}
-		}
-		return $routeHTML;
+		return sff_showFitFile($options, $file);	
 	}
 	else {
 		$filePath = sff_pathToFileInCustomFolder($file);
@@ -301,16 +238,64 @@ function showFitFile($atts) {
 	}
 }
 
+function sff_showFitFile($options, $file) {
+	// Renders an HTML table with the summary of the data and the map with a route overlay
+
+	$options->uniqueID = uniqid('', TRUE);
+
+	$transientID = "sff_transient" . $file;
+	$transientOptionsID = "sff_transient" . "options" . $file;
+
+	// Retrieve the cached options
+	$cachedOptions = get_transient($transientOptionsID);
+	// Test if the cached options are the same as the options passed this time
+	if ($cachedOptions === false) {
+		set_transient($transientOptionsID, $options);
+	}
+	else {
+		if (($cachedOptions->colour == $options->colour) && ($cachedOptions->units == $options->units) && ($cachedOptions->isInteractive == $options->isInteractive)) {
+			$optionsChanged = false;
+		}
+		else {
+			set_transient($transientOptionsID, $options);
+			$optionsChanged = true;
+		}
+	}
+
+	// Cache the HTML so that it's only generated the first time the map is displayed
+	$routeHTML = false;
+	if ( defined('SFF_DEBUG') && true === SFF_DEBUG ) { 
+		delete_transient($transientID);
+		console_log("regenerating map html");
+	}
+	else {
+		$routeHTML = get_transient($transientID);
+		console_log("Using cached map html");
+	}
+
+	if (($routeHTML === false) || $optionsChanged) {
+		console_log("Regenerating Map");
+		$success = sff_readFitFile($file);
+		if ( $success === true ) {
+			$routeHTML = sff_fitHTML();
+			set_transient($transientID, $routeHTML);
+		}
+	}
+	return $routeHTML;
+}
+
 // Class to hold the various options for the map
 class ssf_mapOptions {
 	public $routeLineColour;
 	public $isInteractive;
 	public $units;
+	public $showSummary;
 	public $uniqueID;
 	
 	function __construct() {
 		$routeLineColour = 'red';
 		$isInteractive = 'NO';
+		$showSummary = 'YES';
 		$units = 'metric';
 	}
 }
@@ -409,7 +394,14 @@ function sff_fitHTML() {
     	$unitsString = "miles";
     }
 	
-	$html = "<table class=\"dataTable\"><tr><td class=\"dataTable\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $date->format('d-M-y g:i a') . "</div></td>\n<td class=\"dataTable\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_timer_time']) . "</div>\n</td><td class=\"dataTable\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr><tr><td colspan=\"3\" class=\"dataTable\">" . $mapcode ."</td></tr></table>";
+	$html = "<table class=\"dataTable\">";
+	
+	if ($options->showSummary == 'YES') {
+		$html .= "<tr><td class=\"dataTable\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $date->format('d-M-y g:i a') . "</div></td>\n<td class=\"dataTable\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_timer_time']) . "</div>\n</td><td class=\"dataTable\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr>";
+	
+	
+	}
+	$html .= "<tr><td colspan=\"3\" class=\"dataTable\">" . $mapcode ."</td></tr></table>";
 	
 	return $html;
 }

@@ -37,6 +37,10 @@ registerBlockType('yft/showfitfile', {
 			type: 'boolean',
 			default: false
 		},
+		showSummary: {
+			type: 'boolean',
+			default: true
+		},
 		units: {
 			type: 'string',
 			default: 'metric'
@@ -77,6 +81,13 @@ registerBlockType('yft/showfitfile', {
 							/>
 					</PanelRow>
 					<PanelRow>
+							<ToggleControl
+								label="Show session summary"
+								checked={attributes.showSummary}
+								onChange={(newval) => setAttributes({ showSummary: newval })}
+							/>
+					</PanelRow>										
+					<PanelRow>
 							<SelectControl
 								label="Units"
 								value={attributes.units}
@@ -103,7 +114,8 @@ registerBlockType('yft/showfitfile', {
 					fileName: attributes.fileName, 
 					toggle: attributes.toggle, 
 					units: attributes.units, 
-					lineColour: attributes.lineColour
+					lineColour: attributes.lineColour,
+					showSummary: attributes.showSummary
 				}}
 			/>
 			<MediaUpload
