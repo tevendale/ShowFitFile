@@ -20,10 +20,10 @@ registerBlockType('yft/showfitfile', {
 	// TODO: Set description, category and keywords
 	// TODO: Tidy up the actual attributes we need
 	title: 'Show Fit File',
-	icon: 'smiley',
+	icon: 'location-alt',
 	category: 'common',
-	description: 'Project in progress',
-	keywords: ['test', 'exanple'],
+	description: 'Display Garmin data on a map',
+	keywords: ['Garmin', 'Map', 'Route', 'Fit file'],
 	attributes: {
 		mediaUrl: {
 			type: 'string',
