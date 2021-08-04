@@ -80,6 +80,7 @@ add_action('init', function() {
 	register_block_type('yft/showfitfileheader', [
 		'editor_script' => 'yft-showfitfile-js',
 		'render_callback' => 'yft_showfitfile_render_header',
+		'textdomain' => "yft",
 		'attributes' => [
 			'fileName' => [
 				'type' => 'string'

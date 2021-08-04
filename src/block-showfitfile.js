@@ -13,6 +13,11 @@ const { Fragment } = wp.element;
 const { MediaUploadCheck } = wp.blockEditor;
 const { ServerSideRender } = wp.editor;
 
+registerBlockType('yft/showfitfileheader', {
+	title: 'Header',
+	textdomain: "yft"
+	}),
+ 
  
 registerBlockType('yft/showfitfile', {
 	// Your block configuration and code here
@@ -24,6 +29,7 @@ registerBlockType('yft/showfitfile', {
 	category: 'common',
 	description: 'Display Garmin data on a map',
 	keywords: ['Garmin', 'Map', 'Route', 'Fit file'],
+	textdomain: "yft",
 	attributes: {
 		mediaUrl: {
 			type: 'string',
@@ -127,8 +133,6 @@ registerBlockType('yft/showfitfile', {
                         />;
                 }}				
 			/>
-
-			
 			
 			<MediaUpload 
 				onSelect={selectImage}
