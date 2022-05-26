@@ -1,5 +1,5 @@
 {
-  "name": "ShowFitFile",
+  "name": "showfitfile",
   "version": "1.0.0",
   "description": "This plugin allows you to add a map and summary exercise data from a .fit (Flexible and Interoperable Data Transfer) file. The maps are generated using leafletJS with the map tiles provided by OpenStreetMap.",
   "main": "index.js",
@@ -19,9 +19,9 @@
   },
   "homepage": "https://github.com/tevendale/ShowFitFile#readme",
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.12.13",
-    "@babel/preset-env": "^7.12.13",
-    "@babel/preset-react": "^7.12.13",
+    "@babel/plugin-proposal-class-properties": "^7.17.12",
+    "@babel/preset-env": "^7.18.0",
+    "@babel/preset-react": "^7.17.12",
     "@wordpress/scripts": "13.0.2"
   }
 }
