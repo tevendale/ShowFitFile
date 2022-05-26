@@ -397,11 +397,12 @@ function sff_fitHTML() {
 	
 	$html = "<table class=\"dataTable\">";
 	
-	if ($options->showSummary == 'YES') {
+// Fails to show map for shortcode if the next line isn't commented out
+// 	if ($options->showSummary == 'YES') {
 		$html .= "<tr><td class=\"dataTable\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $date->format('d-M-y g:i a') . "</div></td>\n<td class=\"dataTable\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_timer_time']) . "</div>\n</td><td class=\"dataTable\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr>";
 	
 	
-	}
+// 	}
 	$html .= "<tr><td colspan=\"3\" class=\"dataTable\">" . $mapcode ."</td></tr></table>";
 	
 	return $html;
