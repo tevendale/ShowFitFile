@@ -267,15 +267,15 @@ function sff_showFitFile($options, $file) {
 	$routeHTML = false;
 	if ( defined('SFF_DEBUG') && true === SFF_DEBUG ) { 
 		delete_transient($transientID);
-		console_log("regenerating map html");
+// 		console_log("regenerating map html");
 	}
 	else {
 		$routeHTML = get_transient($transientID);
-		console_log("Using cached map html");
+// 		console_log("Using cached map html");
 	}
 
 	if (($routeHTML === false) || $optionsChanged) {
-		console_log("Regenerating Map");
+// 		console_log("Regenerating Map");
 		$success = sff_readFitFile($file);
 		if ( $success === true ) {
 			$routeHTML = sff_fitHTML();
