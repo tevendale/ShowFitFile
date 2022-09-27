@@ -1,0 +1,85 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "yft/showfitfile",
+  "version": "1.0.0",
+  "title": "Show Fit File",
+  "category": "common",
+  "icon": "location-alt",
+  "description": "Display Garmin data on a map.",
+  "supports": {
+    "html": false
+  },
+  "textdomain": "yft",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "attributes": {
+    "mediaUrl": {
+      "type": "string",
+      "default": "http://placehold.it/500"
+    },
+    "fileName": {
+      "type": "string",
+      "default": ""
+    },
+    "interactive": {
+      "type": "boolean",
+      "default": "{true}"
+    },
+    "showSummary": {
+      "type": "boolean",
+      "default": "{true}"
+    },
+    "units": {
+      "type": "string",
+      "default": "metric"
+    },
+    "lineColour": {
+      "type": "string",
+      "default": "red"
+    },
+    "distanceMetres": {
+      "type": "integer",
+      "default": 0
+    },
+    "distanceString": {
+      "type": "string",
+      "default": "--"
+    },
+    "duration": {
+      "type": "string",
+      "default": "--:--:--"
+    },
+    "time": {
+      "type": "string",
+      "default": "--:--:--"
+    },
+    "startPos": {
+      "type": "array",
+      "default": [
+        51.505,
+        -0.09
+      ]
+    },
+    "endPos": {
+      "type": "array",
+      "default": [
+        51.515,
+        -0.1
+      ]
+    },
+    "showStartMarker": {
+      "type": "boolean",
+      "default": "{true}"
+    },
+    "showEndMarker": {
+      "type": "boolean",
+      "default": "{true}"
+    },
+    "route": {
+      "type": "array",
+      "default": []
+    }
+  }
+}

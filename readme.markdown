@@ -1,10 +1,20 @@
 ### ShowFitFile
 
-This plugin allows you to add a map and summary exercise data from a .fit (Flexible and Interoperable Data Transfer) file. The maps are generated using leafletJS with the map tiles provided by OpenStreetMap.
+This plugin allows you to add a map and summary exercise data from a .fit (Flexible and Interoperable Data Transfer) file. The maps are generated using leafletJS with the map tiles provided by OpenStreetMap. THe plugin inclides a shortcode and Gutenberg Block version.
 
 ## Usage
 
 ![Sample](/images/SuieMap.png)
+
+### Block
+
+Add the ShowFitFile Block to your post. It will initially show a map of central London.
+
+Click on the blue button below the map to select or upload a .fit file. After a few seconds, your file ill be displayed.
+
+The sidebar contains various options for controlling the look and interactivity of the map.
+
+### Shortcode
 
 Upload the .fit file to your Media Library, then simply create a map from the file by adding the following ShortCode to your post:
 
