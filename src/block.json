@@ -23,6 +23,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"fileID": {
+			"type": "number",
+			"default": 0
+		},
+
 		"interactive": {
 			"type": "boolean",
 			"default": "{true}"
@@ -37,7 +42,7 @@
 		},
 		"lineColour": {
 			"type": "string",
-			"default": "red"
+			"default": "orange"
 		},
 		"distanceMetres": {
 			"type": "integer",
@@ -74,6 +79,54 @@
 		"route": {
 			"type": "array",
 			"default": []
+		},
+		"altitude": {
+			"type": "array",
+			"default": []
+		},
+		"showAltitudeGraph": {
+			"type": "boolean",
+			"default": "{true}"
+		},
+		"speed": {
+			"type": "array",
+			"default": []
+		},
+		"showSpeedGraph": {
+			"type": "boolean",
+			"default": "{true}"
+		},
+		"sport": {
+			"type": "string",
+			"default": ""
+		},
+		"subSport": {
+			"type": "string",
+			"default": ""
+		},
+		"showShareRoute": {
+			"type": "boolean",
+			"default": "{false}"
+		},
+		"ascent": {
+			"type": "integer",
+			"default": 0
+		},
+		"descent": {
+			"type": "integer",
+			"default": 0
+		},
+		"ascentString": {
+			"type": "string",
+			"default": "-"
+		},
+		"descentString": {
+			"type": "string",
+			"default": "-"
+		},
+		"useTabbedInterface": {
+			"type": "boolean",
+			"default": "{false}"
 		}
 	}
 }

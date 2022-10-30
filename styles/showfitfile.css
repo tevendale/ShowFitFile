@@ -1,3 +1,7 @@
+.dataTable {
+	border: 0px solid black;
+	width: 100%;
+}
 .dataTitle {
 	color: grey;
 	font-size: 75%;
@@ -6,6 +10,90 @@
 .dataItem {
 	color: black;
 }
-.dataTable {
-	border: 0px solid black;
+.sportName {
+	color: black;
+	font-size: 150%;
+	font-weight: bold;
+	padding-top: 5px;
+	padding-bottom: 0px;
+	line-height: 100%
 }
+.sportIcon {
+	color: black;
+	font-size: 200%;
+	font-weight: bold;
+	padding-right: 10px;
+	float: left;
+	color: grey;
+}
+.subSportName {
+	color: grey;
+	font-size: 75%;
+	font-weight: bold;
+	padding-top: 0px;
+}
+.sportNameBlock {
+	margin-left: 5ex;
+}
+
+.progressBar {
+	display: flex;
+/* 	outline: dashed 1px black; */
+}
+
+.hideProgressBar {
+	display: none;
+}
+
+.progressBarChild {
+	margin: 0 auto;
+/* 	outline: dashed 1px green; */
+	width: 100px;
+/* 	background-color: grey; */
+	align-items: center;
+	text-align: center;
+}
+
+.progressBarSpinner {
+	width: 42px;
+/* 	outline: dashed 1px red; */
+	margin: 0 auto;
+	align-items: center;
+}
+
+.progressLabel {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.errorPanel {
+	display: flex;
+/* 	outline: dashed 1px black; */
+	background-color: RGB(244, 162,162);
+}
+
+.hideErrorPanel {
+	display: none;
+}
+
+.errorLabel {
+	margin-top: 10;
+	margin-bottom: 10;
+	margin-left: 15;
+	text-align: center;
+}
+
+.shareRouteLink {
+	text-align: right;
+	font-size: 12px;
+}
+
+.preparingFileText {
+	text-align: center;
+	font-size: 18px;
+	font-weight: bold;
+
+}
+
+
+
