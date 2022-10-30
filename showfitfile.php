@@ -1,14 +1,14 @@
 <?php
 
 /**
- * Plugin Name:       Show_Fit_File
- * Plugin URI:        http://yellowfield.co.uk/plugins/Show-FIT-File/
- * Description:       A plugin for displaying route and exercise data from a Garmin .fit file (Flexible and Interoperable Data Transfer).
- * Version:           1.0.0
- * Requires at least: 5.2
- * Requires PHP:      7.2
+ * Plugin Name:       Show Fit File
+ * Plugin URI:        https://stuarttevendale.com/wordpress-plugin-for-garmin-fit-files/
+ * Description:       A fitness-focused plugin for displaying route and exercise data from .fit, .gpx and .tcx files.
+ * Version:           1.1.0
+ * Requires at least: 5.8
+ * Requires PHP:      7.4
  * Author:            Stuart Tevendale
- * Author URI:        http://Yellowfield.co.uk
+ * Author URI:        http://stuarttevendale.com
  * License:           GPL v2
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  */
