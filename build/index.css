@@ -1,1 +1,17 @@
-.wp-block-create-block-showfitfile{border:1px dotted red}
+/*!****************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[3].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./src/editor.scss ***!
+  \****************************************************************************************************************************************************************************************************************************************/
+/**
+ * The following styles get applied inside the editor only.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+.wp-block-create-block-showfitfile {
+  border: 1px dotted #f00;
+}
+/*!*************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/react-best-tabs/dist/index.css ***!
+  \*************************************************************************************************************************************************************************************************/
+.rb-tabs,.rb-tabs .rb-tabs-header{position:relative}.rb-tabs .rb-tabs-header .rb-tabs-items{display:flex;align-items:center;list-style:none;padding:0;margin:0;border-bottom:1px solid #ebebeb}@media (max-width:768px){.rb-tabs .rb-tabs-header .rb-tabs-items{justify-content:space-between}}.rb-tabs .rb-tabs-header .rb-tabs-items .rb-tabs-item{padding:8px 16px;cursor:pointer}.rb-tabs .rb-tabs-header .rb-tabs-items .rb-tabs-item.active{font-weight:500}@media (max-width:768px){.rb-tabs .rb-tabs-header .rb-tabs-items .rb-tabs-item{font-size:14px}}.rb-tabs .rb-tabs-header .rb-tabs-active-item{height:2px;background-color:#222;position:absolute;bottom:0;transition:all .3s cubic-bezier(.4,0,.2,1) 0ms;will-change:left,width}.rb-tabs .rb-tabs-content .rb-tabs-content-item{display:none}.rb-tabs .rb-tabs-content .rb-tabs-content-item.show{display:block}
+
+/*# sourceMappingURL=index.css.map*/
