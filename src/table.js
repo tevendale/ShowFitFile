@@ -5,7 +5,7 @@ import { faArrowTrendUp, faArrowTrendDown} from '@fortawesome/free-solid-svg-ico
 import React, { useEffect, useState } from 'react';
 
 
-	export const SessionTable = ( { time, duration, distance, show, units, sport, subSport, showShareRoute, ascent, descent, setAttributes } ) => {
+	export const SessionTable = ( { time, duration, distance, show, units, ascent, descent, setAttributes } ) => {
 		// Build the distance String in selected units
 		const distString = buildDistanceString( distance, units );
 		const ascentString = buildAscentString( ascent, units);
