@@ -81,10 +81,6 @@ import { CompactPicker } from 'react-color';
 // Progress Bar
 import { CircleSpinner } from 'react-spinner-overlay'
 
-// Tabs
-import Tabs,{Tab} from 'react-best-tabs';
-import 'react-best-tabs/dist/index.css';
-
 import loadFitFile from './fitimport';
 import loadGPXFile from './gpximport';
 import loadTCXFile from './tcximport';
@@ -107,7 +103,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	const [ hideErrorPanel, setHideErrorPanel ] = useState( true );
 	const [ errorMessage, setErrorMessage ] = useState( "Error Happened" );
 	const [ loading, setLoading ] = useState( true );
-	const [ tabIndex, setTabIndex ] = useState(0);
 
 	function selectFitFile( value ) {
 		// We need to save the file name here
@@ -221,12 +216,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						routeColour={ attributes.lineColour }
 						showGraph={ attributes.showAltitudeGraph }
 					></ShowAltitudeGraph>
-					<ShowSpeedGraph
-						speedData={ attributes.speed }
-						units={ attributes.units }
-						routeColour={ attributes.lineColour }
-						showGraph={ attributes.showSpeedGraph }
-					></ShowSpeedGraph>
 				</div>;
 		};
 
@@ -242,9 +231,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						distance={ attributes.distanceMetres }
 						show={ attributes.showSummary }
 						units={ attributes.units }
-						sport={ attributes.sport }
-						subSport={ attributes.subSport }
-						showShareRoute={ attributes.showShareRoute }
 						ascent={ attributes.ascent }
 						descent={ attributes.descent }
 						setAttributes = {setAttributes}
@@ -263,26 +249,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		};
 
 	const MainPanel = () => {
-		if (attributes.useTabbedInterface) {
-			return	<Tabs activeTab="1" className="" ulClassName="" activityClassName="">
-						<Tab title="Map" className="">
-							<div className="">
-							<MapPanel />
-							</div>
-						</Tab>
-						<Tab title="Graph" className="">
-							<div className="">
-							<GraphPanel />
-							</div>
-						</Tab>
-					</Tabs>;
-		}
-		else {
-			return  <div>
-						<MapPanel />
-						<GraphPanel />
-					</div>;
-		}
+	return  <div>
+				<MapPanel />
+				<GraphPanel />
+			</div>;
 	}
 
 
