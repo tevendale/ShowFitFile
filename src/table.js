@@ -1,6 +1,6 @@
 // FontAwesome for Sport icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPersonBiking, faPersonRunning, faPersonSwimming, faHeartPulse, faBasketball, faFutbol, faFootball, faDumbbell, faPersonWalking, faPersonSkiingNordic, faPersonSkiing, faPersonSnowboarding, faMountain, faPersonHiking, faPlane, faMotorcycle, faSailboat, faCar, faGolfBallTee, faHorseHead, faFishFins, faPersonSkating, faParachuteBox} from '@fortawesome/free-solid-svg-icons';
+import { faArrowTrendUp, faArrowTrendDown} from '@fortawesome/free-solid-svg-icons';
 
 import React, { useEffect, useState } from 'react';
 
@@ -17,31 +17,11 @@ import React, { useEffect, useState } from 'react';
 			setAttributes( { descentString: descentString } );
 		} );
 
-		let shareRouteRow = null;
-		if (showShareRoute) {
-			shareRouteRow =<tr>
-							<td className="dataTable" colSpan="4">
-								<div>
-								<a href='' className="shareRouteLink">Share this Route</a>
-								</div>
-							</td>
-						</tr>;
-		}
-
 
 		if ( show ) {
 			return (
 				<table style={ { width: '100%' } } className="dataTable">
 					<tbody>
-						<tr>
-							<td className="dataTable" colSpan="4">
-								<div className="sportIcon" ><IconForSport sport={sport} /></div>
-								<div className="sportNameBlock">
-									<div className="sportName"> { sport }</div>
-									<div className="subSportName" > { subSport }</div>
-								</div>
-							</td>
-						</tr>
 						<tr>
 							<td className="dataTable">
 								<div className="dataTitle">Time:</div>
@@ -53,7 +33,7 @@ import React, { useEffect, useState } from 'react';
 							</td>
 							<td className="dataTable">
 								<div className="dataTitle">Ascent/Descent:</div>
-								<div className="dataItem"> <FontAwesomeIcon icon="fa-solid fa-arrow-trend-up" /> {ascentString} <FontAwesomeIcon icon="fa-solid fa-arrow-trend-down" /> { descentString} </div>
+								<div className="dataItem"> <FontAwesomeIcon icon={ faArrowTrendUp } /> {ascentString}  <FontAwesomeIcon icon={ faArrowTrendDown } /> { descentString} </div>
 							</td>
 							<td
 								style={ { width: '18%' } }
@@ -63,7 +43,6 @@ import React, { useEffect, useState } from 'react';
 								<div className="dataItem"> { distString } </div>
 							</td>
 						</tr>
-						{ shareRouteRow }
 					</tbody>
 				</table>
 			);
@@ -71,80 +50,7 @@ import React, { useEffect, useState } from 'react';
 		return null;
 	};
 
-	const IconForSport = ( { sport } ) => {
-		const sportUC = sport.toUpperCase();
-		if (sportUC.includes( 'CYCLING' ) || sportUC.includes( 'BIKING' )) {
-			return <FontAwesomeIcon icon={ faPersonBiking } />;
-		}
-		if (sportUC.includes( 'RUNNING' )) {
-			return <FontAwesomeIcon icon={ faPersonRunning } />;
-		}
-		if (sportUC.includes( 'SWIMMING' )) {
-			return <FontAwesomeIcon icon={ faPersonSwimming } />;
-		}
-		if (sportUC.includes( 'BASKETBALL' )) {
-			return <FontAwesomeIcon icon={ faBasketball } />;
-		}
-		if (sportUC.includes( 'SOCCER' )) {
-			return <FontAwesomeIcon icon={ faFutbol } />;
-		}
-		if (sportUC.includes( 'AMERICAN_FOOTBALL' )) {
-			return <FontAwesomeIcon icon={ faFootball } />;
-		}
-		if (sportUC.includes( 'TRAINING' )) {
-			return <FontAwesomeIcon icon={ faDumbbell } />;
-		}
-		if (sportUC.includes( 'WALKING' )) {
-			return <FontAwesomeIcon icon={ faPersonWalking } />;
-		}
-		if (sportUC.includes( 'CROSS_COUNTRY_SKIING' )) {
-			return <FontAwesomeIcon icon={ faPersonSkiingNordic } />;
-		}
-		if (sportUC.includes( 'ALPINE_SKIING' )) {
-			return <FontAwesomeIcon icon={ faPersonSkiing } />;
-		}
-		if (sportUC.includes( 'SNOWBOARDING' )) {
-			return <FontAwesomeIcon icon={ faPersonSnowboarding } />;
-		}
-		if (sportUC.includes( 'MOUNTAINEERING' )) {
-			return <FontAwesomeIcon icon={ faMountain } />;
-		}
-		if (sportUC.includes( 'HIKING' )) {
-			return <FontAwesomeIcon icon={ faPersonHiking } />;
-		}
-		if (sportUC.includes( 'FLYING' )) {
-			return <FontAwesomeIcon icon={ faPlane } />;
-		}
-		if (sportUC.includes( 'MOTORCYCLING' )) {
-			return <FontAwesomeIcon icon={ faMotorcycle } />;
-		}
-		if (sportUC.includes( 'BOATING' )) {
-			return <FontAwesomeIcon icon={ faSailboat } />;
-		}
-		if (sportUC.includes( 'DRIVING' )) {
-			return <FontAwesomeIcon icon={ faCar } />;
-		}
-		if (sportUC.includes( 'GOLF' )) {
-			return <FontAwesomeIcon icon={ faGolfBallTee } />;
-		}
-		if (sportUC.includes( 'HORSEBACK_RIDING' )) {
-			return <FontAwesomeIcon icon={ faHorseHead } />;
-		}
-		if (sportUC.includes( 'FISHING' )) {
-			return <FontAwesomeIcon icon={ faFishFins } />;
-		}
-		if (sportUC.includes( 'SAILING' )) {
-			return <FontAwesomeIcon icon={ faSailboat } />;
-		}
-		if (sportUC.includes( 'ICE_SKATING' )) {
-			return <FontAwesomeIcon icon={ faPersonSkating } />;
-		}
-		if (sportUC.includes( 'SKY_DIVING' )) {
-			return <FontAwesomeIcon icon={ faParachuteBox } />;
-		}
 
-		return <FontAwesomeIcon icon={ faHeartPulse } />;
-	};
 
 		const buildDistanceString = ( distanceMetres, units ) => {
 		let distString = '--';
