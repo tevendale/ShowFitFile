@@ -72,8 +72,8 @@ import React, { useEffect, useState } from 'react';
 import './editor.scss';
 
 // FontAwesome for Sport icons
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPersonBiking, faPersonRunning, faPersonSwimming, faHeartPulse } from '@fortawesome/free-solid-svg-icons';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faPersonBiking, faPersonRunning, faPersonSwimming, faHeartPulse } from '@fortawesome/free-solid-svg-icons';
 
 // New Colour Picker
 import { CompactPicker } from 'react-color';
@@ -339,23 +339,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelRow>
 					<PanelRow>
 						<ToggleControl
-							label="Show Share Route Option"
-							checked={ attributes.showShareRoute }
+							label="Show Altitude Graph"
+							checked={ attributes.showAltitudeGraph }
 							onChange={ ( newval ) =>
-								setAttributes( { showShareRoute: newval } )
+								setAttributes( { showAltitudeGraph: newval } )
 							}
 						/>
 					</PanelRow>
-					<PanelRow>
-						<ToggleControl
-							label="Use Tabs"
-							checked={ attributes.useTabbedInterface }
-							onChange={ ( newval ) =>
-								setAttributes( { useTabbedInterface: newval } )
-							}
-						/>
-					</PanelRow>
-
 					<PanelRow>
 						<SelectControl
 							label="Units"
@@ -378,26 +368,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 						/>
 
-					</PanelRow>
-				</PanelBody>
-				<PanelBody title="Graph Settings" initialOpen={ true }>
-					<PanelRow>
-						<ToggleControl
-							label="Show Altitude Graph"
-							checked={ attributes.showAltitudeGraph }
-							onChange={ ( newval ) =>
-								setAttributes( { showAltitudeGraph: newval } )
-							}
-						/>
-					</PanelRow>
-					<PanelRow>
-						<ToggleControl
-							label="Show Speed Graph"
-							checked={ attributes.showSpeedGraph }
-							onChange={ ( newval ) =>
-								setAttributes( { showSpeedGraph: newval } )
-							}
-						/>
 					</PanelRow>
 				</PanelBody>
 			</InspectorControls>
