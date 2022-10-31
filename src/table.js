@@ -20,24 +20,24 @@ import React, { useEffect, useState } from 'react';
 
 		if ( show ) {
 			return (
-				<table style={ { width: '100%' } } className="dataTable">
+				<table className="dataTable">
 					<tbody>
 						<tr>
-							<td className="dataTable">
+							<td className="dataCell">
 								<div className="dataTitle">Time:</div>
 								<div className="dataItem"> { time }</div>
 							</td>
-							<td className="dataTable">
+							<td className="dataCell">
 								<div className="dataTitle">Duration:</div>
 								<div className="dataItem"> { duration } </div>
 							</td>
-							<td className="dataTable">
+							<td className="dataCell">
 								<div className="dataTitle">Ascent/Descent:</div>
-								<div className="dataItem"> <FontAwesomeIcon icon={ faArrowTrendUp } /> {ascentString}  <FontAwesomeIcon icon={ faArrowTrendDown } /> { descentString} </div>
+								<div className="dataItem"> <FontAwesomeIcon icon={ faArrowTrendUp } /> {ascentString} / <FontAwesomeIcon icon={ faArrowTrendDown } /> { descentString} </div>
 							</td>
 							<td
 								style={ { width: '18%' } }
-								className="dataTable"
+								className="dataCell"
 							>
 								<div className="dataTitle">Distance:</div>
 								<div className="dataItem"> { distString } </div>

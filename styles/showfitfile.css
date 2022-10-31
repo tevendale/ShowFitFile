@@ -9,7 +9,13 @@
 }
 .dataItem {
 	color: black;
+	font-size: 90%;
 }
+
+.dataCell {
+	width: 25%;
+}
+
 .sportName {
 	color: black;
 	font-size: 150%;
