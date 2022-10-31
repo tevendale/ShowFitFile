@@ -31,7 +31,7 @@ if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 add_shortcode('showfitfile', 'showFitFile');
 
 // Add the Leaflet.js css & javascript files
-add_action('wp_enqueue_scripts', 'sff_leafletjs_load');
+add_action('wp_enqueue_scripts', 'sff_scripts_and_styles_load');
 
 // Adds .fit filetype to the allowable types. Without this we can't upload .fit files to the gallery
 add_filter('upload_mimes', 'sff_fit_mime_types');
@@ -76,7 +76,11 @@ function yft_showfitfile_block_render($attr, $content) {
 function yft_showfitfile_block_summary_table($attr) {
 // 	print_r($attr);
 	if ($attr['showSummary']) {
-		$html = "<table style=\"width: 100%\"; className=\"dataTable\"><tr><td class=\"dataTable\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $attr['time'] . "</div></td>\n<td class=\"dataTable\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . ($attr['duration']) . "</div>\n</td><td style=\"text-align: right\"; class=\"dataTable\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . $attr['distanceString'] . "</div></td></tr></table>";
+			// HTML for session details
+	$htmlSessionDetails = "<tr><td class=\"dataCell\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $attr['time'] . "</div></td>\n<td class=\"dataCell\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . ($attr['duration']) . "</div>\n</td><td class=\"dataCell\"><div class=\"dataTitle\">Ascent/Descent:</div><div class=\"dataItem\"><i class=\"fa-solid fa-arrow-trend-up\"></i> " . $attr['ascentString'] . " <i class=\"fa-solid fa-arrow-trend-down\"></i> " . $attr['descentString'] . "</div>\n</td><td style=\"text-align: right\"; class=\"dataCell\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . $attr['distanceString'] . "</div></td></tr>";
+
+	
+		$html = "<table className=\"dataTable\">" . $htmlSessionDetails . "</table>";
 
 	return $html;
 	}
@@ -544,7 +548,7 @@ function sff_timeZoneForCoords($lat, $long) {
 return $xml->timezone->timezoneId;
 }
 
-function sff_leafletjs_load(){
+function sff_scripts_and_styles_load(){
 	global $options;
 	// Custom css for table containing map and data
 	$cssurl = plugins_url('/styles/showfitfile.css', __FILE__);
@@ -563,6 +567,17 @@ function sff_leafletjs_load(){
 	wp_enqueue_script('leafletghjs', $leafletGHjs);
 
 
+	//CSS and JS for FontAwesome
+	$faSolid = plugins_url('/styles/solid.js', __FILE__);
+	$fontawesomejs = plugins_url('/styles/fontawesome.js', __FILE__);
+	wp_enqueue_script('faSolid', $faSolid);
+	wp_enqueue_script('fontawesomejs', $fontawesomejs);
+
+	// For gpx export
+	$gpxExport = plugins_url('/src/gpxExport.js', __FILE__);
+	wp_enqueue_script('gpxExport', $gpxExport);
+
+
 	// Custom css for displaying Map
 	$map_custom_css = "
 		body {
@@ -574,6 +589,8 @@ function sff_leafletjs_load(){
 			width: 100%;
 		}";
   wp_add_inline_style('leafletjs_css', $map_custom_css );
+
+  wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js');
 }
 
 function sff_getRouteColour() {
