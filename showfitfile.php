@@ -23,6 +23,9 @@
 require __DIR__ . '/libraries/phpFITFileAnalysis.php';
 require __DIR__ . '/libraries/Line_DouglasPeucker.php';
 
+require_once __DIR__ . '/graphs.php';
+
+
 if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
     define( 'SFF_DEBUG', true );
 }
@@ -70,7 +73,17 @@ add_action('init', function() {
 function yft_showfitfile_block_render($attr, $content) {
 
 	// return the block output
-	return yft_showfitfile_block_summary_table($attr) . yft_showfitfile_block_map($attr);
+	$renderHTML = yft_showfitfile_block_summary_table($attr) . yft_showfitfile_block_map($attr);
+	
+	if ($attr['showAltitudeGraph']) {
+		$renderHTML .= yft_showfitfile_block_altitudegraph($attr);
+	}
+	
+	$renderHTML .= "</script>";
+
+	// return the block output
+	return $renderHTML;
+
 }
 
 function yft_showfitfile_block_summary_table($attr) {
@@ -86,6 +99,49 @@ function yft_showfitfile_block_summary_table($attr) {
 	}
 }
 
+function yft_showfitfile_block_canvas_for_altitude_graph() {
+	return yft_showfitfile_block_canvas_for_graph("altitude");
+}
+
+function yft_showfitfile_block_canvas_for_graph($canvasID) {
+	$graphCanvas = "<canvas id=\"" . $canvasID . "\" width=\"650\" height=\"150\"></canvas>\n";
+	return $graphCanvas;
+}
+
+function yft_showfitfile_block_latitude_data($attr) {
+
+	$points = $attr['route'];
+	$polyline = "";
+	$nn = 0;
+
+    foreach($points as $latLongPair) {
+//     	$polyline .= "[" . $latLongPair[0] . "," . $latLongPair[1] . "],";
+    	$polyline .= "{x: " . $nn++ . ", y: " . $latLongPair[0] . "},";
+    }
+
+    $polyline = rtrim($polyline, ",");
+	$polyline = "[" . $polyline . "]";
+
+	return $polyline;
+}
+
+function yft_showfitfile_block_longitude_data($attr) {
+	$points = $attr['route'];
+	$polyline = "";
+	$nn = 0;
+
+    foreach($points as $latLongPair) {
+//     	$polyline .= "[" . $latLongPair[0] . "," . $latLongPair[1] . "],";
+    	$polyline .= "{x: " . $nn++ . ", y: " . $latLongPair[1] . "},";
+    }
+
+    $polyline = rtrim($polyline, ",");
+	$polyline = "[" . $polyline . "]";
+
+	return $polyline;
+}
+
+
 function yft_showfitfile_block_map($attr) {
 	global $startPoint;
 	global $endPoint;
@@ -94,6 +150,12 @@ function yft_showfitfile_block_map($attr) {
 
 	$mapID = uniqid('', TRUE);
 	$maphtml = "<div id=\"mapid-" . $mapID . "\" style=\"width: 100%; height: 400px; outline: none; margin-top: 0px\"></div>";
+	
+	if ($attr['showAltitudeGraph']) {
+		// Add the canvas for the altitude graph
+		$maphtml .= yft_showfitfile_block_canvas_for_altitude_graph();
+	}
+
 
 	$maphtml = $maphtml . "<script>
 	( function(){
@@ -142,7 +204,7 @@ function yft_showfitfile_block_map($attr) {
 			});
 		}
 	})();
-	</script>";
+	";
 	return $maphtml;
 }
 
