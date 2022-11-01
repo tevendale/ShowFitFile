@@ -44,7 +44,7 @@ add_filter('wp_handle_upload_prefilter', 'sff_pre_upload');
 add_filter('wp_handle_upload', 'sff_post_upload');
 
 // Hook the enqueue functions into the editor
-add_action( 'enqueue_block_editor_assets', 'sff_leafletjs_load' );
+add_action( 'enqueue_block_editor_assets', 'sff_scripts_and_styles_load' );
 
 global $startPoint;
 global $endPoint;
