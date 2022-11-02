@@ -636,8 +636,8 @@ function sff_scripts_and_styles_load(){
 	wp_enqueue_script('fontawesomejs', $fontawesomejs);
 
 	// For gpx export
-	$gpxExport = plugins_url('/src/gpxExport.js', __FILE__);
-	wp_enqueue_script('gpxExport', $gpxExport);
+// 	$gpxExport = plugins_url('/src/gpxExport.js', __FILE__);
+// 	wp_enqueue_script('gpxExport', $gpxExport);
 
 
 	// Custom css for displaying Map
