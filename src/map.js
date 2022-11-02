@@ -4,6 +4,11 @@ import { useMap } from 'react-leaflet/hooks';
 import { Marker, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 
+// Gesture handling to show 'use 2 fingers to zoom'
+import { GestureHandling } from "leaflet-gesture-handling";
+import "leaflet/dist/leaflet.css";
+import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
+
 // Start & End Markers for Map
 import blueMarker from '../styles/images/marker-icon-2x-blue.png';
 import greenMarker from '../styles/images/marker-icon-2x-green.png';
@@ -55,6 +60,7 @@ import markerShadow from '../styles/images/marker-shadow.png';
 	const InteractiveOptions = ( { interactive } ) => {
 		const map = useMap();
 		if ( interactive ) {
+			map.gestureHandling.enable();
 			map.touchZoom.enable();
 			map.doubleClickZoom.enable();
 			map.scrollWheelZoom.enable();
@@ -64,6 +70,7 @@ import markerShadow from '../styles/images/marker-shadow.png';
 			// Add the Zoom control back in
 			map.zoomControl.addTo( map );
 		} else {
+			map.gestureHandling.disable();
 			map.touchZoom.disable();
 			map.doubleClickZoom.disable();
 			map.scrollWheelZoom.disable();
