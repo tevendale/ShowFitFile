@@ -41,8 +41,8 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 					errorCallback( error );
 				} else {
 					// TODO: Look at a file with multiple sessions - triathlon
-					// TODO: Look at a session where the first couple of records don't have GPS dat
-
+					// TODO: Look at a session where the first couple of records don't have GPS data
+					
 					const sport = data.sessions[ 0 ].sport;
 					var subSport = data.sessions[ 0 ].sub_sport;
 					if (subSport.toUpperCase() === 'GENERIC') {
@@ -69,6 +69,9 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 					// CurveReduce npm package
 					// We also extract the altitude data here - we'll probably do the
 					// same for the other training data that we're interested it.
+					var distanceLastPoint = 0.0;
+					var timeLastPoint = -1;
+					var movingTime = 0.0;
 					const positions = [];
 					const altData = [];
 					const speedData = [];
@@ -92,8 +95,27 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 								arrayItem.speed,
 							] );
 						}
+						if ( 'distance' in arrayItem ) {
+							const distanceThisPoint = arrayItem.distance;
+							const timeThisPoint = arrayItem.timestamp;
+// 							console.log("distance: " + distanceThisPoint + ", time:" + timeThisPoint);
+							if ((distanceThisPoint - distanceLastPoint) > 0.0) {
+// 								console.log("distance > 0");
+								if (timeLastPoint > 0) {
+// 									movingTime += 1;
+									movingTime += timeThisPoint - timeLastPoint;
+// 									console.log("Moving time: " + movingTime);
+									}
+								
+							}
+							timeLastPoint = timeThisPoint;
+							distanceLastPoint = distanceThisPoint;
+						}
 
 					} );
+					
+					console.log("Total moving time:" + movingTime);
+					console.log("Total Timer Time:" + duration);
 
 					// Simplify the route to 500 points
 					// This helps reduce the amount of data stored for each post,
@@ -131,6 +153,10 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 				}
 			} );
 		} );
+		
+		function movingTime(data) {
+			
+		}
 
 		const titleCase = (s) =>
 			  s.replace (/^[-_]*(.)/, (_, c) => c.toUpperCase())       // Initial char (after -/_)
