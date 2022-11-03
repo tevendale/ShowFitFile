@@ -124,7 +124,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			loadGPXFile( value.id, processSessionDataCallback );
 		}
 		if ( ext === 'tcx' ) {
-			loadTCXFile( value.id, processSessionDataCallback );
+			loadTCXFile( value.id, processSessionDataCallback, errorCallback  );
 		}
 
 	}

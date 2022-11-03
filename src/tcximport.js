@@ -13,7 +13,7 @@ import { LTTB } from 'downsample';
 import { TcxFile } from 'tcx-file-class';
 
 
-export default async function loadTCXFile( fileID, callback ) {
+export default async function loadTCXFile( fileID, callback, errorCallback ) {
 	const downloadsizeTo = 500;
 	// preload your attachment
 	wp.media
@@ -32,7 +32,7 @@ export default async function loadTCXFile( fileID, callback ) {
 
 			tcxfile.readFromString(buffer, (error, result) => {
 					if (error) {
-						console.log(error);
+						errorCallback( error );
 					}
 					else {
 
