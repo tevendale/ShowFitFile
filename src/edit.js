@@ -111,6 +111,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			fileName: value.filename,
 			fileID: value.id,
 		} );
+		
+		// Clear any error messages
+		setHideErrorPanel(true);
 
 		const ext = get_url_extension( value.url );
 		setHideProgressbar(false);
