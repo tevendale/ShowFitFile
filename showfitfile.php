@@ -717,6 +717,9 @@ function sff_getUniqueID() {
 function sff_fit_mime_types( $mimes ) {
 	// New allowed mime types.
 	$mimes['fit'] = 'application/fit';
+	$mimes['gpx'] = 'text/xml';
+	$mimes['tcx'] = 'text/xml';
+// 	print_r($mimes);
 	return $mimes;
 }
 
@@ -733,7 +736,9 @@ function sff_post_upload($fileinfo){
 function sff_custom_upload_dir($path){
 	$filename = sanitize_file_name($_POST['name'])  ;
     $extension = substr(strrchr($filename,'.'),1);
-    if(!empty($path['error']) ||  $extension != 'fit') { return $path; } //error or other filetype; do nothing.
+    if(!empty($path['error']) ||  ($extension != 'fit' &&  $extension != 'gpx'  &&  $extension != 'tcx') ) {
+		return $path; //error or other filetype; do nothing.
+	}
     $customdir = '/fit_Files';
     $path['path']    = str_replace($path['subdir'], '', $path['path']); //remove default subdir (year/month)
     $path['url']     = str_replace($path['subdir'], '', $path['url']);
