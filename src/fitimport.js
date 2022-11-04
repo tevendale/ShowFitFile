@@ -114,8 +114,15 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 
 					} );
 					
-					console.log("Total moving time:" + movingTime);
-					console.log("Total Timer Time:" + duration);
+					// Check if we have GPS data - file may be from an indoor run or cycle
+					if (positions.length == 0) {
+						errorCallback( "The file doesn't contain any position data." );
+					}
+					
+// 					console.log(positions.length);
+// 					
+// 					console.log("Total moving time:" + movingTime);
+// 					console.log("Total Timer Time:" + duration);
 
 					// Simplify the route to 500 points
 					// This helps reduce the amount of data stored for each post,
