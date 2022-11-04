@@ -56,6 +56,11 @@
 			"type": "string",
 			"default": "--:--:--"
 		},
+		"useMovingTime": {
+			"type": "boolean",
+			"default": "{false}"
+		},
+
 		"time": {
 			"type": "string",
 			"default": "--:--:--"
