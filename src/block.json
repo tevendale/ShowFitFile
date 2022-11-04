@@ -88,14 +88,6 @@
 			"type": "boolean",
 			"default": "{true}"
 		},
-		"ascent": {
-			"type": "integer",
-			"default": 0
-		},
-		"descent": {
-			"type": "integer",
-			"default": 0
-		},
 		"ascentString": {
 			"type": "string",
 			"default": "-"
