@@ -139,6 +139,7 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 					const sessionDetails = {
 						startTime: time,
 						duration: duration,
+						movingTime: movingTime/1000.0,
 						distance: distance,
 						route: routeData,
 						elevation: altDownsampled,
