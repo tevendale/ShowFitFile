@@ -117,6 +117,7 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 					// Check if we have GPS data - file may be from an indoor run or cycle
 					if (positions.length == 0) {
 						errorCallback( "The file doesn't contain any position data." );
+						return;
 					}
 					
 // 					console.log(positions.length);
