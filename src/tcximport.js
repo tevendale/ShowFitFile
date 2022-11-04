@@ -49,6 +49,8 @@ export default async function loadTCXFile( fileID, callback, errorCallback ) {
 
 						let ascent = 0;
 						let descent = 0;
+						
+						let movingTime = 0;
 
 						// tcx data is stored as a collection of laps
 						const laps = tcxfile.getLaps();
@@ -80,20 +82,30 @@ export default async function loadTCXFile( fileID, callback, errorCallback ) {
 											ascent += difference;
 										}
 									}
+									
+									if ( lastPoint ) {
+										const lastPointTime = new Date( lastPoint.time );
+										let pointTime = new Date( point.time );
+										const distanceMoved = point.distanceMeters - lastPoint.distanceMeters;
+										const timeMoved = pointTime - lastPointTime;
+										if (distanceMoved > 0) {
+											movingTime += timeMoved;
+										}
+									}
+									
 
 									if ( speed > -1 ) { //Speed data present
 										speedData.push( [dist, (speed * 3.6)] ); // m/s to kph
 									}
 									else { //Calculate from time & distance
 										if ( lastPoint ) {
-											const lastPointTime = new Date( lastPoint.time );
-											let pointTime = new Date( point.time );
-											const distanceMoved = point.distanceMeters - lastPoint.distanceMeters;
-											const timeMoved = pointTime - lastPointTime;
+// 											const lastPointTime = new Date( lastPoint.time );
+// 											let pointTime = new Date( point.time );
+// 											const distanceMoved = point.distanceMeters - lastPoint.distanceMeters;
+// 											const timeMoved = pointTime - lastPointTime;
 											const speedThisPoint = distanceMoved/(timeMoved/1000.0);
 											speedData.push( [ dist, ( speedThisPoint * 3.6 ) ] ); // m/s to kph
 										}
-
 									}
 
 									positions.push( { x: lat, y: lon } );
@@ -126,6 +138,7 @@ export default async function loadTCXFile( fileID, callback, errorCallback ) {
 						const sessionDetails = {
 							startTime: startTimeString,
 							duration: duration,
+							movingTime: movingTime/1000,
 							distance: distance,
 							route: routeData,
 							elevation: altDownsampled,
