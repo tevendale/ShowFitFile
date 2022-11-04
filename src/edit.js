@@ -178,7 +178,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 
 	function errorCallback ( error ) {
-		setErrorMessage( 'Error reading .fit file: ' + error );
+		setErrorMessage( 'Error reading file: ' + error );
 		setHideProgressbar(true);
 		setHideErrorPanel(false);
 	}
