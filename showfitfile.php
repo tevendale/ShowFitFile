@@ -88,12 +88,16 @@ function yft_showfitfile_block_render($attr, $content) {
 
 function yft_showfitfile_block_summary_table($attr) {
 // 	print_r($attr);
+	$durationLabel = "Duration:";
 	if ($attr['showSummary']) {
-			// HTML for session details
-	$htmlSessionDetails = "<tr><td class=\"dataCell\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $attr['time'] . "</div></td>\n<td class=\"dataCell\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . ($attr['duration']) . "</div>\n</td><td class=\"dataCell\"><div class=\"dataTitle\">Ascent/Descent:</div><div class=\"dataItem\"><i class=\"fa-solid fa-arrow-trend-up\"></i> " . $attr['ascentString'] . " <i class=\"fa-solid fa-arrow-trend-down\"></i> " . $attr['descentString'] . "</div>\n</td><td style=\"text-align: right\"; class=\"dataCell\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . $attr['distanceString'] . "</div></td></tr>";
+		if ($attr['useMovingTime']) {
+			$durationLabel = "Moving Time:";
+		}
+	// HTML for session details
+	$htmlSessionDetails = "<tr><td class=\"dataCell\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $attr['time'] . "</div></td>\n<td class=\"dataCell\"><div class=\"dataTitle\">" . $durationLabel . "</div><div class=\"dataItem\">" . ($attr['duration']) . "</div>\n</td><td class=\"dataCell\"><div class=\"dataTitle\">Ascent/Descent:</div><div class=\"dataItem\"><i class=\"fa-solid fa-arrow-trend-up\"></i> " . $attr['ascentString'] . " <i class=\"fa-solid fa-arrow-trend-down\"></i> " . $attr['descentString'] . "</div>\n</td><td style=\"text-align: right\"; class=\"dataCell\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . $attr['distanceString'] . "</div></td></tr>";
 
 	
-		$html = "<table className=\"dataTable\">" . $htmlSessionDetails . "</table>";
+	$html = "<table className=\"dataTable\">" . $htmlSessionDetails . "</table>";
 
 	return $html;
 	}

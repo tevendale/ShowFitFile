@@ -5,7 +5,7 @@ import { faArrowTrendUp, faArrowTrendDown} from '@fortawesome/free-solid-svg-ico
 import React, { useEffect, useState } from 'react';
 
 
-	export const SessionTable = ( { time, duration, distance, show, units, ascent, descent, setAttributes } ) => {
+	export const SessionTable = ( { time, duration, distance, show, units, ascent, descent, showMovingTime, setAttributes } ) => {
 		// Build the distance String in selected units
 		const distString = buildDistanceString( distance, units );
 		const ascentString = buildAscentString( ascent, units);
@@ -17,8 +17,11 @@ import React, { useEffect, useState } from 'react';
 			setAttributes( { descentString: descentString } );
 		} );
 
-
 		if ( show ) {
+			var durationLabel = "Duration:";
+			if (showMovingTime) {
+				durationLabel = "Moving Time:";
+			}
 			return (
 				<table className="dataTable">
 					<tbody>
@@ -28,7 +31,7 @@ import React, { useEffect, useState } from 'react';
 								<div className="dataItem"> { time }</div>
 							</td>
 							<td className="dataCell">
-								<div className="dataTitle">Duration:</div>
+								<div className="dataTitle">{ durationLabel }</div>
 								<div className="dataItem"> { duration } </div>
 							</td>
 							<td className="dataCell">
