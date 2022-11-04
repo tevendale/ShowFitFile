@@ -27,7 +27,6 @@
 			"type": "number",
 			"default": 0
 		},
-
 		"interactive": {
 			"type": "boolean",
 			"default": "{true}"
@@ -58,9 +57,16 @@
 		},
 		"useMovingTime": {
 			"type": "boolean",
-			"default": "{false}"
+			"default": false
 		},
-
+		"durationValue": {
+			"type": "integer",
+			"default": 0
+		},
+		"movingTimeValue": {
+			"type": "integer",
+			"default": 0
+		},
 		"time": {
 			"type": "string",
 			"default": "--:--:--"
