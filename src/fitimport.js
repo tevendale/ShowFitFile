@@ -41,7 +41,6 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 					errorCallback( error );
 				} else {
 					// TODO: Look at a file with multiple sessions - triathlon
-					// TODO: Look at a session where the first couple of records don't have GPS data
 					
 					const sport = data.sessions[ 0 ].sport;
 					var subSport = data.sessions[ 0 ].sub_sport;
@@ -98,13 +97,9 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 						if ( 'distance' in arrayItem ) {
 							const distanceThisPoint = arrayItem.distance;
 							const timeThisPoint = arrayItem.timestamp;
-// 							console.log("distance: " + distanceThisPoint + ", time:" + timeThisPoint);
 							if ((distanceThisPoint - distanceLastPoint) > 0.0) {
-// 								console.log("distance > 0");
 								if (timeLastPoint > 0) {
-// 									movingTime += 1;
 									movingTime += timeThisPoint - timeLastPoint;
-// 									console.log("Moving time: " + movingTime);
 									}
 								
 							}
@@ -120,11 +115,6 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 						return;
 					}
 					
-// 					console.log(positions.length);
-// 					
-// 					console.log("Total moving time:" + movingTime);
-// 					console.log("Total Timer Time:" + duration);
-
 					// Simplify the route to 500 points
 					// This helps reduce the amount of data stored for each post,
 					// and speeds up displaying the map.
