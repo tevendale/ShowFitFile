@@ -30,6 +30,7 @@ export default async function loadGPXFile( fileID, callback ) {
 			const altData = [];
 			const speedData = [];
 			let distance = 0.0;
+			let movingTime = 0;
 			let nn = 1;
 
 			let sport = gpx.tracks[ 0 ].type;
@@ -57,6 +58,10 @@ export default async function loadGPXFile( fileID, callback ) {
 					let distanceThisPoint = gpx.tracks[ 0 ].distance.cumul[ nn ] - gpx.tracks[ 0 ].distance.cumul[ nn-1 ]; // in meters
 					let time = (gpx.tracks[ 0 ].points[nn].time - gpx.tracks[ 0 ].points[ nn-1 ].time)/1000.0; // in seconds
 					let speed = distanceThisPoint / time;  //in meters per milliseconds
+					
+					if (distanceThisPoint > 0) {
+						movingTime += time;
+					}
 
 					speedData.push( [ distance, (speed * 3.6) ] ); // convert to km/hr from metres/second
 
@@ -104,6 +109,7 @@ export default async function loadGPXFile( fileID, callback ) {
 			const sessionDetails = {
 				startTime: time,
 				duration: duration,
+				movingTime, movingTime,
 				distance: totalDistance,
 				route: routeData,
 				elevation: altDownsampled,
