@@ -134,9 +134,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 
 	function processSessionDataCallback( details ) {
+	
 		setAttributes( {
 			duration: toHHMMSS( details.duration ),
 		} );
+		
+		setAttributes( { durationValue: details.duration } );
 
 		setAttributes( {
 			time: details.startTime,
@@ -167,7 +170,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		// Ascent & descent
 		setAttributes( { ascent: details.ascent } );
 		setAttributes( { descent: details.descent } );
-
+		
+		// Moving Time
+		setAttributes( { movingTimeValue: details.movingTime } );
 
 		setHideProgressbar(true);
 	}
@@ -236,7 +241,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						units={ attributes.units }
 						ascent={ attributes.ascent }
 						descent={ attributes.descent }
-						setAttributes = {setAttributes}
+						showMovingTime={ attributes.useMovingTime }
+						setAttributes ={ setAttributes }
 					></SessionTable>
 
 					<RouteMap
@@ -289,6 +295,26 @@ export default function Edit( { attributes, setAttributes } ) {
 							checked={ attributes.showSummary }
 							onChange={ ( newval ) =>
 								setAttributes( { showSummary: newval } )
+							}
+						/>
+					</PanelRow>
+					<PanelRow>
+						<ToggleControl
+							label="Use Moving Time instead of duration"
+							checked={ attributes.useMovingTime }
+							onChange={ ( newval ) => {
+								setAttributes( { useMovingTime: newval } );
+								if (newval) {
+									setAttributes( {
+										duration: toHHMMSS( attributes.movingTimeValue ),
+									} );
+								}
+								else {
+									setAttributes( {
+										duration: toHHMMSS( attributes.durationValue ),
+									} );
+								}
+								}
 							}
 						/>
 					</PanelRow>
