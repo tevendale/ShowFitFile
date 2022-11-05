@@ -1,16 +1,20 @@
 === Show Fit File ===
 Contributors:      stuarttevendale
-Tags:              garmin, fit
+Tags:              Garmin, Wahoo, Polar, Hammerhead, fit, gpx, tcx, OpenStreetMap
+Requires at least: 5.8
 Tested up to:      6.1
-Stable tag:        1.0.0
+Stable tag:        1.1.0
+Requires PHP:	   7.4
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
+A plugin to display fit, gpx and tcx files.
+
 == Description ==
 
-This plugin allows you to add a map and summary exercise data from a .fit (Flexible and Interoperable Data Transfer) file. The maps are generated using leafletJS with the map tiles provided by OpenStreetMap.
+Show Fit File is a sports & fitness oriented plugin that allows you to add a map and summary exercise data from a fit, gpx or tcx file. The maps are generated using leafletJS with the map tiles provided by OpenStreetMap.
 
-Both a Gutenberg Block and Shortcode versions are present in this plugin
+Both a Gutenberg Block and Shortcode versions are present in this plugin.
 
 == Installation ==
 
@@ -30,6 +34,8 @@ Add the Show Fit File block to your post
 
 Click on the blue button below the map to upload your .fit file. After a couple of seconds, your file will then be displayed.
 
+An altitude profile graph will be displayed under the map. This can be hidden using the block controls in the side bar.
+
 === Shortcode ===
 
 Upload the .fit file to your Media Library, then simply create a map from the file by adding the following ShortCode to your post:
@@ -48,7 +54,15 @@ To allow scrolling and zooming of the map (default is 'no')
 
 [showfitfile file="2019-06-16-10-48-12.fit" interactive = "yes"]
 
+== Screenshots ==
+
+1. Plugin Showing Map and Altitude Graph
+
 == Changelog ==
+= 1.1.0 =
+* Can now display .gpx & .tcx files
+* Added Altitude graph
+* Other bug fixes
 
 = 1.0.0 =
 * Introduces ShowFitFile Block
