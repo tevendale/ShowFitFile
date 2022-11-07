@@ -1,8 +1,8 @@
 {
 	"name": "showfitfile",
-	"version": "0.1.0",
-	"description": "Example static block scaffolded with Create Block tool.",
-	"author": "The WordPress Contributors",
+	"version": "1.1.0",
+	"description": "Block to display .fit, .gpx & .tcx files.",
+	"author": "Stuart Tevendale",
 	"license": "GPL-2.0-or-later",
 	"main": "build/index.js",
 	"scripts": {
@@ -10,25 +10,44 @@
 		"format": "wp-scripts format",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
+		"lint:js:src": "wp-scripts lint-js ./src",
 		"packages-update": "wp-scripts packages-update",
 		"plugin-zip": "wp-scripts plugin-zip",
 		"start": "wp-scripts start"
 	},
 	"devDependencies": {
-		"@wordpress/scripts": "^24.2.0"
+		"@wordpress/scripts": "^24.5.0"
 	},
 	"dependencies": {
-		"@sports-alliance/sports-lib": "^5.4.24",
-		"@wordpress/media-utils": "^4.9.0",
-		"@wordpress/server-side-render": "^3.16.0",
+		"@fortawesome/fontawesome-free": "^6.2.0",
+		"@fortawesome/fontawesome-svg-core": "^6.2.0",
+		"@fortawesome/free-regular-svg-icons": "^6.2.0",
+		"@fortawesome/free-solid-svg-icons": "^6.2.0",
+		"@fortawesome/react-fontawesome": "^0.2.0",
+		"@ramonak/react-progress-bar": "^5.0.2",
+		"@wordpress/media-utils": "^4.12.0",
+		"@wordpress/server-side-render": "^3.19.0",
 		"axios": "^0.27.2",
+		"chart.js": "^3.9.1",
 		"curvereduce": "^1.0.0",
+		"downsample": "^1.4.0",
 		"fit-file-parser": "^1.9.3",
+		"geolib": "^3.3.3",
+		"gpx-builder": "^5.0.0",
+		"gpxparser": "^3.0.8",
+		"haversine-distance": "^1.2.1",
 		"leaflet": "^1.8.0",
+		"leaflet-gesture-handling": "^1.2.2",
 		"node-fetch": "^2.6.7",
 		"react": "^17.0.2",
+		"react-chartjs-2": "^4.3.1",
+		"react-color": "^2.19.3",
 		"react-dom": "^17.0.2",
 		"react-leaflet": "^4.0.2",
-		"request": "^2.88.2"
+		"react-spinner-overlay": "^0.1.33",
+		"request": "^2.88.2",
+		"stream": "^0.0.2",
+		"tcx-file-class": "github:tevendale/tcx-file-class#with-fs-removed",
+		"timers": "^0.1.1"
 	}
 }

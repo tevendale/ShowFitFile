@@ -1,11 +1,120 @@
-.dataTitle {
+.sff_dataTable {
+	width: 100%;
+}
+
+.sff_dataTitle {
 	color: grey;
 	font-size: 75%;
 	font-weight: bold;
 }
-.dataItem {
+.sff_dataItem {
 	color: black;
+	font-size: 90%;
 }
-.dataTable {
-	border: 0px solid black;
+
+.sff_dataCell {
+	width: 25%;
 }
+
+.sff_sportName {
+	color: black;
+	font-size: 150%;
+	font-weight: bold;
+	padding-top: 5px;
+	padding-bottom: 0px;
+	line-height: 100%
+}
+.sff_sportIcon {
+	color: black;
+	font-size: 200%;
+	font-weight: bold;
+	padding-right: 10px;
+	float: left;
+	color: grey;
+}
+.sff_subSportName {
+	color: grey;
+	font-size: 75%;
+	font-weight: bold;
+	padding-top: 0px;
+}
+.sff_sportNameBlock {
+	margin-left: 5ex;
+}
+
+.sff_progressBar {
+	display: flex;
+/* 	outline: dashed 1px black; */
+}
+
+.sff_hideProgressBar {
+	display: none;
+}
+
+.sff_progressBarChild {
+	margin: 0 auto;
+/* 	outline: dashed 1px green; */
+	width: 100px;
+/* 	background-color: grey; */
+	align-items: center;
+	text-align: center;
+}
+
+.sff_progressBarSpinner {
+	width: 42px;
+/* 	outline: dashed 1px red; */
+	margin: 0 auto;
+	align-items: center;
+}
+
+.sff_progressLabel {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.sff_errorPanel {
+	display: flex;
+/* 	outline: dashed 1px black; */
+	background-color: RGB(244, 162,162);
+}
+
+.sff_hideErrorPanel {
+	display: none;
+}
+
+.sff_errorLabel {
+	margin-top: 10;
+	margin-bottom: 10;
+	margin-left: 15;
+	text-align: center;
+}
+
+.sff_shareRouteLink {
+	text-align: right;
+	font-size: 12px;
+}
+
+.sff_preparingFileText {
+	text-align: center;
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.sff_altitudeGraph {
+	width: 100%;
+	height: 150px;
+}
+
+.sff_routeMap {
+	width: 100%; 
+	height: 400px; 
+	outline: none; 
+	margin-top: 0px;
+}
+
+.leaflet-bar a, .leaflet-bar a:hover {
+    text-decoration: none !important;
+}
+
+
+

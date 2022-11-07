@@ -2,11 +2,11 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 2,
 	"name": "yft/showfitfile",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"title": "Show Fit File",
 	"category": "common",
 	"icon": "location-alt",
-	"description": "Display Garmin data on a map.",
+	"description": "Display .fit, .gpx and .tcx file data on a map.",
 	"supports": {
 		"html": false
 	},
@@ -23,6 +23,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"fileID": {
+			"type": "number",
+			"default": 0
+		},
 		"interactive": {
 			"type": "boolean",
 			"default": "{true}"
@@ -37,7 +41,7 @@
 		},
 		"lineColour": {
 			"type": "string",
-			"default": "red"
+			"default": "orange"
 		},
 		"distanceMetres": {
 			"type": "integer",
@@ -50,6 +54,18 @@
 		"duration": {
 			"type": "string",
 			"default": "--:--:--"
+		},
+		"useMovingTime": {
+			"type": "boolean",
+			"default": false
+		},
+		"durationValue": {
+			"type": "integer",
+			"default": 0
+		},
+		"movingTimeValue": {
+			"type": "integer",
+			"default": 0
 		},
 		"time": {
 			"type": "string",
@@ -74,6 +90,22 @@
 		"route": {
 			"type": "array",
 			"default": []
+		},
+		"altitude": {
+			"type": "array",
+			"default": []
+		},
+		"showAltitudeGraph": {
+			"type": "boolean",
+			"default": "{true}"
+		},
+		"ascentString": {
+			"type": "string",
+			"default": "-"
+		},
+		"descentString": {
+			"type": "string",
+			"default": "-"
 		}
 	}
 }

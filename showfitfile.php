@@ -1,14 +1,14 @@
 <?php
 
 /**
- * Plugin Name:       Show_Fit_File
- * Plugin URI:        http://yellowfield.co.uk/plugins/Show-FIT-File/
- * Description:       A plugin for displaying route and exercise data from a Garmin .fit file (Flexible and Interoperable Data Transfer).
- * Version:           1.0.0
- * Requires at least: 5.2
- * Requires PHP:      7.2
+ * Plugin Name:       Show Fit File
+ * Plugin URI:        https://stuarttevendale.com/wordpress-plugin-for-garmin-fit-files/
+ * Description:       A sport & fitness-focused plugin for displaying route and exercise data from .fit, .gpx and .tcx files.
+ * Version:           1.1.0
+ * Requires at least: 5.8
+ * Requires PHP:      7.4
  * Author:            Stuart Tevendale
- * Author URI:        http://Yellowfield.co.uk
+ * Author URI:        http://stuarttevendale.com
  * License:           GPL v2
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  */
@@ -23,6 +23,9 @@
 require __DIR__ . '/libraries/phpFITFileAnalysis.php';
 require __DIR__ . '/libraries/Line_DouglasPeucker.php';
 
+require_once __DIR__ . '/graphs.php';
+
+
 if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
     define( 'SFF_DEBUG', true );
 }
@@ -31,7 +34,7 @@ if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 add_shortcode('showfitfile', 'showFitFile');
 
 // Add the Leaflet.js css & javascript files
-add_action('wp_enqueue_scripts', 'sff_leafletjs_load');
+add_action('wp_enqueue_scripts', 'sff_scripts_and_styles_load');
 
 // Adds .fit filetype to the allowable types. Without this we can't upload .fit files to the gallery
 add_filter('upload_mimes', 'sff_fit_mime_types');
@@ -41,7 +44,7 @@ add_filter('wp_handle_upload_prefilter', 'sff_pre_upload');
 add_filter('wp_handle_upload', 'sff_post_upload');
 
 // Hook the enqueue functions into the editor
-add_action( 'enqueue_block_editor_assets', 'sff_leafletjs_load' );
+add_action( 'enqueue_block_editor_assets', 'sff_scripts_and_styles_load' );
 
 global $startPoint;
 global $endPoint;
@@ -70,17 +73,80 @@ add_action('init', function() {
 function yft_showfitfile_block_render($attr, $content) {
 
 	// return the block output
-	return yft_showfitfile_block_summary_table($attr) . yft_showfitfile_block_map($attr);
+	$renderHTML = yft_showfitfile_block_summary_table($attr) . yft_showfitfile_block_map($attr);
+	
+	if ($attr['showAltitudeGraph']) {
+		$renderHTML .= yft_showfitfile_block_altitudegraph($attr);
+	}
+	
+	$renderHTML .= "	})();</script>";
+
+	// return the block output
+	return $renderHTML;
+
 }
 
 function yft_showfitfile_block_summary_table($attr) {
 // 	print_r($attr);
+	$durationLabel = "Duration:";
 	if ($attr['showSummary']) {
-		$html = "<table style=\"width: 100%\"; className=\"dataTable\"><tr><td class=\"dataTable\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $attr['time'] . "</div></td>\n<td class=\"dataTable\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . ($attr['duration']) . "</div>\n</td><td style=\"text-align: right\"; class=\"dataTable\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . $attr['distanceString'] . "</div></td></tr></table>";
+		if ($attr['useMovingTime']) {
+			$durationLabel = "Moving Time:";
+		}
+	// HTML for session details
+	$htmlSessionDetails = "<tr><td class=\"sff_dataCell\"><div class=\"sff_dataTitle\">Time:</div><div class=\"sff_dataItem\">" . $attr['time'] . "</div></td>\n<td class=\"sff_dataCell\"><div class=\"sff_dataTitle\">" . $durationLabel . "</div><div class=\"sff_dataItem\">" . ($attr['duration']) . "</div>\n</td><td class=\"sff_dataCell\"><div class=\"sff_dataTitle\">Ascent/Descent:</div><div class=\"sff_dataItem\"><i class=\"fa-solid fa-arrow-trend-up\"></i> " . $attr['ascentString'] . " <i class=\"fa-solid fa-arrow-trend-down\"></i> " . $attr['descentString'] . "</div>\n</td><td style=\"text-align: right\"; class=\"sff_dataCell\"><div class=\"sff_dataTitle\">Distance:</div><div class=\"sff_dataItem\">" . $attr['distanceString'] . "</div></td></tr>";
+
+	
+	$html = "<table class=\"sff_dataTable\"  style=\"margin-bottom: 0px\">" . $htmlSessionDetails . "</table>";
 
 	return $html;
 	}
 }
+
+function yft_showfitfile_block_canvas_for_altitude_graph() {
+	return yft_showfitfile_block_canvas_for_graph("altitude");
+}
+
+function yft_showfitfile_block_canvas_for_graph($canvasID) {
+	$graphCanvas = "<div class=\"sff_altitudeGraph\">";
+	$graphCanvas .= "<canvas id=\"" . $canvasID . "\"></canvas>\n";
+	$graphCanvas .= "</div>";
+	return $graphCanvas;
+}
+
+function yft_showfitfile_block_latitude_data($attr) {
+
+	$points = $attr['route'];
+	$polyline = "";
+	$nn = 0;
+
+    foreach($points as $latLongPair) {
+//     	$polyline .= "[" . $latLongPair[0] . "," . $latLongPair[1] . "],";
+    	$polyline .= "{x: " . $nn++ . ", y: " . $latLongPair[0] . "},";
+    }
+
+    $polyline = rtrim($polyline, ",");
+	$polyline = "[" . $polyline . "]";
+
+	return $polyline;
+}
+
+function yft_showfitfile_block_longitude_data($attr) {
+	$points = $attr['route'];
+	$polyline = "";
+	$nn = 0;
+
+    foreach($points as $latLongPair) {
+//     	$polyline .= "[" . $latLongPair[0] . "," . $latLongPair[1] . "],";
+    	$polyline .= "{x: " . $nn++ . ", y: " . $latLongPair[1] . "},";
+    }
+
+    $polyline = rtrim($polyline, ",");
+	$polyline = "[" . $polyline . "]";
+
+	return $polyline;
+}
+
 
 function yft_showfitfile_block_map($attr) {
 	global $startPoint;
@@ -89,7 +155,13 @@ function yft_showfitfile_block_map($attr) {
 
 
 	$mapID = uniqid('', TRUE);
-	$maphtml = "<div id=\"mapid-" . $mapID . "\" style=\"width: 100%; height: 400px; outline: none; margin-top: 0px\"></div>";
+	$maphtml = "<div id=\"mapid-" . $mapID . "\" class=\"sff_routeMap\"></div>";
+	
+	if ($attr['showAltitudeGraph']) {
+		// Add the canvas for the altitude graph
+		$maphtml .= yft_showfitfile_block_canvas_for_altitude_graph();
+	}
+
 
 	$maphtml = $maphtml . "<script>
 	( function(){
@@ -137,8 +209,8 @@ function yft_showfitfile_block_map($attr) {
 				map.invalidateSize(true);
 			});
 		}
-	})();
-	</script>";
+
+	";
 	return $maphtml;
 }
 
@@ -420,15 +492,15 @@ function sff_fitHTML() {
     	$unitsString = "miles";
     }
 
-	$html = "<table class=\"dataTable\">";
+	$html = "<table class=\"sff_dataTable\">";
 
 // Fails to show map for shortcode if the next line isn't commented out
 // 	if ($options->showSummary == 'YES') {
-		$html .= "<tr><td class=\"dataTable\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $date->format('d-M-y g:i a') . "</div></td>\n<td class=\"dataTable\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_timer_time']) . "</div>\n</td><td class=\"dataTable\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr>";
+		$html .= "<tr><td class=\"sff_dataTable\"><div class=\"sff_dataTitle\">Time:</div><div class=\"sff_dataItem\">" . $date->format('d-M-y g:i a') . "</div></td>\n<td class=\"sff_dataTable\"><div class=\"sff_dataTitle\">Duration:</div><div class=\"sff_dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_timer_time']) . "</div>\n</td><td class=\"sff_dataTable\"><div class=\"sff_dataTitle\">Distance:</div><div class=\"sff_dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr>";
 
 
 // 	}
-	$html .= "<tr><td colspan=\"3\" class=\"dataTable\">" . $mapcode ."</td></tr></table>";
+	$html .= "<tr><td colspan=\"3\" class=\"sff_dataTable\">" . $mapcode ."</td></tr></table>";
 
 	return $html;
 }
@@ -544,7 +616,7 @@ function sff_timeZoneForCoords($lat, $long) {
 return $xml->timezone->timezoneId;
 }
 
-function sff_leafletjs_load(){
+function sff_scripts_and_styles_load(){
 	global $options;
 	// Custom css for table containing map and data
 	$cssurl = plugins_url('/styles/showfitfile.css', __FILE__);
@@ -563,6 +635,17 @@ function sff_leafletjs_load(){
 	wp_enqueue_script('leafletghjs', $leafletGHjs);
 
 
+	//CSS and JS for FontAwesome
+	$faSolid = plugins_url('/styles/solid.js', __FILE__);
+	$fontawesomejs = plugins_url('/styles/fontawesome.js', __FILE__);
+	wp_enqueue_script('faSolid', $faSolid);
+	wp_enqueue_script('fontawesomejs', $fontawesomejs);
+
+	// For gpx export
+// 	$gpxExport = plugins_url('/src/gpxExport.js', __FILE__);
+// 	wp_enqueue_script('gpxExport', $gpxExport);
+
+
 	// Custom css for displaying Map
 	$map_custom_css = "
 		body {
@@ -574,6 +657,8 @@ function sff_leafletjs_load(){
 			width: 100%;
 		}";
   wp_add_inline_style('leafletjs_css', $map_custom_css );
+
+  wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js');
 }
 
 function sff_getRouteColour() {
@@ -638,6 +723,9 @@ function sff_getUniqueID() {
 function sff_fit_mime_types( $mimes ) {
 	// New allowed mime types.
 	$mimes['fit'] = 'application/fit';
+	$mimes['gpx'] = 'text/xml';
+	$mimes['tcx'] = 'text/xml';
+// 	print_r($mimes);
 	return $mimes;
 }
 
@@ -654,7 +742,9 @@ function sff_post_upload($fileinfo){
 function sff_custom_upload_dir($path){
 	$filename = sanitize_file_name($_POST['name'])  ;
     $extension = substr(strrchr($filename,'.'),1);
-    if(!empty($path['error']) ||  $extension != 'fit') { return $path; } //error or other filetype; do nothing.
+    if(!empty($path['error']) ||  ($extension != 'fit' &&  $extension != 'gpx'  &&  $extension != 'tcx') ) {
+		return $path; //error or other filetype; do nothing.
+	}
     $customdir = '/fit_Files';
     $path['path']    = str_replace($path['subdir'], '', $path['path']); //remove default subdir (year/month)
     $path['url']     = str_replace($path['subdir'], '', $path['url']);
