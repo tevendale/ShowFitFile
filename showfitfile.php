@@ -97,7 +97,7 @@ function yft_showfitfile_block_summary_table($attr) {
 	$htmlSessionDetails = "<tr><td class=\"sff_dataCell\"><div class=\"sff_dataTitle\">Time:</div><div class=\"sff_dataItem\">" . $attr['time'] . "</div></td>\n<td class=\"sff_dataCell\"><div class=\"sff_dataTitle\">" . $durationLabel . "</div><div class=\"sff_dataItem\">" . ($attr['duration']) . "</div>\n</td><td class=\"sff_dataCell\"><div class=\"sff_dataTitle\">Ascent/Descent:</div><div class=\"sff_dataItem\"><i class=\"fa-solid fa-arrow-trend-up\"></i> " . $attr['ascentString'] . " <i class=\"fa-solid fa-arrow-trend-down\"></i> " . $attr['descentString'] . "</div>\n</td><td style=\"text-align: right\"; class=\"sff_dataCell\"><div class=\"sff_dataTitle\">Distance:</div><div class=\"sff_dataItem\">" . $attr['distanceString'] . "</div></td></tr>";
 
 	
-	$html = "<table className=\"sff_dataTable\">" . $htmlSessionDetails . "</table>";
+	$html = "<table class=\"sff_dataTable\" >" . $htmlSessionDetails . "</table>";
 
 	return $html;
 	}
