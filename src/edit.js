@@ -217,7 +217,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 
 	const GraphPanel = () => {
-		return 	<div className="">
+		return 	<div className="sff_altitudeGraph">
 					<ShowAltitudeGraph
 						altitudeData={ attributes.altitude }
 						units={ attributes.units }

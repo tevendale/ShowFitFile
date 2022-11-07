@@ -97,7 +97,7 @@ function yft_showfitfile_block_summary_table($attr) {
 	$htmlSessionDetails = "<tr><td class=\"sff_dataCell\"><div class=\"sff_dataTitle\">Time:</div><div class=\"sff_dataItem\">" . $attr['time'] . "</div></td>\n<td class=\"sff_dataCell\"><div class=\"sff_dataTitle\">" . $durationLabel . "</div><div class=\"sff_dataItem\">" . ($attr['duration']) . "</div>\n</td><td class=\"sff_dataCell\"><div class=\"sff_dataTitle\">Ascent/Descent:</div><div class=\"sff_dataItem\"><i class=\"fa-solid fa-arrow-trend-up\"></i> " . $attr['ascentString'] . " <i class=\"fa-solid fa-arrow-trend-down\"></i> " . $attr['descentString'] . "</div>\n</td><td style=\"text-align: right\"; class=\"sff_dataCell\"><div class=\"sff_dataTitle\">Distance:</div><div class=\"sff_dataItem\">" . $attr['distanceString'] . "</div></td></tr>";
 
 	
-	$html = "<table class=\"sff_dataTable\" >" . $htmlSessionDetails . "</table>";
+	$html = "<table class=\"sff_dataTable\"  style=\"margin-bottom: 0px\">" . $htmlSessionDetails . "</table>";
 
 	return $html;
 	}
@@ -108,7 +108,9 @@ function yft_showfitfile_block_canvas_for_altitude_graph() {
 }
 
 function yft_showfitfile_block_canvas_for_graph($canvasID) {
-	$graphCanvas = "<canvas id=\"" . $canvasID . "\" width=\"650\" height=\"150\"></canvas>\n";
+	$graphCanvas = "<div class=\"sff_altitudeGraph\">";
+	$graphCanvas .= "<canvas id=\"" . $canvasID . "\"></canvas>\n";
+	$graphCanvas .= "</div>";
 	return $graphCanvas;
 }
 
@@ -153,7 +155,7 @@ function yft_showfitfile_block_map($attr) {
 
 
 	$mapID = uniqid('', TRUE);
-	$maphtml = "<div id=\"mapid-" . $mapID . "\" style=\"width: 100%; height: 400px; outline: none; margin-top: 0px\"></div>";
+	$maphtml = "<div id=\"mapid-" . $mapID . "\" class=\"sff_routeMap\"></div>";
 	
 	if ($attr['showAltitudeGraph']) {
 		// Add the canvas for the altitude graph
