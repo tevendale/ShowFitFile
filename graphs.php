@@ -55,7 +55,7 @@ function yft_showfitfile_block_altitudegraph($attr) {
 		options: {
 		  onHover: handleChartHover,
 		  responsive: true,
-		  maintainAspectRatio: true,
+		  maintainAspectRatio: false,
 		  showLine: true,
 		  plugins: {
 			legend: {

@@ -38,7 +38,7 @@ import { Scatter } from 'react-chartjs-2';
 		const options = {
 			responsive: true,
 			showLine: true,
-			maintainAspectRatio: true,
+			maintainAspectRatio: false,
 			animation: false,
 
 			plugins: {
