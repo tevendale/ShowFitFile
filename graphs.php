@@ -23,7 +23,6 @@ function yft_showfitfile_block_altitudegraph($attr) {
 		$yAxisLabel = "Height (ft)";
 	}
     foreach($attr['altitude'] as $point) {
-//     	print_r($point);
 		$distance = $point[0]/$conversionFactor;
 		$elevation = $point[1] * $elevationFactor;
 
@@ -46,7 +45,7 @@ function yft_showfitfile_block_altitudegraph($attr) {
 		  datasets: [
 			{
 			  data: " . $polyline . ",
-			  fill: {value: -100},
+			  fill: {value: -1000},
 			  borderColor: '" . $attr['lineColour'] . "',
 			  backgroundColor: '" . $attr['lineColour'] . "',
 			},
@@ -82,13 +81,23 @@ function yft_showfitfile_block_altitudegraph($attr) {
 			  title: {
 				display: true,
 				text: '". $xAxisLabel ."'
-			  }
+			  },
+			  ticks: {
+				callback: function(value, index, ticks) {
+					return value.toFixed(2);
+					}
+				},
 			},
 			y: {
 				title: {
 					display: true,
 					text: '" . $yAxisLabel ."'
-				}
+				},
+				ticks: {
+                    callback: function(value, index, ticks) {
+                        return value.toFixed(0);
+						}
+					}
 			}
 		}
 	}
