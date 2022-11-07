@@ -23,27 +23,27 @@ import React, { useEffect, useState } from 'react';
 				durationLabel = "Moving Time:";
 			}
 			return (
-				<table className="dataTable">
+				<table className="sff_dataTable">
 					<tbody>
 						<tr>
-							<td className="dataCell">
-								<div className="dataTitle">Time:</div>
-								<div className="dataItem"> { time }</div>
+							<td className="sff_dataCell">
+								<div className="sff_dataTitle">Time:</div>
+								<div className="sff_dataItem"> { time }</div>
 							</td>
-							<td className="dataCell">
-								<div className="dataTitle">{ durationLabel }</div>
-								<div className="dataItem"> { duration } </div>
+							<td className="sff_dataCell">
+								<div className="sff_dataTitle">{ durationLabel }</div>
+								<div className="sff_dataItem"> { duration } </div>
 							</td>
-							<td className="dataCell">
-								<div className="dataTitle">Ascent/Descent:</div>
-								<div className="dataItem"> <FontAwesomeIcon icon={ faArrowTrendUp } /> {ascentString} / <FontAwesomeIcon icon={ faArrowTrendDown } /> { descentString} </div>
+							<td className="sff_dataCell">
+								<div className="sff_dataTitle">Ascent/Descent:</div>
+								<div className="sff_dataItem"> <FontAwesomeIcon icon={ faArrowTrendUp } /> {ascentString} / <FontAwesomeIcon icon={ faArrowTrendDown } /> { descentString} </div>
 							</td>
 							<td
 								style={ { width: '18%' } }
-								className="dataCell"
+								className="sff_dataCell"
 							>
-								<div className="dataTitle">Distance:</div>
-								<div className="dataItem"> { distString } </div>
+								<div className="sff_dataTitle">Distance:</div>
+								<div className="sff_dataItem"> { distString } </div>
 							</td>
 						</tr>
 					</tbody>

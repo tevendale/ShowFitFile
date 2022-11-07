@@ -196,10 +196,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 
 	const ShowProgressBar = () => {
-		return <div className={ `${hideProgressbar ? "hideProgressBar" : "progressBar"}` }>
-					<div className="progressBarChild">
-						<p className="progressLabel">Loading....</p>
-						<div className="progressBarSpinner">
+		return <div className={ `${hideProgressbar ? "sff_hideProgressBar" : "sff_progressBar"}` }>
+					<div className="sff_progressBarChild">
+						<p className="sff_progressLabel">Loading....</p>
+						<div className="sff_progressBarSpinner">
 							<CircleSpinner
 							  　loading={ loading }
 							/>
@@ -209,9 +209,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 
 	const ShowErrorPanel = () => {
-		return <div className={ `${hideErrorPanel ? "hideErrorPanel" : "errorPanel"}` }>
+		return <div className={ `${hideErrorPanel ? "sff_hideErrorPanel" : "sff_errorPanel"}` }>
 					<div >
-						<p className="errorLabel"> { errorMessage } </p>
+						<p className="sff_errorLabel"> { errorMessage } </p>
 					</div>
 			</div>;
 	};

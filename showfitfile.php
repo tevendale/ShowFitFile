@@ -94,10 +94,10 @@ function yft_showfitfile_block_summary_table($attr) {
 			$durationLabel = "Moving Time:";
 		}
 	// HTML for session details
-	$htmlSessionDetails = "<tr><td class=\"dataCell\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $attr['time'] . "</div></td>\n<td class=\"dataCell\"><div class=\"dataTitle\">" . $durationLabel . "</div><div class=\"dataItem\">" . ($attr['duration']) . "</div>\n</td><td class=\"dataCell\"><div class=\"dataTitle\">Ascent/Descent:</div><div class=\"dataItem\"><i class=\"fa-solid fa-arrow-trend-up\"></i> " . $attr['ascentString'] . " <i class=\"fa-solid fa-arrow-trend-down\"></i> " . $attr['descentString'] . "</div>\n</td><td style=\"text-align: right\"; class=\"dataCell\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . $attr['distanceString'] . "</div></td></tr>";
+	$htmlSessionDetails = "<tr><td class=\"sff_dataCell\"><div class=\"sff_dataTitle\">Time:</div><div class=\"sff_dataItem\">" . $attr['time'] . "</div></td>\n<td class=\"sff_dataCell\"><div class=\"sff_dataTitle\">" . $durationLabel . "</div><div class=\"sff_dataItem\">" . ($attr['duration']) . "</div>\n</td><td class=\"sff_dataCell\"><div class=\"sff_dataTitle\">Ascent/Descent:</div><div class=\"sff_dataItem\"><i class=\"fa-solid fa-arrow-trend-up\"></i> " . $attr['ascentString'] . " <i class=\"fa-solid fa-arrow-trend-down\"></i> " . $attr['descentString'] . "</div>\n</td><td style=\"text-align: right\"; class=\"sff_dataCell\"><div class=\"sff_dataTitle\">Distance:</div><div class=\"sff_dataItem\">" . $attr['distanceString'] . "</div></td></tr>";
 
 	
-	$html = "<table className=\"dataTable\">" . $htmlSessionDetails . "</table>";
+	$html = "<table className=\"sff_dataTable\">" . $htmlSessionDetails . "</table>";
 
 	return $html;
 	}
@@ -490,15 +490,15 @@ function sff_fitHTML() {
     	$unitsString = "miles";
     }
 
-	$html = "<table class=\"dataTable\">";
+	$html = "<table class=\"sff_dataTable\">";
 
 // Fails to show map for shortcode if the next line isn't commented out
 // 	if ($options->showSummary == 'YES') {
-		$html .= "<tr><td class=\"dataTable\"><div class=\"dataTitle\">Time:</div><div class=\"dataItem\">" . $date->format('d-M-y g:i a') . "</div></td>\n<td class=\"dataTable\"><div class=\"dataTitle\">Duration:</div><div class=\"dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_timer_time']) . "</div>\n</td><td class=\"dataTable\"><div class=\"dataTitle\">Distance:</div><div class=\"dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr>";
+		$html .= "<tr><td class=\"sff_dataTable\"><div class=\"sff_dataTitle\">Time:</div><div class=\"sff_dataItem\">" . $date->format('d-M-y g:i a') . "</div></td>\n<td class=\"sff_dataTable\"><div class=\"sff_dataTitle\">Duration:</div><div class=\"sff_dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_timer_time']) . "</div>\n</td><td class=\"sff_dataTable\"><div class=\"sff_dataTitle\">Distance:</div><div class=\"sff_dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr>";
 
 
 // 	}
-	$html .= "<tr><td colspan=\"3\" class=\"dataTable\">" . $mapcode ."</td></tr></table>";
+	$html .= "<tr><td colspan=\"3\" class=\"sff_dataTable\">" . $mapcode ."</td></tr></table>";
 
 	return $html;
 }
