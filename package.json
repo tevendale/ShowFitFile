@@ -16,7 +16,7 @@
 		"start": "wp-scripts start"
 	},
 	"devDependencies": {
-		"@wordpress/scripts": "^24.2.0"
+		"@wordpress/scripts": "^24.5.0"
 	},
 	"dependencies": {
 		"@fortawesome/fontawesome-free": "^6.2.0",
@@ -25,8 +25,8 @@
 		"@fortawesome/free-solid-svg-icons": "^6.2.0",
 		"@fortawesome/react-fontawesome": "^0.2.0",
 		"@ramonak/react-progress-bar": "^5.0.2",
-		"@wordpress/media-utils": "^4.9.0",
-		"@wordpress/server-side-render": "^3.16.0",
+		"@wordpress/media-utils": "^4.12.0",
+		"@wordpress/server-side-render": "^3.19.0",
 		"axios": "^0.27.2",
 		"chart.js": "^3.9.1",
 		"curvereduce": "^1.0.0",
