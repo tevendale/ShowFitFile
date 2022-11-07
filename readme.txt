@@ -70,10 +70,14 @@ Moving time is the time you actually spent moving during your session, while dur
 
 It's worth noting that, depending on the setup of your device, you may not see much difference between Moving Time and Duration, particularly if your device is set to auto-pause.
 
+== Upgrade Notice ==
+= 1.1.0 =
+When upgrading blocks from V1.0.0, you'll need to import the .fit file again, if you want to display the profile graph or the ascent/descent figures.
+
 == Changelog ==
 = 1.1.0 =
-* Can now display .gpx & .tcx files
-* Adds Altitude graph
+* Can now display .gpx & .tcx files for block
+* Adds Altitude graph for block
 * Adds gesture scroll in block editor
 * Shows ascent & descent in table about the map
 * Has option of show either moving time or elapsed time
@@ -82,11 +86,3 @@ It's worth noting that, depending on the setup of your device, you may not see m
 = 1.0.0 =
 * Introduces ShowFitFile Block
 * Adds gesture scroll to Shortcode version
-
-
-
-
-
-Map by IconMark from Noun Project
-
-Map by Atif Arshad from <a href="https://thenounproject.com/browse/icons/term/map/" target="_blank" title="Map Icons">Noun Project</a>
