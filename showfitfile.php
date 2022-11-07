@@ -79,7 +79,7 @@ function yft_showfitfile_block_render($attr, $content) {
 		$renderHTML .= yft_showfitfile_block_altitudegraph($attr);
 	}
 	
-	$renderHTML .= "</script>";
+	$renderHTML .= "	})();</script>";
 
 	// return the block output
 	return $renderHTML;
@@ -207,7 +207,7 @@ function yft_showfitfile_block_map($attr) {
 				map.invalidateSize(true);
 			});
 		}
-	})();
+
 	";
 	return $maphtml;
 }
