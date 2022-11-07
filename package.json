@@ -1,7 +1,7 @@
 {
 	"name": "showfitfile",
-	"version": "1.0.0",
-	"description": "Block to display Garmin .fit files.",
+	"version": "1.1.0",
+	"description": "Block to display .fit, .gpx & .tcx files.",
 	"author": "Stuart Tevendale",
 	"license": "GPL-2.0-or-later",
 	"main": "build/index.js",
