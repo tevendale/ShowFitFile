@@ -19,6 +19,8 @@ import markerShadow from '../styles/images/marker-shadow.png';
 		return 		<MapContainer
 						center={ startPos }
 						zoom={ 13 }
+						zoomAnimation={false}
+						fadeAnimation={false}						
 						style={ { height: '400px' } }
 					>
 						<TileLayer
