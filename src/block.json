@@ -106,6 +106,15 @@
 		"descentString": {
 			"type": "string",
 			"default": "-"
+		},
+		"ascent": {
+			"type": "integer",
+			"default": 0
+		},
+		"descent": {
+			"type": "integer",
+			"default": 0
 		}
+		
 	}
 }
