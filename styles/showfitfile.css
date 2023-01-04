@@ -10,10 +10,12 @@
 .sff_dataItem {
 	color: black;
 	font-size: 90%;
+	white-space: nowrap;
 }
 
 .sff_dataCell {
 	width: 25%;
+	border: 0px;
 }
 
 .sff_sportName {
