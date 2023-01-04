@@ -3,7 +3,7 @@ Contributors:      stuarttevendale
 Tags:              Garmin, fit, gpx, tcx, OpenStreetMap, Wahoo, Polar, Hammerhead
 Requires at least: 5.8
 Tested up to:      6.1
-Stable tag:        1.1.0
+Stable tag:        1.1.1
 Requires PHP:	   7.4
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -75,6 +75,11 @@ It's worth noting that, depending on the setup of your device, you may not see m
 When upgrading blocks from V1.0.0, you'll need to import the .fit file again, if you want to display the profile graph or the ascent/descent figures.
 
 == Changelog ==
+
+= 1.1.1 =
+* Map no longer redraws when post text is edited
+* Ascent & Descent values are no longer lost when post is edited
+
 = 1.1.0 =
 * Can now display .gpx & .tcx files for block
 * Adds Altitude graph for block
