@@ -16,6 +16,7 @@
 		"start": "wp-scripts start"
 	},
 	"devDependencies": {
+		"@types/jest": "^29.4.0",
 		"@wordpress/scripts": "^25.1.0",
 		"jest": "^29.4.1"
 	},
