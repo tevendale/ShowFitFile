@@ -61,8 +61,6 @@ it("tests setter for distance", () => {
 	expect(store.distance).toBe(79.3);
 });
 
-
-
 it("builds an array of DataPoints", () => {
 	var points = [];
 	for (let i = 0; i < 5; i++) {
@@ -73,6 +71,17 @@ it("builds an array of DataPoints", () => {
 	expect(points[1].speed).toBe(20);
 	
 });
+
+it("tests valueForElementType method for element types", () => {
+	store = new DataPoint(57.5, -78.3, 45, 37.48, 25.6);
+	
+	expect(store.valueForElementType(1)).toBe(57.5);
+	expect(store.valueForElementType(2)).toBe(-78.3);
+	expect(store.valueForElementType(3)).toBe(45);
+	expect(store.valueForElementType(4)).toBe(37.48);
+	expect(store.valueForElementType(5)).toBe(25.6);
+});
+
 
 it("builds a SessionData Object", () => {
 	let session = new SessionData();
@@ -138,6 +147,45 @@ it("Test distanceArray function in SessionData Object", () => {
 	expect(distArray[3]).toBe(25.6);
 	expect(distArray.length).toBe(5);
 });
+
+
+it("Test distanceAltitudeArray function in SessionData Object", () => {
+	let session = new SessionData();
+	for (let i = 0; i < 5; i++) {
+		session.addPoint(57.5, -78.3, (i * 15), i * 20, 25.6);
+	}
+	var distArray = session.distanceAltitudeArray();
+	
+	expect(distArray[1][0]).toBe(25.6);
+	expect(distArray[1][1]).toBe(15);
+	expect(distArray.length).toBe(5);
+});
+
+it("Test distanceSpeedArray function in SessionData Object", () => {
+	let session = new SessionData();
+	for (let i = 0; i < 5; i++) {
+		session.addPoint(57.5, -78.3, (i * 15), i * 20, 25.6);
+	}
+	var distArray = session.distanceSpeedArray();
+	
+	expect(distArray[1][0]).toBe(25.6);
+	expect(distArray[1][1]).toBe(20);
+	expect(distArray.length).toBe(5);
+});
+
+it("Test latLongArray function in SessionData Object", () => {
+	let session = new SessionData();
+	for (let i = 0; i < 5; i++) {
+		session.addPoint(57.5, -78.3, (i * 15), i * 20, 25.6);
+	}
+	var distArray = session.latLongArray();
+	
+	expect(distArray[1][0]).toBe(57.5);
+	expect(distArray[1][1]).toBe(-78.3);
+	expect(distArray.length).toBe(5);
+});
+
+
 
 // #region ShortestDistance
 test('shortest distance, 0-length line', () => {

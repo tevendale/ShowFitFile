@@ -18,9 +18,21 @@ Container class can also produce down-sized arrays
 
 // module.exports = test;
 
+// class to define data element types
+class DataElements {
+	// Constants for the data elements - add for additional elements as required
+	kElementLatitude = 1;
+	kElementLongitude = 2;
+	kElementAltitude = 3;
+	kElementSpeed = 4;
+	kElementDistance = 5;
+}
+
 
 // Class to hold data point
 class DataPoint {
+
+	elementTypes = new DataElements();
 
 	constructor(latitude, longitude, altitude, speed, distance) {
 		this.latitude = latitude;
@@ -49,21 +61,33 @@ class DataPoint {
 	addDistance(distance) {
 		this.distance = distance;
 	}
+	
+	valueForElementType(elementType) {
+		if (elementType == this.elementTypes.kElementLatitude) {
+			return this.latitude;
+		}
+		if (elementType == this.elementTypes.kElementLongitude) {
+			return this.longitude;
+		}
+		if (elementType == this.elementTypes.kElementAltitude) {
+			return this.altitude;
+		}
+		if (elementType == this.elementTypes.kElementSpeed) {
+			return this.speed;
+		}
+		if (elementType == this.elementTypes.kElementDistance) {
+			return this.distance;
+		}
+	}
 }
 
 // Class to act as a collection of DataPoints
 class SessionData {
 
+	elementTypes = new DataElements();
+
 	constructor() {
 		this.dataPoints = [];
-		
-		// Constants for the data elements - add for additional elements as required
-		this.kElementLatitude = 1;
-		this.kElementLongitude = 2;
-		this.kElementAltitude = 3;
-		this.kElementSpeed = 4;
-		this.kElementDistance = 5;
-
 	}
 	
 	addPoint(latitude, longitude, altitude, speed, distance) {
@@ -72,48 +96,60 @@ class SessionData {
 	}
 	
 	latitudeArray() {
-		return this.arrayOfElements(this.kElementLatitude);
+		return this.arrayOfElements(this.elementTypes.kElementLatitude);
 	}
 	
 	longitudeArray() {
-		return this.arrayOfElements(this.kElementLongitude);
+		return this.arrayOfElements(this.elementTypes.kElementLongitude);
 	}
 
 	altitudeArray() {
-		return this.arrayOfElements(this.kElementAltitude);
+		return this.arrayOfElements(this.elementTypes.kElementAltitude);
 	}
 
 	speedArray() {
-		return this.arrayOfElements(this.kElementSpeed);
+		return this.arrayOfElements(this.elementTypes.kElementSpeed);
 	}
 
 	distanceArray() {
-		return this.arrayOfElements(this.kElementDistance);
+		return this.arrayOfElements(this.elementTypes.kElementDistance);
+	}
+	
+	distanceAltitudeArray() {
+		// Returns array of elements as [ distance, altitude ]
+		return this.arrayOfElementsWithElement(this.elementTypes.kElementDistance, this.elementTypes.kElementAltitude)
+	}
+	
+	distanceSpeedArray() {
+		// Returns array of elements as [ distance, speed ]
+		return this.arrayOfElementsWithElement(this.elementTypes.kElementDistance, this.elementTypes.kElementSpeed)
+	}
+	
+	latLongArray() {
+		// Returns array of elements as [ latitude, longitude ]
+		return this.arrayOfElementsWithElement(this.elementTypes.kElementLatitude, this.elementTypes.kElementLongitude)
 	}
 
 	
 	arrayOfElements(elementType) {
 		var elementArray = [];
 		for (let i = 0; i < this.dataPoints.length; i++) {
-			if (elementType == this.kElementLatitude) {
-				elementArray.push(this.dataPoints[i].latitude);
-			}
-			if (elementType == this.kElementLongitude) {
-				elementArray.push(this.dataPoints[i].longitude);
-			}
-			if (elementType == this.kElementAltitude) {
-				elementArray.push(this.dataPoints[i].altitude);
-			}
-			if (elementType == this.kElementSpeed) {
-				elementArray.push(this.dataPoints[i].speed);
-			}
-			if (elementType == this.kElementDistance) {
-				elementArray.push(this.dataPoints[i].distance);
-			}
+			elementArray.push(this.dataPoints[i].valueForElementType(elementType));
 		}
 		return elementArray;
 	}
-
+	
+	arrayOfElementsWithElement(elementType1, elementType2) {
+		var elementArray = [];
+		for (let i = 0; i < this.dataPoints.length; i++) {
+			var element1 = this.dataPoints[i].valueForElementType(elementType1);
+			var element2 = this.dataPoints[i].valueForElementType(elementType2);
+			let elementPair = [ element1, element2 ];
+			elementArray.push(elementPair);
+		}
+		return elementArray;
+	}
+	
 }
 
  /**
