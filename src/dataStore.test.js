@@ -31,6 +31,38 @@ it("sets and returns speed & distance", () => {
 // 	expect(store.longitude).toBe(-78.3);
 });
 
+it("tests setter for latitude", () => {
+	store = new DataPoint();
+	store.addLatitude(57.5);
+	expect(store.latitude).toBe(57.5);
+});
+
+it("tests setter for longitude", () => {
+	store = new DataPoint();
+	store.addLongitude(-78.3);
+	expect(store.longitude).toBe(-78.3);
+});
+
+it("tests setter for altitude", () => {
+	store = new DataPoint();
+	store.addAltitude(45);
+	expect(store.altitude).toBe(45);
+});
+
+it("tests setter for speed", () => {
+	store = new DataPoint();
+	store.addSpeed(34.5);
+	expect(store.speed).toBe(34.5);
+});
+
+it("tests setter for distance", () => {
+	store = new DataPoint();
+	store.addDistance(79.3);
+	expect(store.distance).toBe(79.3);
+});
+
+
+
 it("builds an array of DataPoints", () => {
 	var points = [];
 	for (let i = 0; i < 5; i++) {

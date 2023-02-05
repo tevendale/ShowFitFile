@@ -29,6 +29,26 @@ class DataPoint {
 		this.speed = speed;
 		this.distance = distance;
 	}
+	
+	addLatitude(latitude) {
+		this.latitude = latitude;
+	}
+	
+	addLongitude(longitude) {
+		this.longitude = longitude;
+	}
+
+	addAltitude(altitude) {
+		this.altitude = altitude;
+	}
+
+	addSpeed(speed) {
+		this.speed = speed;
+	}
+	
+	addDistance(distance) {
+		this.distance = distance;
+	}
 }
 
 // Class to act as a collection of DataPoints
