@@ -76,27 +76,27 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 					const positions = [];
 					const altData = [];
 					const speedData = [];
+					
+					// Extract the data from the file into a SessionData object
+					var sessionData = new SessionData();
 					data.records.forEach( function ( arrayItem ) {
+						let lat = null;
+						let lon = null;
+						let altitude = null;
+						let speed = null;
+						let distance = null;
 						if ( 'position_lat' in arrayItem ) {
-							const lat = arrayItem.position_lat;
-							const lon = arrayItem.position_long;
-							positions.push( { x: lat, y: lon } );
+							lat = arrayItem.position_lat;
+							lon = arrayItem.position_long;
 						}
 						if ( 'altitude' in arrayItem ) {
-							const distanceThisPoint = arrayItem.distance;
-							altData.push( [
-								distanceThisPoint,
-								arrayItem.altitude,
-							] );
+							altitude = arrayItem.altitude
 						}
 						if ( 'speed' in arrayItem ) {
-							const distanceThisPoint = arrayItem.distance;
-							speedData.push( [
-								distanceThisPoint,
-								arrayItem.speed,
-							] );
+							speed = arrayItem.speed;
 						}
 						if ( 'distance' in arrayItem ) {
+							distance = arrayItem.distance;
 							const distanceThisPoint = arrayItem.distance;
 							const timeThisPoint = arrayItem.timestamp;
 							if ((distanceThisPoint - distanceLastPoint) > 0.0) {
@@ -108,11 +108,11 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 							timeLastPoint = timeThisPoint;
 							distanceLastPoint = distanceThisPoint;
 						}
-
+						sessionData.addPoint( lat, lon, altitude, speed, distance );
 					} );
 					
 					// Check if we have GPS data - file may be from an indoor run or cycle
-					if (positions.length == 0) {
+					if (sessionData.length == 0) {
 						errorCallback( "The file doesn't contain any position data." );
 						return;
 					}
@@ -122,19 +122,21 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 					// and speeds up displaying the map.
 					// 500 is an arbitrary figure that seems to work ok
 					// There might be a case for making this figure a setting somewhere
-					const simplified = SimplifyTo( positions, downloadsizeTo );
+					const simplified = SimplifyTo( sessionData, downloadsizeTo );
 
 					// Now, convert the array to the format required by Leaflet
-					const routeData = [];
-					simplified.forEach( function ( pointItem ) {
-						const lat = pointItem.x;
-						const lon = pointItem.y;
-						routeData.push( [ lat, lon ] );
-					} );
+					const routeData = simplified.latLongArray();
+// 					simplified.forEach( function ( pointItem ) {
+// 						const lat = pointItem.x;
+// 						const lon = pointItem.y;
+// 						routeData.push( [ lat, lon ] );
+// 					} );
 
 					// Downsample the Altitude Data to 500 points
-					const altDownsampled = LTTB( altData, downloadsizeTo );
-					const speedDownsampled = LTTB( speedData, downloadsizeTo );
+					const altDownsampled = simplified.distanceAltitudeArray();
+					const speedDownsampled = simplified.distanceSpeedArray();
+// 					const altDownsampled = LTTB( altData, downloadsizeTo );
+// 					const speedDownsampled = LTTB( speedData, downloadsizeTo );
 
 					const sessionDetails = {
 						startTime: time,
