@@ -5,6 +5,8 @@ import axios from 'axios';
 import { Buffer } from 'buffer';
 // import fitfileparser from 'fit-file-parser';
 
+import { DataPoint, SessionData } from './dataStore';
+
 // To simplify the route curve
 import { SimplifyTo } from 'curvereduce';
 
