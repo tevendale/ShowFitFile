@@ -5,11 +5,7 @@
 import axios from 'axios';
 import { Buffer } from 'buffer';
 
-// To simplify the route curve
-import { SimplifyTo } from 'curvereduce';
-
-// To downsample the Altitude array
-import { LTTB } from 'downsample';
+import { DataPoint, SessionData } from './dataStore';
 
 export default async function loadGPXFile( fileID, callback ) {
 	wp.media
@@ -41,7 +37,10 @@ export default async function loadGPXFile( fileID, callback ) {
 			const descent = gpx.tracks[ 0 ].elevation.neg;
 
 			// First entry, zero distance, zero speed.
-			speedData.push( [ 0, 0 ] );
+// 			speedData.push( [ 0, 0 ] );
+			
+			// Extract the data from the file into a SessionData object
+			var sessionData = new SessionData();
 
 			const pointCount = gpx.tracks[ 0 ].points.length;
 			while ( nn < pointCount ) {
@@ -49,29 +48,26 @@ export default async function loadGPXFile( fileID, callback ) {
 					// Build lat/long route array
 					const lat = gpx.tracks[ 0 ].points[ nn ].lat;
 					const lon = gpx.tracks[ 0 ].points[ nn ].lon;
-					const latLong = { x: lat, y: lon };
-					positions.push( latLong );
+					var altitude = null;
 
-					// Build distance/speed arrayItem
+					// Build distance/speed
 					distance = gpx.tracks[ 0 ].distance.cumul[ nn ];
 
 					let distanceThisPoint = gpx.tracks[ 0 ].distance.cumul[ nn ] - gpx.tracks[ 0 ].distance.cumul[ nn-1 ]; // in meters
 					let time = (gpx.tracks[ 0 ].points[nn].time - gpx.tracks[ 0 ].points[ nn-1 ].time)/1000.0; // in seconds
-					let speed = distanceThisPoint / time;  //in meters per milliseconds
+					let speed = ((distanceThisPoint / time) * 3.6);  //in meters per milliseconds
 					
 					if (distanceThisPoint > 0) {
 						movingTime += time;
 					}
 
-					speedData.push( [ distance, (speed * 3.6) ] ); // convert to km/hr from metres/second
-
-					// Build elevation array
 					if ( 'ele' in gpx.tracks[ 0 ].points[ nn ] ) {
-						altData.push( [ distance, gpx.tracks[ 0 ].points[ nn ].ele ] );
+						altitude = gpx.tracks[ 0 ].points[ nn ].ele 
 					}
-
-					nn++;
+					
+					sessionData.addPoint( lat, lon, altitude, speed, distance );
 				}
+				nn++;
 			}
 
 			// Get duration between first and last points (milliseconds)
@@ -90,20 +86,13 @@ export default async function loadGPXFile( fileID, callback ) {
 			// and speeds up displaying the map.
 			// 500 is an arbitrary figure that seems to work ok
 			// There might be a case for making this figure a setting somewhere
-			const simplified = SimplifyTo( positions, downloadsizeTo );
+			sessionData.simplifyTo(downloadsizeTo );
 
-			// Now, convert the array to the format required by Leaflet
-			const routeData = [];
-			simplified.forEach( function ( pointItem ) {
-				const lat = pointItem.x;
-				const lon = pointItem.y;
-				routeData.push( [ lat, lon ] );
-			} );
 
-			// Downsample the Altitude Data to 500 points
-			const altDownsampled = LTTB( altData, downloadsizeTo );
-			// Downsample the Speed Data to 500 points
-			const speedDownsampled = LTTB( speedData, downloadsizeTo );
+			// Extract the downsampled data arrays
+			const routeData = sessionData.latLongArray();
+			const altDownsampled = sessionData.distanceAltitudeArray();
+			const speedDownsampled = sessionData.distanceSpeedArray();
 
 
 			const sessionDetails = {
