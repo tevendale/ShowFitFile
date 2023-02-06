@@ -8,10 +8,10 @@ import { Buffer } from 'buffer';
 import { DataPoint, SessionData } from './dataStore';
 
 // To simplify the route curve
-import { SimplifyTo } from 'curvereduce';
-
+// import { SimplifyTo } from 'curvereduce';
+// 
 // To downsample the Altitude array
-import { LTTB } from 'downsample';
+// import { LTTB } from 'downsample';
 
 export default async function loadFitFile( fitfileID, callback, errorCallback ) {
 	// preload your attachment
