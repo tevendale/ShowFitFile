@@ -8,12 +8,6 @@ const PerpendicularDistance = require("./dataStore").PerpendicularDistance;
 const MaxDistance = require("./dataStore").MaxDistance;
 const BinarySearch = require("./dataStore").BinarySearch;
 const Simplify = require("./dataStore").Simplify;
-const SimplifyTo = require("./dataStore").SimplifyTo;
-
-
-// it("Returns test ", () => {
-//     expect(testCall()).toBe("test");
-// });
 
 it("sets and returns latitude, longitude, altitude, speed & distance", () => {
 	store = new DataPoint(57.5, -78.3, 45);
@@ -619,7 +613,10 @@ test('simplify to 1 point, shortest distance', () => {
 					 new DataPoint( 198.975,  26.1596 ),
 					 new DataPoint( 199.699,  26.1729 ) 
 					 ];
-    expect(SimplifyTo(points, 1)).toStrictEqual([ points[0], points[points.length - 1] ]);
+	sessionData = new SessionData();
+	sessionData.dataPoints = points;
+	sessionData.simplifyTo(1);
+    expect(sessionData.dataPoints).toStrictEqual([ points[0], points[points.length - 1] ]);
 });
 test('simplify to 20 points, shortest distance', () => {
     const points = [ new DataPoint( 1.20401E-09,  -0.00120428 ),
@@ -817,7 +814,10 @@ test('simplify to 20 points, shortest distance', () => {
 					 new DataPoint( 198.975,  26.1596 ),
 					 new DataPoint( 199.699,  26.1729 ) 
 					 ];
-    expect(SimplifyTo(points, 20).length).toEqual(20);
+	sessionData = new SessionData();
+	sessionData.dataPoints = points;
+	sessionData.simplifyTo(20);		 
+    expect(sessionData.dataPoints.length).toEqual(20);
 });
 test('simplify to 1000 point, shortest distance', () => {
     const points = [ new DataPoint( 1.20401E-09,  -0.00120428 ),
@@ -1015,7 +1015,11 @@ test('simplify to 1000 point, shortest distance', () => {
 					 new DataPoint( 198.975,  26.1596 ),
 					 new DataPoint( 199.699,  26.1729 ) 
 					 ];
-    expect(SimplifyTo(points, 1000)).toStrictEqual(points);
+    sessionData = new SessionData();
+	sessionData.dataPoints = points;
+	sessionData.simplifyTo(1000);		 
+
+    expect(sessionData.dataPoints).toStrictEqual(points);
 });
 //#endregion
 

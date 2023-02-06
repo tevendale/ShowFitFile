@@ -91,7 +91,7 @@ class SessionData {
 	}
 	
 	addPoint(latitude, longitude, altitude, speed, distance) {
-		var point = new DataPoint(latitude, longitude, altitude, speed, distance);
+		const point = new DataPoint(latitude, longitude, altitude, speed, distance);
 		this.dataPoints.push(point);
 	}
 	
@@ -132,7 +132,7 @@ class SessionData {
 
 	
 	arrayOfElements(elementType) {
-		var elementArray = [];
+		const elementArray = [];
 		for (let i = 0; i < this.dataPoints.length; i++) {
 			elementArray.push(this.dataPoints[i].valueForElementType(elementType));
 		}
@@ -140,16 +140,20 @@ class SessionData {
 	}
 	
 	arrayOfElementsWithElement(elementType1, elementType2) {
-		var elementArray = [];
+		const elementArray = [];
 		for (let i = 0; i < this.dataPoints.length; i++) {
-			var element1 = this.dataPoints[i].valueForElementType(elementType1);
-			var element2 = this.dataPoints[i].valueForElementType(elementType2);
-			let elementPair = [ element1, element2 ];
+			const element1 = this.dataPoints[i].valueForElementType(elementType1);
+			const element2 = this.dataPoints[i].valueForElementType(elementType2);
+			const elementPair = [ element1, element2 ];
 			elementArray.push(elementPair);
 		}
 		return elementArray;
 	}
 	
+	simplifyTo(pointCount) {
+		const simplifiedPoints = SimplifyTo(this.dataPoints, pointCount);
+		this.dataPoints = simplifiedPoints;
+	}
 }
 
  /**
@@ -352,6 +356,11 @@ class SessionData {
   * @param distanceFunc function used for determining distance
   * @returns points making up the simplified curve
   */
+  
+ //TODO: This needs to accept a SessionData object and return the same 
+ // extract the 'points' variable from the SessionData object and use that to work on
+ // Create a new SessionData object and inject the returned data points into it - needs a new method in SsssionData class.
+ // Scrap the above - add this as a method of SessionData, and just downsize the array that's contained in it.
  const SimplifyTo = (points, pointCount, distanceFunc = DefaultDistanceFunc) => {
  
      let result;
@@ -382,11 +391,6 @@ class SessionData {
      return result;
  }
 
-
-
-
-
-// module.exports = DataPoint, testCall, SessionData;
 exports.DataPoint = DataPoint;
 exports.SessionData = SessionData;
 exports.ShortestDistance = ShortestDistance;
@@ -394,4 +398,3 @@ exports.PerpendicularDistance = PerpendicularDistance;
 exports.MaxDistance = MaxDistance;
 exports.BinarySearch = BinarySearch;
 exports.Simplify = Simplify;
-exports.SimplifyTo = SimplifyTo;
