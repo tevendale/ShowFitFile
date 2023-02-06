@@ -122,10 +122,10 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 					// and speeds up displaying the map.
 					// 500 is an arbitrary figure that seems to work ok
 					// There might be a case for making this figure a setting somewhere
-					const simplified = SimplifyTo( sessionData, downloadsizeTo );
-
+					sessionData.simplifyTo(downloadsizeTo );
+					
 					// Now, convert the array to the format required by Leaflet
-					const routeData = simplified.latLongArray();
+					const routeData = sessionData.latLongArray();
 // 					simplified.forEach( function ( pointItem ) {
 // 						const lat = pointItem.x;
 // 						const lon = pointItem.y;
@@ -133,8 +133,8 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 // 					} );
 
 					// Downsample the Altitude Data to 500 points
-					const altDownsampled = simplified.distanceAltitudeArray();
-					const speedDownsampled = simplified.distanceSpeedArray();
+					const altDownsampled = sessionData.distanceAltitudeArray();
+					const speedDownsampled = sessionData.distanceSpeedArray();
 // 					const altDownsampled = LTTB( altData, downloadsizeTo );
 // 					const speedDownsampled = LTTB( speedData, downloadsizeTo );
 
