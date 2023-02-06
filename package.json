@@ -31,8 +31,6 @@
 		"@wordpress/server-side-render": "^4.1.0",
 		"axios": "^1.2.2",
 		"chart.js": "^4.1.1",
-		"curvereduce": "^1.0.0",
-		"downsample": "^1.4.0",
 		"fit-file-parser": "^1.9.3",
 		"geolib": "^3.3.3",
 		"gpx-builder": "^5.2.0",
