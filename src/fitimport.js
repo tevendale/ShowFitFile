@@ -3,15 +3,8 @@
 // For fitfileparser for .fit import
 import axios from 'axios';
 import { Buffer } from 'buffer';
-// import fitfileparser from 'fit-file-parser';
 
 import { DataPoint, SessionData } from './dataStore';
-
-// To simplify the route curve
-// import { SimplifyTo } from 'curvereduce';
-// 
-// To downsample the Altitude array
-// import { LTTB } from 'downsample';
 
 export default async function loadFitFile( fitfileID, callback, errorCallback ) {
 	// preload your attachment
@@ -64,18 +57,12 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 					const descent = data.sessions[ 0 ].total_descent;
 
 
-					// built array of GPS data in correct format for Leafletjs map
-					// First, simplify the array using Ramer–Douglas–Peucker algorithm
-					// Data needs to be array of {x:, y:} objects
-					// CurveReduce npm package
-					// We also extract the altitude data here - we'll probably do the
-					// same for the other training data that we're interested it.
 					var distanceLastPoint = 0.0;
 					var timeLastPoint = -1;
 					var movingTime = 0.0;
-					const positions = [];
-					const altData = [];
-					const speedData = [];
+// 					const positions = [];
+// 					const altData = [];
+// 					const speedData = [];
 					
 					// Extract the data from the file into a SessionData object
 					var sessionData = new SessionData();
@@ -124,19 +111,10 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 					// There might be a case for making this figure a setting somewhere
 					sessionData.simplifyTo(downloadsizeTo );
 					
-					// Now, convert the array to the format required by Leaflet
+					// Extract the downsampled data arrays
 					const routeData = sessionData.latLongArray();
-// 					simplified.forEach( function ( pointItem ) {
-// 						const lat = pointItem.x;
-// 						const lon = pointItem.y;
-// 						routeData.push( [ lat, lon ] );
-// 					} );
-
-					// Downsample the Altitude Data to 500 points
 					const altDownsampled = sessionData.distanceAltitudeArray();
 					const speedDownsampled = sessionData.distanceSpeedArray();
-// 					const altDownsampled = LTTB( altData, downloadsizeTo );
-// 					const speedDownsampled = LTTB( speedData, downloadsizeTo );
 
 					const sessionDetails = {
 						startTime: time,
