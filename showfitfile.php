@@ -496,7 +496,7 @@ function sff_fitHTML() {
 
 // Fails to show map for shortcode if the next line isn't commented out
 // 	if ($options->showSummary == 'YES') {
-		$html .= "<tr><td class=\"sff_dataTable\"><div class=\"sff_dataTitle\">Time:</div><div class=\"sff_dataItem\">" . $date->format('d-M-y g:i a') . "</div></td>\n<td class=\"sff_dataTable\"><div class=\"sff_dataTitle\">Duration:</div><div class=\"sff_dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_timer_time']) . "</div>\n</td><td class=\"sff_dataTable\"><div class=\"sff_dataTitle\">Distance:</div><div class=\"sff_dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr>";
+		$html .= "<tr><td class=\"sff_sc_dataCell\"><div class=\"sff_dataTitle\">Time:</div><div class=\"sff_dataItem\">" . $date->format('d-M-y g:i a') . "</div></td>\n<td class=\"sff_sc_dataCellMiddle\"><div class=\"sff_dataTitle\">Duration:</div><div class=\"sff_dataItem\">" . gmdate('H:i:s', $pFFA->data_mesgs['session']['total_timer_time']) . "</div>\n</td><td class=\"sff_sc_dataCellLast\"><div class=\"sff_dataTitle\">Distance:</div><div class=\"sff_dataItem\">" . max($pFFA->data_mesgs['record']['distance']) . " " . $unitsString . "</div></td></tr>";
 
 
 // 	}

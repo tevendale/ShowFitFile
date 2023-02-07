@@ -18,6 +18,23 @@
 	border: 0px;
 }
 
+.sff_sc_dataCell {
+	width: 33%;
+	border: 0px;
+}
+
+.sff_sc_dataCellLast {
+	width: 33%;
+	border: 0px;
+	text-align: right;
+}
+
+.sff_sc_dataCellMiddle {
+	width: 33%;
+	border: 0px;
+	text-align: center;
+}
+
 .sff_sportName {
 	color: black;
 	font-size: 150%;
