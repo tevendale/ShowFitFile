@@ -60,9 +60,6 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 					var distanceLastPoint = 0.0;
 					var timeLastPoint = -1;
 					var movingTime = 0.0;
-// 					const positions = [];
-// 					const altData = [];
-// 					const speedData = [];
 					
 					// Extract the data from the file into a SessionData object
 					var sessionData = new SessionData();
@@ -90,7 +87,6 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 								if (timeLastPoint > 0) {
 									movingTime += timeThisPoint - timeLastPoint;
 									}
-								
 							}
 							timeLastPoint = timeThisPoint;
 							distanceLastPoint = distanceThisPoint;
