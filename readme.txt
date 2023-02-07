@@ -1,9 +1,9 @@
 === Show Fit File ===
 Contributors:      stuarttevendale
-Tags:              Garmin, fit, gpx, tcx, OpenStreetMap, Wahoo, Polar, Hammerhead
+Tags:              fit, gpx, tcx, run, cycle, bike, hike, track, gps, Garmin, Wahoo, Polar
 Requires at least: 5.8
 Tested up to:      6.1
-Stable tag:        1.1.1
+Stable tag:        1.1.2
 Requires PHP:	   7.4
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -14,13 +14,15 @@ A plugin to display fit, gpx and tcx files.
 
 Show Fit File is a sports & fitness oriented plugin that allows you to add a map and summary exercise data from a fit, gpx or tcx file. The maps are generated using leafletJS with the map tiles provided by OpenStreetMap.
 
-Both a Gutenberg Block and Shortcode versions are present in this plugin.
+These files are produced by fitness, running and cycling computers, such as Garmin, Polar, Suunto, Wahoo and Hammerhead devices. The files can usually be downloaded either directly from the device, or via the manufacturer's portal.
+
+Both a Gutenberg Block and Shortcode (.fit files only) versions are present in this plugin.
 
 == Installation ==
 
 This section describes how to install the plugin and get it working.
 
-1. Upload complete 'showfit' folder to `/wp-content/plugins/` directory
+1. Upload complete 'showfitfile' folder to `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Upload a .fit file to your Media Library
 4. Add the ShortCode or Block to your post
@@ -32,7 +34,7 @@ This section describes how to install the plugin and get it working.
 
 Add the Show Fit File block to your post
 
-Click on the blue button below the map to upload your .fit file. After a couple of seconds, your file will then be displayed.
+Click on the blue button below the map to upload your .fit , .gpx or .tcx file. After a couple of seconds, your file will then be displayed.
 
 An altitude profile graph will be displayed under the map. This can be hidden using the block controls in the side bar.
 
@@ -71,10 +73,15 @@ Moving time is the time you actually spent moving during your session, while dur
 It's worth noting that, depending on the setup of your device, you may not see much difference between Moving Time and Duration, particularly if your device is set to auto-pause.
 
 == Upgrade Notice ==
+
 = 1.1.0 =
 When upgrading blocks from V1.0.0, you'll need to import the .fit file again, if you want to display the profile graph or the ascent/descent figures.
 
 == Changelog ==
+
+= 1.1.2 =
+* Position on map now correctly tracks mouse location on altitude graph
+* Improved layout of Session Summary details table for ShortCode
 
 = 1.1.1 =
 * Map no longer redraws when post text is edited
