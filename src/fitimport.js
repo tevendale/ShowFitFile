@@ -91,7 +91,9 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 							timeLastPoint = timeThisPoint;
 							distanceLastPoint = distanceThisPoint;
 						}
-						sessionData.addPoint( lat, lon, altitude, speed, distance );
+						if (lat != null) { // Only add data points that have Lat/Long data
+							sessionData.addPoint( lat, lon, altitude, speed, distance );
+						}
 					} );
 					
 					// Check if we have GPS data - file may be from an indoor run or cycle
