@@ -67,7 +67,7 @@
 }
 
 .sff_hideProgressBar {
-	display: none;
+	display: none !important;
 }
 
 .sff_progressBarChild {
@@ -98,7 +98,7 @@
 }
 
 .sff_hideErrorPanel {
-	display: none;
+	display: none !important;
 }
 
 .sff_errorLabel {
