@@ -1,3 +1,7 @@
+/* Added as a test to fix missing styles in editor */
+.wp-block {
+}
+
 .sff_dataTable {
 	width: 100%;
 }
