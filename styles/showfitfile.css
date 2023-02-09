@@ -135,6 +135,10 @@
 	margin-top: 0px;
 }
 
+.sff_trend {
+	width: 14px;
+}
+
 .leaflet-bar a, .leaflet-bar a:hover {
     text-decoration: none !important;
 }
