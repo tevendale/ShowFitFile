@@ -3,7 +3,7 @@ Contributors:      stuarttevendale
 Tags:              fit, gpx, tcx, run, cycle, bike, hike, track, gps, Garmin, Wahoo, Polar
 Requires at least: 5.8
 Tested up to:      6.1
-Stable tag:        1.1.3
+Stable tag:        1.1.4
 Requires PHP:	   7.4
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -78,6 +78,9 @@ It's worth noting that, depending on the setup of your device, you may not see m
 When upgrading blocks from V1.0.0, you'll need to import the .fit file again, if you want to display the profile graph or the ascent/descent figures.
 
 == Changelog ==
+
+= 1.1.4 =
+* Fixed issued reading gpx files that don't have a timestamp in the <trkpt> elements
 
 = 1.1.3 =
 * Fixed bug introduced in 1.1.2 that included empty Lat/Long elements in .fit file decoding
