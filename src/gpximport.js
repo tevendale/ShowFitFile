@@ -28,8 +28,11 @@ export default async function loadGPXFile( fileID, callback ) {
 			let distance = 0.0;
 			let movingTime = 0;
 			let nn = 1;
-
+			
 			let sport = gpx.tracks[ 0 ].type;
+			if (!sport) {
+				sport = "";
+			}
 
 			const totalDistance = gpx.tracks[ 0 ].distance.total;
 
@@ -55,7 +58,10 @@ export default async function loadGPXFile( fileID, callback ) {
 
 					let distanceThisPoint = gpx.tracks[ 0 ].distance.cumul[ nn ] - gpx.tracks[ 0 ].distance.cumul[ nn-1 ]; // in meters
 					let time = (gpx.tracks[ 0 ].points[nn].time - gpx.tracks[ 0 ].points[ nn-1 ].time)/1000.0; // in seconds
-					let speed = ((distanceThisPoint / time) * 3.6);  //in meters per milliseconds
+					let speed = 0;
+					if (time) {
+						speed = ((distanceThisPoint / time) * 3.6);  //in meters per milliseconds
+					}
 					
 					if (distanceThisPoint > 0) {
 						movingTime += time;
@@ -69,7 +75,7 @@ export default async function loadGPXFile( fileID, callback ) {
 				}
 				nn++;
 			}
-
+			
 			// Get duration between first and last points (milliseconds)
 			const duration =
 				( gpx.tracks[ 0 ].points[ gpx.tracks[ 0 ].points.length - 1 ]
@@ -77,9 +83,12 @@ export default async function loadGPXFile( fileID, callback ) {
 					gpx.tracks[ 0 ].points[ 0 ].time ) /
 				1000.0;
 
-			const time = gpx.tracks[ 0 ].points[ 0 ].time
-				.toLocaleString()
-				.substring( 0, 17 );
+			let time = "";
+			if (gpx.tracks[ 0 ].points[ 0 ].time) {
+				time = gpx.tracks[ 0 ].points[ 0 ].time
+					.toLocaleString()
+					.substring( 0, 17 );
+				}
 
 			// Simplify the route to 500 points
 			// This helps reduce the amount of data stored for each post,

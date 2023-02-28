@@ -1,38 +1,4 @@
 /**
- * ToDo
- * ✓ Date format in header - DD/mm/YYYY hh:mm in local format
- * ✓ Format distance in km or miles
- * ✓ Get 'Units' popup working
- * ✓ Get 'Interactive' button Working
- * ✓ Get 'Show/Hide summary' button working
- * ✓ Get Colour selector linked to Route colour
- * ✓ Distance missing is displayed post
- * ✓ - First run in editor, distance shows as 0 km instead of '--'
- * Need to get Moving Time from .fit file
- * - Using Garmin value if it's there
- * - Calculate if it's not
- * ✓ Add option to show or hide start and end markers (option for each)
- * ✓ Downsize the route data
- * Update block.json to latest spec
- * ✓ Test on WP 6.1
- * ✓ Sort out how it looks on a real page
- * ✓ look at what happens when inserted into a new post - errors at the moment.
- *
- *
- * V2
- * ✓ Add sport
- * ✓ Add Altitude Graph
- * ✓ - Altitude graph same colour as route
- * ✓ - Altitude Graph filled in editor
- * ✓ - Altitude Graph tracks route on map
- 		✓ - Need to add this to the 'Edit' view
- * ✓ Add Speed graph
- * Export route gpx
- * Set Map Size in css
- * Add photos? Geolocate with markers on map
- */
-
-/**
  *
  * Copyright (c), Stuart Tevendale 2022
  *
@@ -135,9 +101,16 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	function processSessionDataCallback( details ) {
 	
-		setAttributes( {
-			duration: toHHMMSS( details.duration ),
-		} );
+		if (details.duration > 0) {
+			setAttributes( {
+				duration: toHHMMSS( details.duration ),
+			} );
+		}
+		else {
+			setAttributes( {
+				duration: "",
+			} );
+		}
 		
 		setAttributes( { durationValue: details.duration } );
 
@@ -305,14 +278,28 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( newval ) => {
 								setAttributes( { useMovingTime: newval } );
 								if (newval) {
-									setAttributes( {
-										duration: toHHMMSS( attributes.movingTimeValue ),
-									} );
+									if (attributes.movingTimeValue > 0) {
+										setAttributes( {
+											duration: toHHMMSS( attributes.movingTimeValue ),
+										} );
+									}
+									else {
+										setAttributes( {
+											duration: "",
+										} );									
+									}
 								}
 								else {
-									setAttributes( {
-										duration: toHHMMSS( attributes.durationValue ),
-									} );
+									if (attributes.durationValue > 0) {
+										setAttributes( {
+											duration: toHHMMSS( attributes.durationValue ),
+										} );
+									}
+									else{
+										setAttributes( {
+											duration: "",
+										} );									
+									}
 								}
 								}
 							}

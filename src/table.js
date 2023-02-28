@@ -22,18 +22,21 @@ import React, { useEffect, useState } from 'react';
 			if (showMovingTime) {
 				durationLabel = "Moving Time:";
 			}
+			let timeCell;
+			if (time != "") {
+				timeCell = <td className='sff_dataCell'><div className='sff_dataTitle'>Time:</div><div className='sff_dataItem'> { time }</div></td>;
+			}
+			let durationCell;
+			if (duration != "") {
+				durationCell = <td className='sff_dataCell'><div className='sff_dataTitle'>{ durationLabel }</div><div className='sff_dataItem'> { duration }</div></td>;
+			}
+			
 			return (
 				<table className="sff_dataTable">
 					<tbody>
 						<tr>
-							<td className="sff_dataCell">
-								<div className="sff_dataTitle">Time:</div>
-								<div className="sff_dataItem"> { time }</div>
-							</td>
-							<td className="sff_dataCell">
-								<div className="sff_dataTitle">{ durationLabel }</div>
-								<div className="sff_dataItem"> { duration } </div>
-							</td>
+							{timeCell}
+							{durationCell}
 							<td className="sff_dataCell">
 								<div className="sff_dataTitle">Ascent/Descent:</div>
 								<div className="sff_dataItem"> <FontAwesomeIcon icon={ faArrowTrendUp } /> {ascentString} / <FontAwesomeIcon icon={ faArrowTrendDown } /> { descentString} </div>
@@ -55,7 +58,7 @@ import React, { useEffect, useState } from 'react';
 
 
 
-		const buildDistanceString = ( distanceMetres, units ) => {
+	const buildDistanceString = ( distanceMetres, units ) => {
 		let distString = '--';
 
 		// If distance is 0 (i.e. before a .fit file is loaded), then just show '--'
