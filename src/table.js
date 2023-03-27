@@ -39,7 +39,7 @@ import React, { useEffect, useState } from 'react';
 							{durationCell}
 							<td className="sff_dataCell">
 								<div className="sff_dataTitle">Ascent/Descent:</div>
-								<div className="sff_dataItem"> <FontAwesomeIcon icon={ faArrowTrendUp } /> {ascentString} / <FontAwesomeIcon icon={ faArrowTrendDown } /> { descentString} </div>
+								<div className="sff_dataItem"> <FontAwesomeIcon className="sff_trend" icon={ faArrowTrendUp } /> {ascentString} / <FontAwesomeIcon className="sff_trend" icon={ faArrowTrendDown } /> { descentString} </div>
 							</td>
 							<td
 								style={ { width: '18%' } }
