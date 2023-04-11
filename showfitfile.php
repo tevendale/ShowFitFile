@@ -668,7 +668,7 @@ function sff_scripts_and_styles_load(){
 		}";
   wp_add_inline_style('leafletjs_css', $map_custom_css );
 
-  wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js');
+  wp_enqueue_script('chartjs', 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.2.1/chart.umd.js');
 }
 
 function sff_getRouteColour() {
