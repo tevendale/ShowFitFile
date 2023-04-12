@@ -32,74 +32,32 @@ function yft_showfitfile_block_altitudegraph($attr) {
     $polyline = rtrim($polyline, ",");
 	$polyline = "[" . $polyline . "]";
 
-// 	print_r($polyline);
-
 	$html = "const ctx = document.getElementById('altitude');
 	var latData = " . yft_showfitfile_block_latitude_data($attr) . ";
  	var longData = " . yft_showfitfile_block_longitude_data($attr) . ";
  	var circle = new L.circleMarker();
  	
-// 	const mouseLine = {
-// 		  id: 'mouseLine',
-// 		  afterEvent: function (chart, e) {
-// 		  	console.log('mouseLine afterEvent');
-// 
-// 			var chartArea = chart.chartArea;
-// 			if (
-// 			  e.x >= chartArea.left &&
-// 			  e.y >= chartArea.top &&
-// // 				  e.x <= chartArea.right &&
-// // 				  e.y <= chartArea.bottom &&
-// 			  chart.active.length
-// 			) {
-// 			  chart.options.mouseLine.x = chart.active[0]._model.x;
-// 			} else {
-// 			  chart.options.mouseLine.x = NaN;
-// 			}
-// 		  },
-// 		  afterDraw: function (chart, easing) {
-// 		  	console.log('mouseLine afterDraw');
-// 
-// 			var ctx = chart.chart.ctx;
-// 			var chartArea = chart.chartArea;
-// 			var x = chart.options.mouseLine.x;
-// 
-// 			if (!isNaN(x)) {
-// 			  ctx.save();
-// 			  ctx.strokeStyle = chart.options.mouseLine.color;
-// 			  ctx.lineWidth = 1
-// 			  ctx.moveTo(chart.options.mouseLine.x, chartArea.bottom);
-// 			  ctx.lineTo(chart.options.mouseLine.x, chartArea.top);
-// 			  ctx.stroke();
-// 			  ctx.restore();
-// 			}
-// 		  }
-// 		};
-
-
-	const myChart = new Chart(ctx, {
+ 	
+	const altChart = new Chart(ctx, {
 		plugins: [{
 		  afterEvent: function(chart, args, pluginOptions) {
-			let event = args.event;
-// 			console.log(event.x);
-			let x = event.x;
-			chart.options.mouseLine.x = event.x;
-// 			console.log(chart.options.mouseLine);
+		  	if (args.inChartArea) {
+
+				var ctx = chart.ctx;
+				var chartArea = chart.chartArea;
+
+				ctx.save();
+				ctx.strokeStyle = '#888888';
+				ctx.lineWidth = 1
+				ctx.moveTo(args.event.x, chartArea.bottom);
+				ctx.lineTo(args.event.x, chartArea.top);
+				ctx.stroke();
+				ctx.restore();
+			}
+
 			},
 		afterDraw: function(chart, args, pluginOptions) {
-		  	
-		  	var ctx = chart.ctx;
-			var chartArea = chart.chartArea;
-			var x = chart.options.mouseLine.x;
-
-			ctx.save();
-			ctx.strokeStyle = chart.options.mouseLine.color;
-			ctx.lineWidth = 1
-			ctx.moveTo(chart.options.mouseLine.x, chartArea.bottom);
-			ctx.lineTo(chart.options.mouseLine.x, chartArea.top);
-			ctx.stroke();
-			ctx.restore();
-
+			chart.update();
 			}
 		}
 		],
@@ -118,9 +76,6 @@ function yft_showfitfile_block_altitudegraph($attr) {
 		options: {
 			events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
 		  onHover: handleChartHover,
-			mouseLine: {
-				color: '#32d296'
-			},
 
 		  responsive: true,
 		  maintainAspectRatio: false,
@@ -168,15 +123,13 @@ function yft_showfitfile_block_altitudegraph($attr) {
 					}
 			}
 		},
-// 		plugins: [mouseLine]		
 	}
 	});
 
 	function handleChartHover (e) {
-		var chartHoverData = myChart.getElementsAtEventForMode(e, 'x', { intersect: false }, false);
+		var chartHoverData = altChart.getElementsAtEventForMode(e, 'x', { intersect: false }, false);
 		if (chartHoverData.length) {
 			var xPos = chartHoverData[0].index;
-// 			console.log(xPos);
 			if (xPos < latData.length) {
 				var lat = latData[chartHoverData[0].index].y;
 				var long = longData[chartHoverData[0].index].y;
