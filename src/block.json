@@ -95,6 +95,10 @@
 			"type": "array",
 			"default": []
 		},
+		"laps": {
+			"type": "array",
+			"default": []
+		},
 		"showAltitudeGraph": {
 			"type": "boolean",
 			"default": "{true}"
