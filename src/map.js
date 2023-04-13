@@ -147,7 +147,7 @@ import markerShadow from '../styles/images/marker-shadow.png';
 		if (laps) {
 			for (let i = 0; i < laps.length; i++)  {
 				lapMarkers.push(
-				<CircleMarker key={i} center={laps[i]} radius={5} pathOptions={{ color: 'blue', fillOpacity:1.0}} />
+				<CircleMarker key={i} center={laps[i]} radius={5} pane={"markerPane"} pathOptions={{ color: 'blue', fillOpacity:0.8}} />
 				);
 			}
 			console.log(lapMarkers);
