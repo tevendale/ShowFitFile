@@ -1,7 +1,7 @@
 import { MapContainer } from 'react-leaflet/MapContainer';
 import { TileLayer } from 'react-leaflet/TileLayer';
 import { useMap } from 'react-leaflet/hooks';
-import { Marker, Polyline, Circle } from 'react-leaflet';
+import { Marker, Polyline, CircleMarker } from 'react-leaflet';
 import L from 'leaflet';
 
 // Gesture handling to show 'use 2 fingers to zoom'
@@ -147,7 +147,7 @@ import markerShadow from '../styles/images/marker-shadow.png';
 		if (laps) {
 			for (let i = 0; i < laps.length; i++)  {
 				lapMarkers.push(
-				<Circle key={i} center={laps[i]} radius={200} pathOptions={{ color: 'blue' }} />
+				<CircleMarker key={i} center={laps[i]} radius={5} pathOptions={{ color: 'blue', fillOpacity:1.0}} />
 				);
 			}
 			console.log(lapMarkers);
