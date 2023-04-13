@@ -146,6 +146,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		
 		// Moving Time
 		setAttributes( { movingTimeValue: details.movingTime } );
+		
+		// Laps
+		setAttributes( { laps: details.laps } );
+
 
 		setHideProgressbar(true);
 	}
@@ -226,6 +230,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						lineColour= {attributes.lineColour}
 						route={ attributes.route }
 						interactive={ attributes.interactive }
+						laps={ attributes.laps }
 					></RouteMap>
 				</div>;
 		};
