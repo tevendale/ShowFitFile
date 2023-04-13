@@ -103,6 +103,10 @@
 			"type": "boolean",
 			"default": "{true}"
 		},
+		"showLaps": {
+			"type": "boolean",
+			"default": "{true}"
+		},
 		"ascentString": {
 			"type": "string",
 			"default": "-"

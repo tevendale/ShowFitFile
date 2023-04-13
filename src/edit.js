@@ -338,6 +338,15 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</PanelRow>
 					<PanelRow>
+						<ToggleControl
+							label="Show Laps"
+							checked={ attributes.showLaps }
+							onChange={ ( newval ) =>
+								setAttributes( { showLaps: newval } )
+							}
+						/>
+					</PanelRow>
+					<PanelRow>
 						<SelectControl
 							label="Units"
 							value={ attributes.units }
