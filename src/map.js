@@ -15,7 +15,7 @@ import greenMarker from '../styles/images/marker-icon-2x-green.png';
 import markerShadow from '../styles/images/marker-shadow.png';
 
 
-	export const RouteMap = ( {startPos, endPos, showStartMarker, showEndMarker, lineColour, route, interactive, laps, showLaps } ) => {
+	export const RouteMap = ( {startPos, endPos, showStartMarker, showEndMarker, lineColour, route, interactive, laps, showLaps, lapColour } ) => {
 		return 		<MapContainer
 						center={ startPos }
 						zoom={ 13 }
@@ -39,7 +39,8 @@ import markerShadow from '../styles/images/marker-shadow.png';
 						
 						<ShowLapMarkers
 							showLaps={ showLaps }
-							laps= { laps }
+							laps={ laps }
+							lapColour={ lapColour }
 						></ShowLapMarkers>
 
 						<Polyline
@@ -131,13 +132,13 @@ import markerShadow from '../styles/images/marker-shadow.png';
 		return null;
 	};
 
-	const ShowLapMarkers = ( { showLaps, laps } ) => {
+	const ShowLapMarkers = ( { showLaps, laps, lapColour } ) => {
 		if (showLaps) {
 			const lapMarkers = [];
 			if (laps) {
 				for (let i = 0; i < laps.length; i++)  {
 					lapMarkers.push(
-					<CircleMarker key={i} center={laps[i]} radius={5} pane={"markerPane"} pathOptions={{ color: 'blue', fillOpacity:0.8}} />
+					<CircleMarker key={i} center={laps[i]} radius={5} pane={"markerPane"} pathOptions={{ color: lapColour, fillOpacity:0.8}} />
 					);
 				}
 				return <>{ lapMarkers }</>;

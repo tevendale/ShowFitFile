@@ -245,12 +245,13 @@ function yft_showfitfile_block_markers($attr) {
 function yft_showfitfile_block_laps($attr) {
 
 	$laps = $attr['laps'];
+	$lapColour = $attr['lapColour'];
 	$html = "";
 
 	if ($attr['showLaps']) {
 		foreach($laps as $latLongPair) {
 			$lapPoint = "[" . $latLongPair[0] . "," . $latLongPair[1] . "]";
-			$html .= "L.circleMarker(" . $lapPoint . ", {radius:5, pane:'markerPane', color:'blue', fillOpacity:0.8}).addTo(map)\n";
+			$html .= "L.circleMarker(" . $lapPoint . ", {radius:5, pane:'markerPane', color:'" . $lapColour ."', fillOpacity:0.8}).addTo(map)\n";
 		}
 	}
 
