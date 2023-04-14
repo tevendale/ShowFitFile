@@ -370,6 +370,16 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 
 					</PanelRow>
+					<PanelRow>Lap Marker Colour</PanelRow>
+					<PanelRow>
+						<CompactPicker
+							color={ attributes.lapColour }
+							onChangeComplete={ ( newval ) =>
+								setAttributes( { lapColour: newval.hex } )
+							}
+						/>
+
+					</PanelRow>
 				</PanelBody>
 			</InspectorControls>
 		</div>

@@ -99,6 +99,10 @@
 			"type": "array",
 			"default": []
 		},
+		"lapColour": {
+			"type": "string",
+			"default": "blue"
+		},		
 		"showAltitudeGraph": {
 			"type": "boolean",
 			"default": "{true}"
