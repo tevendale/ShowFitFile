@@ -2,7 +2,7 @@
 
 // Methods for rendering Chartjs graphs
 //
-// Copyright 2022 Stuart Tevendale
+// Copyright 2022 - 2023 Stuart Tevendale
 
 
 function yft_showfitfile_block_altitudegraph($attr) {
