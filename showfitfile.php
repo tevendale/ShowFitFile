@@ -192,6 +192,8 @@ function yft_showfitfile_block_map($attr) {
 	poly.addTo(map);
 
 	" . yft_showfitfile_block_markers($attr) . "
+	
+	" . yft_showfitfile_block_laps($attr) . "	
 
 	var centre = poly.getCenter();
 	var bounds = poly.getBounds();
@@ -239,6 +241,23 @@ function yft_showfitfile_block_markers($attr) {
 
 	return $html;
 }
+
+function yft_showfitfile_block_laps($attr) {
+
+	$laps = $attr['laps'];
+	$lapColour = $attr['lapColour'];
+	$html = "";
+
+	if ($attr['showLaps']) {
+		foreach($laps as $latLongPair) {
+			$lapPoint = "[" . $latLongPair[0] . "," . $latLongPair[1] . "]";
+			$html .= "L.circleMarker(" . $lapPoint . ", {radius:5, pane:'markerPane', color:'" . $lapColour ."', fillOpacity:0.8}).addTo(map)\n";
+		}
+	}
+
+	return $html;
+}
+
 
 function yft_showfitfile_block_route($attr) {
 

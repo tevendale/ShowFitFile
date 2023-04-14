@@ -36,6 +36,7 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 					errorCallback( error );
 				} else {
 					// TODO: Look at a file with multiple sessions - triathlon
+// 					console.log(data);
 					
 					const sport = data.sessions[ 0 ].sport;
 					var subSport = data.sessions[ 0 ].sub_sport;
@@ -96,6 +97,41 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 						}
 					} );
 					
+					// Extract the Laps
+					var lapsData = new SessionData();
+					data.laps.forEach( function ( arrayItem ) {
+						let lat = null;
+						let lon = null;
+						let altitude = null;
+						let speed = null;
+						let distance = null;
+						let time = null;
+						if ( 'end_position_lat' in arrayItem ) {
+							lat = arrayItem.end_position_lat;
+							lon = arrayItem.end_position_long;
+						}
+						
+						// Extract other data from Records array
+						if ( 'records' in arrayItem ) {
+							let endRecord = arrayItem.records[arrayItem.records.length - 1];
+							if (endRecord) {
+								if ( 'speed' in arrayItem ) {
+									speed = arrayItem.speed;
+								}
+								if ( 'distance' in arrayItem ) {
+									distance = arrayItem.distance;
+								}
+								if ( 'altitude' in arrayItem ) {
+									altitude = arrayItem.altitude;
+								}
+							}
+						}
+						
+						if (lat != null) { // Only add data points that have Lat/Long data
+							lapsData.addPoint( lat, lon, altitude, speed, distance );
+						}
+					});
+					
 					// Check if we have GPS data - file may be from an indoor run or cycle
 					if (sessionData.length == 0) {
 						errorCallback( "The file doesn't contain any position data." );
@@ -113,7 +149,8 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 					const routeData = sessionData.latLongArray();
 					const altDownsampled = sessionData.distanceAltitudeArray();
 					const speedDownsampled = sessionData.distanceSpeedArray();
-
+					const lapData = lapsData.latLongArray();
+					
 					const sessionDetails = {
 						startTime: time,
 						duration: duration,
@@ -126,6 +163,7 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 						subSport: titleCase( subSport ),
 						ascent: ascent,
 						descent: descent,
+						laps: lapData,
 					};
 
 					callback( sessionDetails );

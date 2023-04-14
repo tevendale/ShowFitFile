@@ -95,7 +95,19 @@
 			"type": "array",
 			"default": []
 		},
+		"laps": {
+			"type": "array",
+			"default": []
+		},
+		"lapColour": {
+			"type": "string",
+			"default": "blue"
+		},		
 		"showAltitudeGraph": {
+			"type": "boolean",
+			"default": "{true}"
+		},
+		"showLaps": {
 			"type": "boolean",
 			"default": "{true}"
 		},

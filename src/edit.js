@@ -146,6 +146,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		
 		// Moving Time
 		setAttributes( { movingTimeValue: details.movingTime } );
+		
+		// Laps
+		setAttributes( { laps: details.laps } );
+
 
 		setHideProgressbar(true);
 	}
@@ -226,6 +230,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						lineColour= {attributes.lineColour}
 						route={ attributes.route }
 						interactive={ attributes.interactive }
+						laps={ attributes.laps }
+						showLaps={ attributes.showLaps }
+						lapColour={ attributes.lapColour }
 					></RouteMap>
 				</div>;
 		};
@@ -333,6 +340,15 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</PanelRow>
 					<PanelRow>
+						<ToggleControl
+							label="Show Laps"
+							checked={ attributes.showLaps }
+							onChange={ ( newval ) =>
+								setAttributes( { showLaps: newval } )
+							}
+						/>
+					</PanelRow>
+					<PanelRow>
 						<SelectControl
 							label="Units"
 							value={ attributes.units }
@@ -351,6 +367,16 @@ export default function Edit( { attributes, setAttributes } ) {
 							color={ attributes.lineColour }
 							onChangeComplete={ ( newval ) =>
 								setAttributes( { lineColour: newval.hex } )
+							}
+						/>
+
+					</PanelRow>
+					<PanelRow>Lap Marker Colour</PanelRow>
+					<PanelRow>
+						<CompactPicker
+							color={ attributes.lapColour }
+							onChangeComplete={ ( newval ) =>
+								setAttributes( { lapColour: newval.hex } )
 							}
 						/>
 

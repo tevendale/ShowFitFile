@@ -1,7 +1,7 @@
 import { MapContainer } from 'react-leaflet/MapContainer';
 import { TileLayer } from 'react-leaflet/TileLayer';
 import { useMap } from 'react-leaflet/hooks';
-import { Marker, Polyline } from 'react-leaflet';
+import { Marker, Polyline, CircleMarker } from 'react-leaflet';
 import L from 'leaflet';
 
 // Gesture handling to show 'use 2 fingers to zoom'
@@ -15,7 +15,7 @@ import greenMarker from '../styles/images/marker-icon-2x-green.png';
 import markerShadow from '../styles/images/marker-shadow.png';
 
 
-	export const RouteMap = ( {startPos, endPos, showStartMarker, showEndMarker, lineColour, route, interactive } ) => {
+	export const RouteMap = ( {startPos, endPos, showStartMarker, showEndMarker, lineColour, route, interactive, laps, showLaps, lapColour } ) => {
 		return 		<MapContainer
 						center={ startPos }
 						zoom={ 13 }
@@ -36,6 +36,12 @@ import markerShadow from '../styles/images/marker-shadow.png';
 							showEndMarker={ showEndMarker }
 							endPos={endPos}
 						></ShowEndMarker>
+						
+						<ShowLapMarkers
+							showLaps={ showLaps }
+							laps={ laps }
+							lapColour={ lapColour }
+						></ShowLapMarkers>
 
 						<Polyline
 							pathOptions={ { color: lineColour } }
@@ -123,5 +129,21 @@ import markerShadow from '../styles/images/marker-shadow.png';
 				></Marker>
 			);
 		}
+		return null;
+	};
+
+	const ShowLapMarkers = ( { showLaps, laps, lapColour } ) => {
+		if (showLaps) {
+			const lapMarkers = [];
+			if (laps) {
+				for (let i = 0; i < laps.length; i++)  {
+					lapMarkers.push(
+					<CircleMarker key={i} center={laps[i]} radius={5} pane={"markerPane"} pathOptions={{ color: lapColour, fillOpacity:0.8}} />
+					);
+				}
+				return <>{ lapMarkers }</>;
+			}
+		}
+		
 		return null;
 	};
