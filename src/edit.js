@@ -231,6 +231,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						route={ attributes.route }
 						interactive={ attributes.interactive }
 						laps={ attributes.laps }
+						showLaps= { attributes.showLaps }
 					></RouteMap>
 				</div>;
 		};

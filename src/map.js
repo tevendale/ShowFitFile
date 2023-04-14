@@ -15,7 +15,7 @@ import greenMarker from '../styles/images/marker-icon-2x-green.png';
 import markerShadow from '../styles/images/marker-shadow.png';
 
 
-	export const RouteMap = ( {startPos, endPos, showStartMarker, showEndMarker, lineColour, route, interactive, laps } ) => {
+	export const RouteMap = ( {startPos, endPos, showStartMarker, showEndMarker, lineColour, route, interactive, laps, showLaps } ) => {
 		return 		<MapContainer
 						center={ startPos }
 						zoom={ 13 }
@@ -38,6 +38,7 @@ import markerShadow from '../styles/images/marker-shadow.png';
 						></ShowEndMarker>
 						
 						<ShowLapMarkers
+							showLaps={ showLaps }
 							laps= { laps }
 						></ShowLapMarkers>
 
@@ -130,32 +131,18 @@ import markerShadow from '../styles/images/marker-shadow.png';
 		return null;
 	};
 
-	const ShowLapMarkers = ( { laps } ) => {
-	
-		const endMarker = new L.Icon( {
-				iconUrl: blueMarker,
-				shadowUrl: markerShadow,
-				iconSize: [ 25, 41 ],
-				iconAnchor: [ 12, 41 ],
-				popupAnchor: [ 1, -34 ],
-				shadowSize: [ 41, 41 ],
-			} );
-
-		const lapMarkers = [];
-		let i = 0;
-		console.log(laps);
-		if (laps) {
-			for (let i = 0; i < laps.length; i++)  {
-				lapMarkers.push(
-				<CircleMarker key={i} center={laps[i]} radius={5} pane={"markerPane"} pathOptions={{ color: 'blue', fillOpacity:0.8}} />
-				);
+	const ShowLapMarkers = ( { showLaps, laps } ) => {
+		if (showLaps) {
+			const lapMarkers = [];
+			if (laps) {
+				for (let i = 0; i < laps.length; i++)  {
+					lapMarkers.push(
+					<CircleMarker key={i} center={laps[i]} radius={5} pane={"markerPane"} pathOptions={{ color: 'blue', fillOpacity:0.8}} />
+					);
+				}
+				return <>{ lapMarkers }</>;
 			}
-			console.log(lapMarkers);
-			return <>{ lapMarkers }</>;
-		}
-		else {
-			return null;
 		}
 		
-		
+		return null;
 	};
