@@ -2,7 +2,7 @@
 Contributors:      stuarttevendale
 Tags:              fit, gpx, tcx, run, cycle, bike, hike, track, gps, Garmin, Wahoo, Polar
 Requires at least: 5.8
-Tested up to:      6.2
+Tested up to:      6.3
 Stable tag:        1.2.0
 Requires PHP:	   7.4
 License:           GPL-2.0-or-later
