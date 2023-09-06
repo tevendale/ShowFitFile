@@ -349,6 +349,15 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</PanelRow>
 					<PanelRow>
+						<ToggleControl
+							label="Show Photos from Media Library"
+							checked={ attributes.showPhotos }
+							onChange={ ( newval ) =>
+								setAttributes( { showPhotos: newval } )
+							}
+						/>
+					</PanelRow>
+					<PanelRow>
 						<SelectControl
 							label="Units"
 							value={ attributes.units }

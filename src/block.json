@@ -126,6 +126,10 @@
 		"descent": {
 			"type": "integer",
 			"default": 0
+		},
+		"showPhotos": {
+			"type": "boolean",
+			"default" : "{false}"
 		}
 		
 	}
