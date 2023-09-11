@@ -29,6 +29,7 @@ import {
 
 import React, { useEffect, useState } from 'react';
 
+
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
  * Those files can contain any CSS code that gets applied to the editor.
@@ -54,6 +55,8 @@ import loadTCXFile from './tcximport';
 import {ShowSpeedGraph, ShowAltitudeGraph} from './graphs';
 import {RouteMap} from './map';
 import {SessionTable} from './table';
+
+import parsePhoto from './photoparse';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -170,6 +173,56 @@ export default function Edit( { attributes, setAttributes } ) {
 			.map( ( v ) => ( v < 10 ? `0${ v }` : v ) )
 			.filter( ( v, i ) => v !== '00' || i > 0 )
 			.join( ':' );
+	}
+	
+	function findPhotos() {
+		const startDate = '2023-01-01T00:00:00';
+		const endDate = '2023-12-31T23:59:59';
+		const sessionStartDate = '2023-08-26T00:00:00';
+		const sessionEndDate = '2023-08-26T23:59:59';
+
+		const apiUrl = `/wp-json/wp/v2/media?after=${startDate}&before=${endDate}&media_type=image`;
+
+		fetch(apiUrl)
+		  .then((response) => response.json())
+		  .then((mediaData) => {
+			// Process the media data here
+			console.log(mediaData);
+			  const filteredMedia = mediaData.filter((mediaItem) => {
+			  	const timestamp = mediaItem.media_details.image_meta.created_timestamp;
+// 			  	console.log(timestamp);
+				  const mediaDate = new Date(timestamp * 1000);
+// 				  console.log(mediaDate);
+// 				  console.log(mediaItem.source_url);
+// 				  console.log(mediaItem.guid.rendered);
+// 				  const url = mediaItem.source_url;
+// 				  
+// 				  parsePhoto(mediaItem.id, mediaItem.guid.rendered);
+
+				  return mediaDate >= new Date(sessionStartDate) && mediaDate <= new Date(sessionEndDate);
+			  });
+			  console.log(filteredMedia);
+			  // Parse the collection of photos to see if they're on the route - check if coords are within bounding box of route.
+			  filteredMedia.forEach( function ( mediaItem ) {
+			  	parsePhoto(mediaItem.id, mediaItem.guid.rendered, photoCallback);
+			  });
+		  })
+		  .catch((error) => {
+			console.error('Error fetching media data:', error);
+		  });
+		  
+	}
+	
+	function photoCallback(photo) {
+		console.log(photo.url);
+		console.log(photo.lat);
+		console.log(photo.lon);
+		if (photo) {
+			let photosArray = attributes.photos;
+			photosArray.push(photo);
+			setAttributes( {photos: photosArray } );
+			console.log(attributes.photos);
+		}
 	}
 
 	const ShowProgressBar = () => {
@@ -353,7 +406,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							label="Show Photos from Media Library"
 							checked={ attributes.showPhotos }
 							onChange={ ( newval ) =>
-								setAttributes( { showPhotos: newval } )
+								findPhotos()
+// 								setAttributes( { showPhotos: newval } )
 							}
 						/>
 					</PanelRow>
