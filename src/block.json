@@ -130,6 +130,10 @@
 		"showPhotos": {
 			"type": "boolean",
 			"default" : "{false}"
+		},
+		"photos": {
+			"type": "array",
+			"default": []
 		}
 		
 	}
