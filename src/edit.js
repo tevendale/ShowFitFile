@@ -190,15 +190,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			console.log(mediaData);
 			  const filteredMedia = mediaData.filter((mediaItem) => {
 			  	const timestamp = mediaItem.media_details.image_meta.created_timestamp;
-// 			  	console.log(timestamp);
 				  const mediaDate = new Date(timestamp * 1000);
-// 				  console.log(mediaDate);
-// 				  console.log(mediaItem.source_url);
-// 				  console.log(mediaItem.guid.rendered);
-// 				  const url = mediaItem.source_url;
-// 				  
-// 				  parsePhoto(mediaItem.id, mediaItem.guid.rendered);
-
 				  return mediaDate >= new Date(sessionStartDate) && mediaDate <= new Date(sessionEndDate);
 			  });
 			  console.log(filteredMedia);
@@ -214,10 +206,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 	
 	function photoCallback(photo) {
-		console.log(photo.url);
-		console.log(photo.lat);
-		console.log(photo.lon);
-		if (photo) {
+  		if (photo) {
 			let photosArray = attributes.photos;
 			photosArray.push(photo);
 			setAttributes( {photos: photosArray } );
@@ -286,6 +275,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						laps={ attributes.laps }
 						showLaps={ attributes.showLaps }
 						lapColour={ attributes.lapColour }
+						photos={ attributes.photos }
+						showPhotos={ true }
 					></RouteMap>
 				</div>;
 		};

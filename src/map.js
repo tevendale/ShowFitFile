@@ -4,6 +4,11 @@ import { useMap } from 'react-leaflet/hooks';
 import { Marker, Polyline, CircleMarker } from 'react-leaflet';
 import L from 'leaflet';
 
+// FontAwesome for Camera icon
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCamera } from '@fortawesome/free-solid-svg-icons';
+
+
 // Gesture handling to show 'use 2 fingers to zoom'
 import { GestureHandling } from "leaflet-gesture-handling";
 import "leaflet/dist/leaflet.css";
@@ -15,7 +20,8 @@ import greenMarker from '../styles/images/marker-icon-2x-green.png';
 import markerShadow from '../styles/images/marker-shadow.png';
 
 
-	export const RouteMap = ( {startPos, endPos, showStartMarker, showEndMarker, lineColour, route, interactive, laps, showLaps, lapColour } ) => {
+	export const RouteMap = ( {startPos, endPos, showStartMarker, showEndMarker, lineColour, route, interactive, laps, showLaps, lapColour, photos} ) => {
+		console.log(photos);
 		return 		<MapContainer
 						center={ startPos }
 						zoom={ 13 }
@@ -42,6 +48,10 @@ import markerShadow from '../styles/images/marker-shadow.png';
 							laps={ laps }
 							lapColour={ lapColour }
 						></ShowLapMarkers>
+
+						<ShowPhotoMarkers
+							photos={ photos }
+						></ShowPhotoMarkers>
 
 						<Polyline
 							pathOptions={ { color: lineColour } }
@@ -142,6 +152,33 @@ import markerShadow from '../styles/images/marker-shadow.png';
 					);
 				}
 				return <>{ lapMarkers }</>;
+			}
+		}
+		
+		return null;
+	};
+
+	const ShowPhotoMarkers = ( { showPhotos, photos } ) => {
+		if (true) {
+			const photoMarkers = [];
+// 			const fontAwesomeIcon = L.divIcon({
+// 				html: '<i class="fa fa-camera fa-4x"></i>',
+// 				iconSize: [20, 20],
+// 				className: 'myDivIcon'
+// 			});
+			if (photos) {
+				for (let i = 0; i < photos.length; i++)  {
+					console.log(photos[i]);
+					const lat = photos[i].lat;
+					const lon = photos[i].lon;
+// 					const marker = L.marker([{lat, lon}],{ icon:  fontAwesomeIcon})
+// 					photoMarkers.push(marker);
+					photoMarkers.push(
+					<CircleMarker key={i} center={[photos[i].lat, photos[i].lon]} radius={5} pane={"markerPane"} pathOptions={{ color: "Red", fillOpacity:0.8}} />
+					);
+
+				}
+				return <>{ photoMarkers }</>;
 			}
 		}
 		

@@ -12,20 +12,17 @@ export default async function parsePhoto( imageID, imageURL, callback, errorCall
 			} );
 			const buffer = Buffer.from( response.data, 'utf-8' );
 			
-			console.log(buffer);
-			
 			var exifData = ExifReader.load(buffer);
-			
-			console.log(exifData);
 			
 			// Check if GPS data exists in the EXIF metadata
 			if (exifData && exifData.GPSLatitude && exifData.GPSLongitude) {
 				var latitude = exifData.GPSLatitude.description;
 				var longitude = exifData.GPSLongitude.description;
+				if (exifData.GPSLatitudeRef.value =='S')
+					latitude = latitude * -1;
 
-				// Output the GPS coordinates
-				console.log("Latitude: " + latitude);
-				console.log("Longitude: " + longitude);
+				if (exifData.GPSLongitudeRef.value =='W')
+					longitude = longitude * -1;
 				
 				const photo = {
 					url: imageURL,
