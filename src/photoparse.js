@@ -6,7 +6,7 @@ import ExifReader from 'exifreader';
 
 
 export default async function parsePhoto( imageID, imageURL, callback, errorCallback ) {
-			console.log(imageURL);
+// 			console.log(imageURL);
 			const response = await axios.get( imageURL, {
 				responseType: 'arraybuffer',
 			} );

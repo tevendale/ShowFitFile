@@ -72,6 +72,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	const [ hideErrorPanel, setHideErrorPanel ] = useState( true );
 	const [ errorMessage, setErrorMessage ] = useState( "Error Happened" );
 	const [ loading, setLoading ] = useState( true );
+	
+	let photoStore = [];
 
 	function selectFitFile( value ) {
 		// We need to save the file name here
@@ -176,6 +178,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 	
 	function findPhotos() {
+
+		// Also add option to find gps location based on photo timestamp and the gps marker in the fit file for that time.
 		const startDate = '2023-01-01T00:00:00';
 		const endDate = '2023-12-31T23:59:59';
 		const sessionStartDate = '2023-08-26T00:00:00';
@@ -187,13 +191,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		  .then((response) => response.json())
 		  .then((mediaData) => {
 			// Process the media data here
-			console.log(mediaData);
 			  const filteredMedia = mediaData.filter((mediaItem) => {
 			  	const timestamp = mediaItem.media_details.image_meta.created_timestamp;
 				  const mediaDate = new Date(timestamp * 1000);
 				  return mediaDate >= new Date(sessionStartDate) && mediaDate <= new Date(sessionEndDate);
 			  });
-			  console.log(filteredMedia);
 			  // Parse the collection of photos to see if they're on the route - check if coords are within bounding box of route.
 			  filteredMedia.forEach( function ( mediaItem ) {
 			  	parsePhoto(mediaItem.id, mediaItem.guid.rendered, photoCallback);
@@ -207,10 +209,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	
 	function photoCallback(photo) {
   		if (photo) {
-			let photosArray = attributes.photos;
-			photosArray.push(photo);
-			setAttributes( {photos: photosArray } );
-			console.log(attributes.photos);
+  			photoStore.push(photo);
+  			setAttributes( { testArray: photoStore } );
+  			setAttributes( { photosArray: photoStore } );
 		}
 	}
 
@@ -275,7 +276,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						laps={ attributes.laps }
 						showLaps={ attributes.showLaps }
 						lapColour={ attributes.lapColour }
-						photos={ attributes.photos }
+						photos={ attributes.photosArray }
 						showPhotos={ true }
 					></RouteMap>
 				</div>;

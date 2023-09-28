@@ -131,10 +131,9 @@
 			"type": "boolean",
 			"default" : "{false}"
 		},
-		"photos": {
+		"photosArray": {
 			"type": "array",
 			"default": []
 		}
-		
 	}
 }
