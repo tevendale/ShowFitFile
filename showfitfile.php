@@ -72,6 +72,8 @@ add_action('init', function() {
 
 function yft_showfitfile_block_render($attr, $content) {
 
+// 	print_r($attr);
+
 	// return the block output
 	$renderHTML = yft_showfitfile_block_summary_table($attr) . yft_showfitfile_block_map($attr);
 	
@@ -193,7 +195,9 @@ function yft_showfitfile_block_map($attr) {
 
 	" . yft_showfitfile_block_markers($attr) . "
 	
-	" . yft_showfitfile_block_laps($attr) . "	
+	" . yft_showfitfile_block_laps($attr) . "
+	
+	" . yft_showfitfile_block_photos($attr) . "	
 
 	var centre = poly.getCenter();
 	var bounds = poly.getBounds();
@@ -257,6 +261,24 @@ function yft_showfitfile_block_laps($attr) {
 
 	return $html;
 }
+
+function yft_showfitfile_block_photos($attr) {
+
+	$photos = $attr['photosArray'];
+	$lapColour = 'green';
+	$html = "";
+
+	if ($attr['showLaps']) {
+		foreach($photos as $photo) {
+			$lapPoint = "[" . $photo['lat'] . "," . $photo['lon'] . "]";
+			$html .= "L.marker(" . $lapPoint . ", {icon: blueIcon}).addTo(map)\n";
+// 			$html .= "L.circleMarker(" . $lapPoint . ", {radius:5, pane:'markerPane', color:'" . $lapColour ."', fillOpacity:0.8}).addTo(map)\n";
+		}
+	}
+
+	return $html;
+}
+
 
 
 function yft_showfitfile_block_route($attr) {
