@@ -22,7 +22,7 @@ import camera from '../styles/images/photoMarker.png';
 
 // Leaflet.MarketClusterGroup
 // import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
-import "../styles/leaflet.markercluster/leaflet.markercluster-src.js";
+// import "../styles/leaflet.markercluster/leaflet.markercluster-src.js";
 
 	export const RouteMap = ( {startPos, endPos, showStartMarker, showEndMarker, lineColour, route, interactive, laps, showLaps, lapColour, photos} ) => {
 		return 		<MapContainer
