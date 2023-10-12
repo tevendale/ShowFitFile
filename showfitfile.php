@@ -266,19 +266,20 @@ function yft_showfitfile_block_photos($attr) {
 
 	$photos = $attr['photosArray'];
 	$lapColour = 'green';
-	$html = "var markers = L.markerClusterGroup();\n";
+// 	$html = "var markers = L.markerClusterGroup();\n";
+	$html = "";
 
 	if ($attr['showLaps']) {
 		foreach($photos as $photo) {
 			$lapPoint = "[" . $photo['lat'] . "," . $photo['lon'] . "]";
-// 			$html .= "L.marker(" . $lapPoint . ", {icon: blueIcon}).addTo(map)\n";
-			$html .= "var marker = L.marker(" . $lapPoint . ", {icon: blueIcon})\n";
-			$html .= "markers.addLayer(marker);\n";
+			$html .= "L.marker(" . $lapPoint . ", {icon: blueIcon}).addTo(map)\n";
+// 			$html .= "var marker = L.marker(" . $lapPoint . ", {icon: blueIcon})\n";
+// 			$html .= "markers.addLayer(marker);\n";
 // 			$html .= "L.circleMarker(" . $lapPoint . ", {radius:5, pane:'markerPane', color:'" . $lapColour ."', fillOpacity:0.8}).addTo(map)\n";
 		}
 	}
 	
-	$html .= "map.addLayer(markers);\n";
+// 	$html .= "map.addLayer(markers);\n";
 
 	return $html;
 }
@@ -697,12 +698,12 @@ function sff_scripts_and_styles_load(){
 	wp_enqueue_script('fontawesomejs', $fontawesomejs);
 	
 	// CSS and JS for Marker Clustering - Leaflet.markercluster
-	$clustercss = plugins_url('/styles/MarkerCluster.css', __FILE__);
-	$clusterDefaultcss = plugins_url('/styles/MarkerCluster.Default.css', __FILE__);
-	$clusterjs = plugins_url('/styles/leaflet.markercluster.js', __FILE__);
-	wp_enqueue_style('cluster_css', $clustercss);
-	wp_enqueue_style('cluster_default_css', $clusterDefaultcss);
-	wp_enqueue_script('clusterjs', $clusterjs);
+// 	$clustercss = plugins_url('/styles/leaflet.markercluster/MarkerCluster.css', __FILE__);
+// 	$clusterDefaultcss = plugins_url('/styles/leaflet.markercluster/MarkerCluster.Default.css', __FILE__);
+// 	$clusterjs = plugins_url('/styles/leaflet.markercluster/leaflet.markercluster.js', __FILE__);
+// 	wp_enqueue_style('cluster_css', $clustercss);
+// 	wp_enqueue_style('cluster_default_css', $clusterDefaultcss);
+// 	wp_enqueue_script('clusterjs', $clusterjs);
 
 
 	// For gpx export
