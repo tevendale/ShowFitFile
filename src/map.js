@@ -20,16 +20,15 @@ import greenMarker from '../styles/images/marker-icon-2x-green.png';
 import markerShadow from '../styles/images/marker-shadow.png';
 import camera from '../styles/images/photoMarker.png';
 
-// Leaflet.Icon.Glyph
-import { MarkerPP } from '@asicupv/markerpp';
-import 'leaflet.icon.glyph';
-// import '../styles/Leaflet.Icon.Glyph.js';
-
+// Leaflet.MarketClusterGroup
+// import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
+import "../styles/leaflet.markercluster/leaflet.markercluster-src.js";
 
 	export const RouteMap = ( {startPos, endPos, showStartMarker, showEndMarker, lineColour, route, interactive, laps, showLaps, lapColour, photos} ) => {
 		return 		<MapContainer
 						center={ startPos }
 						zoom={ 13 }
+						maxZoom= { 25 }
 						zoomAnimation={false}
 						fadeAnimation={false}						
 						style={ { height: '400px' } }
@@ -55,8 +54,9 @@ import 'leaflet.icon.glyph';
 						></ShowLapMarkers>
 
 						<ShowPhotoMarkers
-							photos={ photos }
+								photos={ photos }
 						></ShowPhotoMarkers>
+
 
 						<Polyline
 							pathOptions={ { color: lineColour } }
@@ -133,7 +133,7 @@ import 'leaflet.icon.glyph';
 				shadowUrl: markerShadow,
 				iconSize: [ 25, 41 ],
 				iconAnchor: [ 12, 41 ],
-				popupAnchor: [ 1, -34 ],
+				popupAnchor: [ 1, -34 ], 
 				shadowSize: [ 41, 41 ],
 			} );
 
@@ -167,22 +167,36 @@ import 'leaflet.icon.glyph';
 	const ShowPhotoMarkers = ( { showPhotos, photos } ) => {
 		if (true) {
 			const photoMarkers = [];
+// 			photoMarkers.push(
+// 				<MarkerClusterGroup>
+// 			);
+			
 			const photoMarker = new L.Icon( {
 				iconUrl: camera,
-// 				shadowUrl: markerShadow,
 				iconSize: [ 41, 41 ],
 				iconAnchor: [ 41, 41 ],
-// 				popupAnchor: [ 1, -34 ],
-// 				shadowSize: [ 41, 41 ],
 			} );
+			
+			const map = useMap();
+			
+// 			var markers = L.markerClusterGroup();
 
 			if (photos) {
+// 				photoMarkers.push(
+// 					<MarkerClusterGroup>
+// 				)
+			
 				for (let i = 0; i < photos.length; i++)  {
-// 					console.log(photos[i]);
 					const lat = photos[i].lat;
 					const lon = photos[i].lon;
 					
 					var latlng = [photos[i].lat, photos[i].lon];
+					
+					var marker = L.marker(latlng, {icon: photoMarker});
+					marker.addTo(map);
+// 					markers.addLayer(marker);
+					
+					
 					
 					photoMarkers.push(
 					<Marker
@@ -191,7 +205,15 @@ import 'leaflet.icon.glyph';
 					></Marker>
 					)
 				}
-				return <>{ photoMarkers }</>;
+// 				photoMarkers.push(</MarkerClusterGroup>);
+// 				console.log(markers);
+// 				console.log(map);
+// 				map.addLayer(markers);
+// 				return <><MarkerClusterGroup>{ photoMarkers }</MarkerClusterGroup></>;
+// 				return <MarkerClusterGroup>{ photoMarkers }</MarkerClusterGroup>;
+// 				return <>{ photoMarkers }</>;
+// 				return { photoMarkers };
+				return null;
 			}
 		}
 		
