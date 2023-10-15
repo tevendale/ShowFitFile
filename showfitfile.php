@@ -264,24 +264,52 @@ function yft_showfitfile_block_laps($attr) {
 
 function yft_showfitfile_block_photos($attr) {
 
+// 	return null;
+
 	$photos = $attr['photosArray'];
 	$lapColour = 'green';
 // 	$html = "var markers = L.markerClusterGroup();\n";
 	$html = "";
 
+	$html2 = <<<'END'
+		var photos = [];
+		var photoLayer = L.photo.cluster().on('click', function (evt) {
+		var photo = evt.layer.photo,
+			template = '<img src="{url}"/></a><p>{caption}</p>';
+
+		evt.layer.bindPopup(L.Util.template(template, photo), {
+			className: 'leaflet-popup-photo',
+			minWidth: 400
+		}).openPopup();
+		});
+		END;
+
 	if ($attr['showLaps']) {
 		foreach($photos as $photo) {
-			$lapPoint = "[" . $photo['lat'] . "," . $photo['lon'] . "]";
-			$html .= "L.marker(" . $lapPoint . ", {icon: blueIcon}).addTo(map)\n";
+			$html2 .= "\nphotos.push({
+						lat: " . $photo['lat'] . ",
+						lng: " . $photo['lon']. ",
+						url: \"" . $photo['url']. "\",
+						caption: \"Caption\",
+						thumbnail: \"" . $photo['url']. "\"
+					});\n";
+					
+			}
+		}
+		
+		
+// 			$lapPoint = "[" . $photo['lat'] . "," . $photo['lon'] . "]";
+// 			$image = $photo['url'];
+// 			$html .= "L.marker(" . $lapPoint . ", {icon: blueIcon}).addTo(map)\n";
+// 			$html .= "L.photo(" . $image . ").addTo(map)\n";
 // 			$html .= "var marker = L.marker(" . $lapPoint . ", {icon: blueIcon})\n";
 // 			$html .= "markers.addLayer(marker);\n";
 // 			$html .= "L.circleMarker(" . $lapPoint . ", {radius:5, pane:'markerPane', color:'" . $lapColour ."', fillOpacity:0.8}).addTo(map)\n";
-		}
-	}
+		$html2 .= "photoLayer.add(photos).addTo(map);\n";
+
 	
 // 	$html .= "map.addLayer(markers);\n";
-
-	return $html;
+	return $html2;
 }
 
 
@@ -698,13 +726,20 @@ function sff_scripts_and_styles_load(){
 	wp_enqueue_script('fontawesomejs', $fontawesomejs);
 	
 	// CSS and JS for Marker Clustering - Leaflet.markercluster
-// 	$clustercss = plugins_url('/styles/leaflet.markercluster/MarkerCluster.css', __FILE__);
-// 	$clusterDefaultcss = plugins_url('/styles/leaflet.markercluster/MarkerCluster.Default.css', __FILE__);
-// 	$clusterjs = plugins_url('/styles/leaflet.markercluster/leaflet.markercluster.js', __FILE__);
-// 	wp_enqueue_style('cluster_css', $clustercss);
-// 	wp_enqueue_style('cluster_default_css', $clusterDefaultcss);
-// 	wp_enqueue_script('clusterjs', $clusterjs);
+	$clustercss = plugins_url('/styles/Leaflet.markercluster/MarkerCluster.css', __FILE__);
+	$clusterDefaultcss = plugins_url('/styles/Leaflet.markercluster/MarkerCluster.Default.css', __FILE__);
+	$clusterjs = plugins_url('/styles/Leaflet.markercluster/leaflet.markercluster.js', __FILE__);
+	$photopopupcss = plugins_url('/styles/Leaflet.markercluster/photopopup.css', __FILE__);
+	wp_enqueue_style('cluster_css', $clustercss);
+	wp_enqueue_style('cluster_default_css', $clusterDefaultcss);
+	wp_enqueue_script('clusterjs', $clusterjs);
+	wp_enqueue_style('photo_popup_css', $photopopupcss);
 
+	// CSS and JS for Photo Marker Leaflet.Photo
+	$photomarkercss = plugins_url('/styles/Leaflet.Photo/Leaflet.Photo.css', __FILE__);
+	$photomarkerjs = plugins_url('/styles/Leaflet.Photo/Leaflet.Photo.js', __FILE__);
+	wp_enqueue_style('photo_marker_css', $photomarkercss);
+	wp_enqueue_script('photo_marker_js', $photomarkerjs);
 
 	// For gpx export
 // 	$gpxExport = plugins_url('/src/gpxExport.js', __FILE__);
