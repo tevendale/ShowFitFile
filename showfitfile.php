@@ -263,53 +263,50 @@ function yft_showfitfile_block_laps($attr) {
 }
 
 function yft_showfitfile_block_photos($attr) {
-
 // 	return null;
 
 	$photos = $attr['photosArray'];
-	$lapColour = 'green';
-// 	$html = "var markers = L.markerClusterGroup();\n";
-	$html = "";
-
-	$html2 = <<<'END'
-		var photos = [];
-		var photoLayer = L.photo.cluster().on('click', function (evt) {
-		var photo = evt.layer.photo,
-			template = '<img src="{url}"/></a><p>{caption}</p>';
-
-		evt.layer.bindPopup(L.Util.template(template, photo), {
-			className: 'leaflet-popup-photo',
-			minWidth: 400
-		}).openPopup();
-		});
-		END;
+	
+	// TODO: Consider moving this to a seprate file to allow for customisation
+	// TODO: Make class names unique with ssf_ prefix
+	$template = "const template = `
+				  <div class=\"popup\">
+					<a href=\"{photo}\">
+					  <img width=\"{width}\" height=\"{height}\" src=\"{photo}\" />
+					  <div class=\"meta\">
+						<span class=\"date\">{date}</span><span class=\"caption\">{caption}</span>
+					  </div>
+					</a>
+				  </div>
+				`;";
+				
+	$photoLayer = "const photoLayer = L.photo.cluster().on('click', function(evt) {
+					  evt.layer.bindPopup(L.Util.template(template, evt.layer.photo)).openPopup();
+					});";
+					
+	$html3 = $template . "\n" . $photoLayer . "\n";
+	
+	$html3 .= "var photos = [];\n";				
 
 	if ($attr['showLaps']) {
 		foreach($photos as $photo) {
-			$html2 .= "\nphotos.push({
+			$html3 .= "\nphotos.push({
 						lat: " . $photo['lat'] . ",
 						lng: " . $photo['lon']. ",
-						url: \"" . $photo['url']. "\",
+						width: 250,
+						height: 250,
+						photo: \"" . $photo['url']. "\",
+						date: \"2023-10-01\",
 						caption: \"Caption\",
 						thumbnail: \"" . $photo['url']. "\"
 					});\n";
 					
 			}
 		}
-		
-		
-// 			$lapPoint = "[" . $photo['lat'] . "," . $photo['lon'] . "]";
-// 			$image = $photo['url'];
-// 			$html .= "L.marker(" . $lapPoint . ", {icon: blueIcon}).addTo(map)\n";
-// 			$html .= "L.photo(" . $image . ").addTo(map)\n";
-// 			$html .= "var marker = L.marker(" . $lapPoint . ", {icon: blueIcon})\n";
-// 			$html .= "markers.addLayer(marker);\n";
-// 			$html .= "L.circleMarker(" . $lapPoint . ", {radius:5, pane:'markerPane', color:'" . $lapColour ."', fillOpacity:0.8}).addTo(map)\n";
-		$html2 .= "photoLayer.add(photos).addTo(map);\n";
-
+				
+		$html3 .= "photoLayer.add(photos).addTo(map);\n";
 	
-// 	$html .= "map.addLayer(markers);\n";
-	return $html2;
+	return $html3;
 }
 
 
