@@ -725,7 +725,8 @@ function sff_scripts_and_styles_load(){
 	// CSS and JS for Marker Clustering - Leaflet.markercluster
 	$clustercss = plugins_url('/styles/Leaflet.markercluster/MarkerCluster.css', __FILE__);
 	$clusterDefaultcss = plugins_url('/styles/Leaflet.markercluster/MarkerCluster.Default.css', __FILE__);
-	$clusterjs = plugins_url('/styles/Leaflet.markercluster/leaflet.markercluster.js', __FILE__);
+	$clusterjs = plugins_url('/styles/Leaflet.markercluster/leaflet.markercluster-src.js', __FILE__);
+// 	$clusterjs = plugins_url('/styles/Leaflet.markercluster/index.js', __FILE__);
 	$photopopupcss = plugins_url('/styles/Leaflet.markercluster/photopopup.css', __FILE__);
 	wp_enqueue_style('cluster_css', $clustercss);
 	wp_enqueue_style('cluster_default_css', $clusterDefaultcss);
