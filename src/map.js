@@ -22,13 +22,18 @@ import camera from '../styles/images/photoMarker.png';
 
 // Leaflet.MarketClusterGroup
 // import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
-// import "../styles/leaflet.markercluster/leaflet.markercluster-src.js";
+import "../styles/Leaflet.markercluster/";
+import "../styles/Leaflet.Photo/Leaflet.Photo.js";
+
+// import '@nconnector/leaflet.markercluster';
+// import {Photo, Cluster} from '@lychee-org/leaflet.photo';
 
 	export const RouteMap = ( {startPos, endPos, showStartMarker, showEndMarker, lineColour, route, interactive, laps, showLaps, lapColour, photos} ) => {
 		return 		<MapContainer
 						center={ startPos }
 						zoom={ 13 }
 						maxZoom= { 25 }
+						minZoom={5}
 						zoomAnimation={false}
 						fadeAnimation={false}						
 						style={ { height: '400px' } }
@@ -37,6 +42,15 @@ import camera from '../styles/images/photoMarker.png';
 							attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 							url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 						/>
+						
+						<Polyline
+							pathOptions={ { color: lineColour } }
+							positions={ route }
+						/>
+						
+						<FitBounds points={ route }></FitBounds>
+
+
 						<ShowStartMarker
 							showStartMarker={ showStartMarker }
 							startPos={ startPos }
@@ -58,11 +72,6 @@ import camera from '../styles/images/photoMarker.png';
 						></ShowPhotoMarkers>
 
 
-						<Polyline
-							pathOptions={ { color: lineColour } }
-							positions={ route }
-						/>
-						<FitBounds points={ route }></FitBounds>
 						<InteractiveOptions
 							interactive={ interactive }
 						></InteractiveOptions>
@@ -165,11 +174,34 @@ import camera from '../styles/images/photoMarker.png';
 	};
 
 	const ShowPhotoMarkers = ( { showPhotos, photos } ) => {
+// 		return null;
 		if (true) {
 			const photoMarkers = [];
 // 			photoMarkers.push(
 // 				<MarkerClusterGroup>
 // 			);
+			const template = `
+			  <div class="popup">
+				<a href="{photo}">
+				  <img width="{width}" height="{height}" src="{photo}" />
+				  <div class="meta">
+					<span class="date">{date}</span><span class="caption">{caption}</span>
+				  </div>
+				</a>
+			  </div>
+			`;
+			
+			if (L.MarkerClusterGroup) {
+				console.log("MarkerClusterGroup exists");
+			}
+			else {
+				console.log("MarkerClusterGroup doesn't exist");
+			}
+				
+			const photoLayer = L.photo.cluster().on('click', function(evt) {
+			  evt.layer.bindPopup(L.Util.template(template, evt.layer.photo)).openPopup();
+			});
+
 			
 			const photoMarker = new L.Icon( {
 				iconUrl: camera,
@@ -181,30 +213,146 @@ import camera from '../styles/images/photoMarker.png';
 			
 // 			var markers = L.markerClusterGroup();
 
+			const photoData = [];
+
 			if (photos) {
 // 				photoMarkers.push(
 // 					<MarkerClusterGroup>
 // 				)
-			
-				for (let i = 0; i < photos.length; i++)  {
-					const lat = photos[i].lat;
-					const lon = photos[i].lon;
-					
-					var latlng = [photos[i].lat, photos[i].lon];
-					
-					var marker = L.marker(latlng, {icon: photoMarker});
-					marker.addTo(map);
-// 					markers.addLayer(marker);
-					
-					
-					
-					photoMarkers.push(
-					<Marker
-						position={ latlng }
-						icon={ photoMarker }
-					></Marker>
-					)
-				}
+// 				for (let i = 0; i < photos.length; i++)  {
+// 					const lat = photos[i].lat;
+// 					const lon = photos[i].lon;
+// 					const photo = photos[i].url;
+// 					
+// 					photoData.push({
+// 						lat: lat,
+// 						lng: lon,
+// 						width: 250,
+// 						height: 250,
+// 						photo: photo,
+// 						date: "2023-10-01",
+// 						caption: "Caption",
+// 						thumbnail: photo
+// 					});
+// 					
+// 					
+// 					
+// // 					var latlng = [photos[i].lat, photos[i].lon];
+// // 					
+// // 					var marker = L.marker(latlng, {icon: photoMarker});
+// // 					marker.addTo(map);
+// // 					markers.addLayer(marker);
+// 					
+// 					
+// 					
+// // 					photoMarkers.push(
+// // 					<Marker
+// // 						position={ latlng }
+// // 						icon={ photoMarker }
+// // 					></Marker>
+// // 					)
+// 				}
+				    photoData.push({
+                        lat: 57.433969444444,
+                        lng: -2.3971972222222,
+                        width: 250,
+                        height: 250,
+                        photo: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.39.10.jpeg",
+                        date: "2023-10-01",
+                        caption: "Caption",
+                        thumbnail: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.39.10.jpeg"
+                    });
+
+                    photoData.push({
+                        lat: 57.434827777778,
+                        lng: -2.39645,
+                        width: 250,
+                        height: 250,
+                        photo: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.42.09.jpeg",
+                        date: "2023-10-01",
+                        caption: "Caption",
+                        thumbnail: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.42.09.jpeg"
+                    });
+// 
+//                     photoData.push({
+//                         lat: 57.441633333333,
+//                         lng: -2.3655305555556,
+//                         width: 250,
+//                         height: 250,
+//                         photo: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.52.23.jpeg",
+//                         date: "2023-10-01",
+//                         caption: "Caption",
+//                         thumbnail: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.52.23.jpeg"
+//                     });
+// 
+//                     photoData.push({
+//                         lat: 57.455488888889,
+//                         lng: -2.382975,
+//                         width: 250,
+//                         height: 250,
+//                         photo: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.23.18.jpeg",
+//                         date: "2023-10-01",
+//                         caption: "Caption",
+//                         thumbnail: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.23.18.jpeg"
+//                     });
+// 
+//                     photoData.push({
+//                         lat: 57.459002777778,
+//                         lng: -2.3616444444444,
+//                         width: 250,
+//                         height: 250,
+//                         photo: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.57.32.jpeg",
+//                         date: "2023-10-01",
+//                         caption: "Caption",
+//                         thumbnail: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.57.32.jpeg"
+//                     });
+// 
+//                     photoData.push({
+//                         lat: 57.455808333333,
+//                         lng: -2.3830777777778,
+//                         width: 250,
+//                         height: 250,
+//                         photo: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.28.53.jpeg",
+//                         date: "2023-10-01",
+//                         caption: "Caption",
+//                         thumbnail: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.28.53.jpeg"
+//                     });
+// 
+//                     photoData.push({
+//                         lat: 57.441669444444,
+//                         lng: -2.3636694444444,
+//                         width: 250,
+//                         height: 250,
+//                         photo: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.52.18.jpeg",
+//                         date: "2023-10-01",
+//                         caption: "Caption",
+//                         thumbnail: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.52.18.jpeg"
+//                     });
+// 
+//                     photoData.push({
+//                         lat: 57.442641666667,
+//                         lng: -2.3962361111111,
+//                         width: 250,
+//                         height: 250,
+//                         photo: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.33.11.jpeg",
+//                         date: "2023-10-01",
+//                         caption: "Caption",
+//                         thumbnail: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.33.11.jpeg"
+//                     });
+// 
+//                     photoData.push({
+//                         lat: 57.464627777778,
+//                         lng: -2.3700888888889,
+//                         width: 250,
+//                         height: 250,
+//                         photo: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.18.02.jpeg",
+//                         date: "2023-10-01",
+//                         caption: "Caption",
+//                         thumbnail: "http://showfitfile.local/wp-content/uploads/2023/10/2023-10-01-11.18.02.jpeg"
+//                     });
+
+				console.log(photoData);
+				photoLayer.add(photoData).addTo(map);
 // 				photoMarkers.push(</MarkerClusterGroup>);
 // 				console.log(markers);
 // 				console.log(map);
