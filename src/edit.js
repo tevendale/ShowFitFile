@@ -182,8 +182,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		// Also add option to find gps location based on photo timestamp and the gps marker in the fit file for that time.
 		const startDate = '2023-01-01T00:00:00';
 		const endDate = '2023-12-31T23:59:59';
-		const sessionStartDate = '2023-08-26T00:00:00';
-		const sessionEndDate = '2023-08-26T23:59:59';
+		const sessionStartDate = '2023-10-01T00:00:00';
+		const sessionEndDate = '2023-10-01T23:59:59';
 
 		const apiUrl = `/wp-json/wp/v2/media?after=${startDate}&before=${endDate}&media_type=image`;
 
