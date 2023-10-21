@@ -3,6 +3,7 @@
 // For fitfileparser for .fit import
 import axios from 'axios';
 import { Buffer } from 'buffer';
+import { Decoder, Stream, Profile, Utils } from '@garmin/fitsdk';
 
 import { DataPoint, SessionData } from './dataStore';
 
@@ -19,6 +20,21 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 				responseType: 'arraybuffer',
 			} );
 			const buffer = Buffer.from( response.data, 'utf-8' );
+			
+			// For Garmin FIT SDK
+			
+			const stream = Stream.fromByteArray(buffer);
+			console.log("isFIT (static method): " + Decoder.isFIT(stream));
+			
+			const decoder = new Decoder(stream);
+			console.log("isFIT (instance method): " + decoder.isFIT());
+			console.log("checkIntegrity: " + decoder.checkIntegrity());
+		
+
+			const { messages, errors } = decoder.read({convertDateTimesToDates: false});
+
+			console.log(errors);
+			console.log(messages);
 
 			const FitFileParser = require( 'fit-file-parser' ).default;
 
