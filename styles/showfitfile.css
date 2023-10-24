@@ -136,7 +136,9 @@
 }
 
 .sff_trend {
-	width: 14px;
+	width: 18px;
+	display: inline;
+	/* height: 14px; */
 }
 
 .leaflet-bar a, .leaflet-bar a:hover {
