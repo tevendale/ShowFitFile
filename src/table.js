@@ -1,8 +1,7 @@
-// FontAwesome for Sport icons
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowTrendUp, faArrowTrendDown} from '@fortawesome/free-solid-svg-icons';
-
 import React, { useEffect, useState } from 'react';
+
+import trendUp from '../styles/images/trend-up.svg';
+import trendDown from '../styles/images/trend-down.svg';
 
 
 	export const SessionTable = ( { time, duration, distance, show, units, ascent, descent, showMovingTime, setAttributes } ) => {
@@ -39,7 +38,7 @@ import React, { useEffect, useState } from 'react';
 							{durationCell}
 							<td className="sff_dataCell">
 								<div className="sff_dataTitle">Ascent/Descent:</div>
-								<div className="sff_dataItem"> <FontAwesomeIcon className="sff_trend" icon={ faArrowTrendUp } /> {ascentString} / <FontAwesomeIcon className="sff_trend" icon={ faArrowTrendDown } /> { descentString} </div>
+								<div className="sff_dataItem"> <img className="sff_trend" src={trendUp} /> {ascentString} / <img className="sff_trend" src={trendDown} /> { descentString} </div>
 							</td>
 							<td
 								style={ { width: '18%' } }
