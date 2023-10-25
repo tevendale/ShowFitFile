@@ -690,7 +690,9 @@ function sff_scripts_and_styles_load(){
 		}";
   wp_add_inline_style('leafletjs_css', $map_custom_css );
 
-  wp_enqueue_script('chartjs', 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.2.1/chart.umd.js');
+	// For Chart.js
+	$chartjs = plugins_url('/styles/chartjs/chart.umd.js', __FILE__);
+	wp_enqueue_script('chartjs', $chartjs);
 }
 
 function sff_getRouteColour() {
