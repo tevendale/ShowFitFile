@@ -666,17 +666,9 @@ function sff_scripts_and_styles_load(){
 	wp_enqueue_style('leafletghjs_css', $leafletGHcss);
 	wp_enqueue_script('leafletghjs', $leafletGHjs);
 
-
-	//CSS and JS for FontAwesome
-	$faSolid = plugins_url('/styles/solid.js', __FILE__);
-	$fontawesomejs = plugins_url('/styles/fontawesome.js', __FILE__);
-	wp_enqueue_script('faSolid', $faSolid);
-	wp_enqueue_script('fontawesomejs', $fontawesomejs);
-
 	// For gpx export
 // 	$gpxExport = plugins_url('/src/gpxExport.js', __FILE__);
 // 	wp_enqueue_script('gpxExport', $gpxExport);
-
 
 	// Custom css for displaying Map
 	$map_custom_css = "
