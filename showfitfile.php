@@ -88,6 +88,9 @@ function yft_showfitfile_block_render($attr, $content) {
 
 function yft_showfitfile_block_summary_table($attr) {
 // 	print_r($attr);
+	$trendUp = plugins_url('/styles/images/trend-up.svg', __FILE__);
+	$trendDown = plugins_url('/styles/images/trend-down.svg', __FILE__);
+
 	$durationLabel = "Duration:";
 	if ($attr['showSummary']) {
 		if ($attr['useMovingTime']) {
@@ -104,7 +107,7 @@ function yft_showfitfile_block_summary_table($attr) {
 		$durationCell = "<td class=\"sff_dataCell\"><div class=\"sff_dataTitle\">" . $durationLabel . "</div><div class=\"sff_dataItem\">" . ($attr['duration']) . "</div></td>";
 	}
 	// HTML for session details
-	$htmlSessionDetails = "<tr>" . $timeCell . "\n" . $durationCell . "\n<td class=\"sff_dataCell\"><div class=\"sff_dataTitle\">Ascent/Descent:</div><div class=\"sff_dataItem\"><i class=\"fa-solid fa-arrow-trend-up\"></i> " . $attr['ascentString'] . " <i class=\"fa-solid fa-arrow-trend-down\"></i> " . $attr['descentString'] . "</div>\n</td><td style=\"text-align: right\"; class=\"sff_dataCell\"><div class=\"sff_dataTitle\">Distance:</div><div class=\"sff_dataItem\">" . $attr['distanceString'] . "</div></td></tr>";
+	$htmlSessionDetails = "<tr>" . $timeCell . "\n" . $durationCell . "\n<td class=\"sff_dataCell\"><div class=\"sff_dataTitle\">Ascent/Descent:</div><div class=\"sff_dataItem\"><img class=\"sff_trend\" src=$trendUp> " . $attr['ascentString'] . " <img class=\"sff_trend\" src=$trendDown> " . $attr['descentString'] . "</div>\n</td><td style=\"text-align: right\"; class=\"sff_dataCell\"><div class=\"sff_dataTitle\">Distance:</div><div class=\"sff_dataItem\">" . $attr['distanceString'] . "</div></td></tr>";
 
 	
 	$html = "<table class=\"sff_dataTable\"  style=\"margin-bottom: 0px\">" . $htmlSessionDetails . "</table>";
@@ -663,17 +666,9 @@ function sff_scripts_and_styles_load(){
 	wp_enqueue_style('leafletghjs_css', $leafletGHcss);
 	wp_enqueue_script('leafletghjs', $leafletGHjs);
 
-
-	//CSS and JS for FontAwesome
-	$faSolid = plugins_url('/styles/solid.js', __FILE__);
-	$fontawesomejs = plugins_url('/styles/fontawesome.js', __FILE__);
-	wp_enqueue_script('faSolid', $faSolid);
-	wp_enqueue_script('fontawesomejs', $fontawesomejs);
-
 	// For gpx export
 // 	$gpxExport = plugins_url('/src/gpxExport.js', __FILE__);
 // 	wp_enqueue_script('gpxExport', $gpxExport);
-
 
 	// Custom css for displaying Map
 	$map_custom_css = "
