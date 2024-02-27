@@ -79,12 +79,16 @@ When upgrading blocks from V1.0.0, you'll need to import the .fit file again, if
 
 == Changelog ==
 
+= 1.2.1 =
+* Now uses Garmin's .fit importer
+* Performance improvements
+
 = 1.2.0 =
 * Can now show lap positions from .fit files
 * Improved position tracking from altitude graph
 
 = 1.1.5 =
-* Fix for WordPRess 6.2
+* Fix for WordPress 6.2
 
 = 1.1.4 =
 * Fixed issued reading gpx files that don't have a timestamp in the <trkpt> elements
