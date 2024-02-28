@@ -1,6 +1,6 @@
 === Show Fit File ===
 Contributors:      stuarttevendale
-Tags:              fit, gpx, tcx, run, cycle, bike, hike, track, gps, Garmin, Wahoo, Polar
+Tags:              fit, gpx, tcx, Garmin, cycle
 Requires at least: 5.8
 Tested up to:      6.4
 Stable tag:        1.2.1
