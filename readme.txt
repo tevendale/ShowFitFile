@@ -3,7 +3,7 @@ Contributors:      stuarttevendale
 Tags:              fit, gpx, tcx, Garmin, cycle
 Requires at least: 5.8
 Tested up to:      6.4
-Stable tag:        1.2.2
+Stable tag:        1.2.3
 Requires PHP:	   7.4
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -78,6 +78,9 @@ It's worth noting that, depending on the setup of your device, you may not see m
 When upgrading blocks from V1.0.0, you'll need to import the .fit file again, if you want to display the profile graph or the ascent/descent figures.
 
 == Changelog ==
+
+= 1.2.3 =
+* Fixed crash in Shortcode if a file has no GPS data
 
 = 1.2.2 =
 * Fixed bug where altitude graph may not appear
