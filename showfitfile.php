@@ -4,7 +4,7 @@
  * Plugin Name:       Show Fit File
  * Plugin URI:        https://stuarttevendale.com/wordpress-plugin-for-garmin-fit-files/
  * Description:       A sport & fitness-focused plugin for displaying route and exercise data from .fit, .gpx and .tcx files.
- * Version:           1.2.2
+ * Version:           1.2.3
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Stuart Tevendale
@@ -328,6 +328,7 @@ function showFitFile($atts) {
 	// Render the shortcode
 
 	global $options;
+	global $fileError;
 	$options = new ssf_mapOptions();
 	$optionsChanged = false;
 
@@ -369,6 +370,9 @@ function showFitFile($atts) {
 }
 
 function sff_showFitFile($options, $file) {
+
+	global $fileError;
+	
 	// Renders an HTML table with the summary of the data and the map with a route overlay
 
 	$options->uniqueID = uniqid('', TRUE);
@@ -410,6 +414,9 @@ function sff_showFitFile($options, $file) {
 			$routeHTML = sff_fitHTML();
 			set_transient($transientID, $routeHTML);
 		}
+		else {
+			$routeHTML = '<p><b>ShowFitFile Plugin - There was a problem reading the .fit file: ' . $fileError . '</b></p>';
+		}
 	}
 	return $routeHTML;
 }
@@ -437,10 +444,12 @@ global $options;
 global $startPoint;
 global $endPoint;
 global $startLatLong;
+global $fileError;
 
 function sff_readFitFile($file) {
 	try {
 		global $options;
+		global $fileError;
 
 		// Files are uploaded to this folder
 		$customdir = '/fit_Files';
@@ -470,9 +479,19 @@ function sff_readFitFile($file) {
 
 		global $pFFA;
 		$pFFA = new adriangibbons\phpFITFileAnalysis($file, $fitOptions);
+		
+		// Check that we've got location data - 'position_lat' key exists in data
+		if (!array_key_exists('position_lat', $pFFA->data_mesgs['record'])) {
+// 			echo '<p>fit file has no positional data</p>';
+			$fileError = "file has no positional data.";
+			return false;
+		}
+		
+		
 		return true;
 	} catch (Exception $e) {
-		echo '<p>Error reading fit file: ' . $e->getMessage() . '</p>';
+// 		echo '<p>Error reading fit file: ' . $e->getMessage() . '</p>';
+		$fileError = "There was an error reading the file: " . $e->getMessage();
 		return false;
 	}
 }
