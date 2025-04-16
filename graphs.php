@@ -32,7 +32,7 @@ function yft_showfitfile_block_altitudegraph($attr) {
     $polyline = rtrim($polyline, ",");
 	$polyline = "[" . $polyline . "]";
 
-	$html = "const ctx = document.getElementById('altitude');
+	$html = "const ctx = document.getElementById('altitude-" . $attr['mapID'] . "');
 	var latData = " . yft_showfitfile_block_latitude_data($attr) . ";
  	var longData = " . yft_showfitfile_block_longitude_data($attr) . ";
  	var circle = new L.circleMarker();

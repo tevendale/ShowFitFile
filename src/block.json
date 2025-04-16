@@ -119,6 +119,10 @@
 			"type": "string",
 			"default": "-"
 		},
+		"mapID": {
+			"type": "string",
+			"default": ""
+		},
 		"ascent": {
 			"type": "integer",
 			"default": 0
