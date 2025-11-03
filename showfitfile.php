@@ -116,8 +116,8 @@ function yft_showfitfile_block_summary_table($attr) {
 	}
 }
 
-function yft_showfitfile_block_canvas_for_altitude_graph() {
-	return yft_showfitfile_block_canvas_for_graph("altitude");
+function yft_showfitfile_block_canvas_for_altitude_graph($mapID) {
+	return yft_showfitfile_block_canvas_for_graph("altitude-" . $mapID);
 }
 
 function yft_showfitfile_block_canvas_for_graph($canvasID) {
@@ -161,7 +161,7 @@ function yft_showfitfile_block_longitude_data($attr) {
 }
 
 
-function yft_showfitfile_block_map($attr) {
+function yft_showfitfile_block_map(&$attr) {
 	global $startPoint;
 	global $endPoint;
 	$lineColour = $attr['lineColour'];
@@ -172,7 +172,8 @@ function yft_showfitfile_block_map($attr) {
 	
 	if ($attr['showAltitudeGraph']) {
 		// Add the canvas for the altitude graph
-		$maphtml .= yft_showfitfile_block_canvas_for_altitude_graph();
+		$attr['mapID'] = $mapID;
+		$maphtml .= yft_showfitfile_block_canvas_for_altitude_graph($mapID);
 	}
 
 
