@@ -66,6 +66,10 @@ export default async function loadFitFile( fitfileID, callback, errorCallback ) 
 				if ( 'altitude' in arrayItem ) {
 					altitude = arrayItem.altitude
 				}
+				if ( 'enhancedAltitude' in arrayItem ) {
+					altitude = arrayItem.enhancedAltitude
+				}
+
 				if ( 'speed' in arrayItem ) {
 					speed = arrayItem.speed;
 				}
