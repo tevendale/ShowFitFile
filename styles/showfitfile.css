@@ -137,7 +137,7 @@
 
 .sff_trend {
 	width: 18px;
-	display: inline;
+	display: inline !important;
 	/* height: 14px; */
 }
 
