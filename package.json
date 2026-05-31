@@ -1,6 +1,6 @@
 {
 	"name": "showfitfile",
-	"version": "1.2.6",
+	"version": "1.2.7",
 	"description": "Block to display .fit, .gpx & .tcx files.",
 	"author": "Stuart Tevendale",
 	"license": "GPL-2.0-or-later",
@@ -15,6 +15,15 @@
 		"plugin-zip": "wp-scripts plugin-zip",
 		"start": "wp-scripts start"
 	},
+	"files": [
+		"build/",
+		"libraries/",
+		"styles/",
+		"graphs.php",
+		"showfitfile.php",
+		"LICENSE",
+		"readme.txt"
+	],
 	"devDependencies": {
 		"@types/jest": "^29.4.0",
 		"@wordpress/scripts": "^25.5.1",
