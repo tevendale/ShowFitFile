@@ -4,7 +4,7 @@
  * Plugin Name:       Show Fit File
  * Plugin URI:        https://stuarttevendale.com/wordpress-plugin-for-garmin-fit-files/
  * Description:       A sport & fitness-focused plugin for displaying route and exercise data from .fit, .gpx and .tcx files.
- * Version:           1.2.6
+ * Version:           1.2.7
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Stuart Tevendale
@@ -786,6 +786,12 @@ function sff_post_upload($fileinfo){
 }
 
 function sff_custom_upload_dir($path){
+
+    // Bail out early if this isn't our plugin's upload
+    if ( empty( $_POST['name'] ) ) {
+        return $path;
+    }
+
 	$filename = sanitize_file_name($_POST['name'])  ;
     $extension = substr(strrchr($filename,'.'),1);
     if(!empty($path['error']) ||  ($extension != 'fit' &&  $extension != 'gpx'  &&  $extension != 'tcx') ) {
